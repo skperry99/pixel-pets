@@ -1,7 +1,10 @@
 package org.example.backend.dto;
 
-import org.example.backend.service.PetService;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class PetDto {
     private Long id;
     private String name;
@@ -11,55 +14,6 @@ public class PetDto {
     private int happiness;
     private int energy;
     private Long userId;
-
-    public int getEnergy() {
-        return energy;
-    }
-    public void setEnergy(int energy) {
-        this.energy = energy;
-    }
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getType() {
-        return type;
-    }
-    public void setType(String type) {
-        this.type = type;
-    }
-    public int getLevel() {
-        return level;
-    }
-    public void setLevel(int level) {
-        this.level = level;
-    }
-    public int getHunger() {
-        return hunger;
-    }
-    public void setHunger(int hunger) {
-        this.hunger = hunger;
-    }
-    public int getHappiness() {
-        return happiness;
-    }
-    public void setHappiness(int happiness) {
-        this.happiness = happiness;
-    }
-    public Long getUserId() {
-        return userId;
-    }
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     public PetDto() {}
 
