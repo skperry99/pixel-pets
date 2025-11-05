@@ -1,27 +1,61 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.PetDto;
+import org.example.backend.mapper.PetMapper;
 import org.example.backend.model.Pet;
+import org.example.backend.model.User;
 import org.example.backend.service.PetService;
+import org.example.backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/pets")
 public class PetController {
     private final PetService petService;
+    private final UserService userService;
 
-    public PetController(PetService petService) {
+    public PetController(PetService petService, UserService userService) {
         this.petService = petService;
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<Pet> getAllPets() {
-        return petService.getAllPets();
+    public List<PetDto> getAllPets() {
+        return petService.getAllPets().stream().map(PetMapper::toPetDto).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
+    public PetDto getPetById(@PathVariable Long id) {
+        Pet pet = petService.getPetById(id);
+        return (pet != null) ? PetMapper.toPetDto(pet) : null;
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<PetDto> getPetsByUserId(@PathVariable Long userId) {
+        return petService.getPetsByUserId(userId)
+                .stream()
+                .map(PetMapper::toPetDto)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
-    public Pet createPet(@RequestBody Pet pet) {
-        return petService.savePet(pet);
+    public PetDto createPet(@RequestBody PetDto petDto) {
+        // Validate user exists and find the user by ID
+        User user = userService.getUserById(petDto.getUserId());
+        if (user == null) {
+            throw new RuntimeException("User not found: " + petDto.getUserId());
+        }
+
+        // Convert DTO to entity and set the user
+        Pet pet = PetMapper.toEntity(petDto, user);
+
+        // Save entity
+        Pet savedPet = petService.savePet(pet);
+
+        // Convert back to DTO and return
+        return PetMapper.toPetDto(savedPet);
     }
 }
