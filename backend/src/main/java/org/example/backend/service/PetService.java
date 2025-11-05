@@ -1,6 +1,7 @@
 package org.example.backend.service;
 
 import org.example.backend.model.Pet;
+import org.example.backend.model.User;
 import org.example.backend.repository.PetRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,12 @@ public class PetService {
     }
 
     public Pet savePet(Pet pet) {
+        return petRepository.save(pet);
+    }
+
+    public Pet createPetForUser(String name, String type, User user) {
+        Pet pet = new Pet(name, type);
+        pet.setUser(user);
         return petRepository.save(pet);
     }
 }

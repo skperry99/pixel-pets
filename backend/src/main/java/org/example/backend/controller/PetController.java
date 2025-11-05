@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.AdoptPetRequest;
 import org.example.backend.dto.PetDto;
 import org.example.backend.mapper.PetMapper;
 import org.example.backend.model.Pet;
@@ -57,5 +58,20 @@ public class PetController {
 
         // Convert back to DTO and return
         return PetMapper.toPetDto(savedPet);
+    }
+
+    @PostMapping("/adopt")
+    public PetDto adoptPet(@RequestBody AdoptPetRequest request) {
+        // Validate user exists
+        User user = userService.getUserById(request.getUserId());
+        if (user == null) {
+            throw new RuntimeException("User not found: " + request.getUserId());
+        }
+
+        // Create and save the pet for the user
+        Pet adoptedPet = petService.createPetForUser(request.getName(), request.getType(), user);
+
+        // Convert to DTO and return
+        return PetMapper.toPetDto(adoptedPet);
     }
 }
