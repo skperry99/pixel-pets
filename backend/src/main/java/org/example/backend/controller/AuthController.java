@@ -1,6 +1,7 @@
 package org.example.backend.controller;
 
 import org.example.backend.dto.LoginRequest;
+import org.example.backend.dto.RegisterRequest;
 import org.example.backend.model.User;
 import org.example.backend.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,5 +29,11 @@ public class AuthController {
         }
 
         return user.getId(); // Return just the userId for now
+    }
+
+    @PostMapping("/register")
+    public Long register(@RequestBody RegisterRequest request) {
+        User newUser = userService.registerNewUser(request.getUsername(), request.getEmail(), request.getPassword());
+        return newUser.getId(); // Return just the userId for now
     }
 }

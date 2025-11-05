@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()  // allow login / register
-                        .anyRequest().permitAll()                     // allow everything for now (MVP)
+                        .anyRequest().permitAll()                     // allow everything for now
                 )
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable());

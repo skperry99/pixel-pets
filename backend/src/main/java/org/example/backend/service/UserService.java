@@ -32,7 +32,19 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByUsername(String username) { return userRepository.findByUsername(username); }
+    public User findByEmail(String email) { return userRepository.findByEmail(email); }
+
+    public User registerNewUser(String username, String email, String rawPassword) {
+        // check for existing username or email
+        if (findByUsername(username) != null) throw new RuntimeException("Username already exits");
+        if (findByEmail(email) != null) throw new RuntimeException("Email already exists");
+
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        // hash password in saveUser method
+        user.setPassword(rawPassword);
+        return saveUser(user);
     }
 }
