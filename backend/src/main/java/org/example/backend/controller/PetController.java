@@ -80,4 +80,16 @@ public class PetController {
         Pet fedPet = petService.feedPet(id);
         return PetMapper.toPetDto(fedPet);
     }
+
+    @PostMapping("/{id}/play")
+    public PetDto play(@PathVariable Long id) {
+        Pet playedWithPet = petService.playWithPet(id);
+        return PetMapper.toPetDto(playedWithPet);
+    }
+
+    @PostMapping("/{id}/rest")
+    public PetDto rest(@PathVariable Long id) {
+        Pet restedPet = petService.restPet(id);
+        return PetMapper.toPetDto(restedPet);
+    }
 }
