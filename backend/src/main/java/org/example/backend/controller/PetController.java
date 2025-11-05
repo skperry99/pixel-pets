@@ -74,4 +74,10 @@ public class PetController {
         // Convert to DTO and return
         return PetMapper.toPetDto(adoptedPet);
     }
+
+    @PostMapping("/{id}/feed")
+    public PetDto feed(@PathVariable Long id) {
+        Pet fedPet = petService.feedPet(id);
+        return PetMapper.toPetDto(fedPet);
+    }
 }
