@@ -5,6 +5,7 @@ import org.example.backend.dto.UserUpdateRequest;
 import org.example.backend.mapper.UserMapper;
 import org.example.backend.model.User;
 import org.example.backend.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
