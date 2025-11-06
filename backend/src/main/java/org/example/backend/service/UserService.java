@@ -2,8 +2,10 @@ package org.example.backend.service;
 
 import org.example.backend.model.User;
 import org.example.backend.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -48,7 +50,33 @@ public class UserService {
         return saveUser(user);
     }
 
-    public User updateUser(User user) {
+    public User updateUser(Long id, String newUsername, String newEmail, String newRawPassword) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found" + id));
+
+        // username update
+        if (newUsername != null && !newUsername.isEmpty() && !newUsername.equals(user.getUsername())) {
+            User existingUser = userRepository.findByUsername(newUsername);
+            if (existingUser != null && !existingUser.getId().equals(id)) {
+                throw new RuntimeException("Username already exists");
+            }
+            user.setUsername(newUsername);
+        }
+
+        // email update
+        if (newEmail != null && !newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
+            User existingUser = userRepository.findByEmail(newEmail);
+            if (existingUser != null && !existingUser.getId().equals(id)) {
+                throw new RuntimeException("Email already exists");
+            }
+            user.setEmail(newEmail);
+        }
+
+        // password update
+        if (newRawPassword != null && !newRawPassword.isEmpty()) {
+            String hashedPassword = passwordEncoder.encode(newRawPassword);
+            user.setPassword(hashedPassword);
+        }
+
         return userRepository.save(user);
     }
 
