@@ -7,6 +7,7 @@ import {
   feedPet,
   playWithPet,
   restPet,
+  deletePet,
 } from "../api";
 
 export default function Dashboard() {
@@ -14,7 +15,7 @@ export default function Dashboard() {
   const userId = localStorage.getItem("userId");
   const [pets, setPets] = useState([]);
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
-  
+
   useEffect(() => {
     if (!userId) {
       navigate("/login");
@@ -91,8 +92,8 @@ export default function Dashboard() {
           required
         >
           <option value="">Select a pet type</option>
-          <option value="dog">Dog</option>
           <option value="cat">Cat</option>
+          <option value="dog">Dog</option>
           <option value="dragon">Dragon</option>
         </select>
 
@@ -147,6 +148,20 @@ export default function Dashboard() {
                   }}
                 >
                   Rest
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!confirm(`Delete ${p.name}? This cannot be undone.`))
+                      return;
+                    try {
+                      await deletePet(p.id);
+                      setPets((prev) => prev.filter((x) => x.id !== p.id));
+                    } catch (e) {
+                      alert(e.message || "Failed to delete pet");
+                    }
+                  }}
+                >
+                  Delete
                 </button>
               </div>
             </li>

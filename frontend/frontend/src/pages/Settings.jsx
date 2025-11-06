@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { updateUser } from "../api";
+import { updateUser, deleteUserApi } from "../api";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -32,8 +32,8 @@ export default function Settings() {
         email,
       });
       setMessage("Profile updated!");
-      if(updatedUser.username) setUsername(updatedUser.username);
-      if(updatedUser.email) setEmail(updatedUser.email);
+      if (updatedUser.username) setUsername(updatedUser.username);
+      if (updatedUser.email) setEmail(updatedUser.email);
     } catch (err) {
       setError(err.message || "Profile update failed!");
     } finally {
@@ -105,6 +105,32 @@ export default function Settings() {
           {loading ? "Changing..." : "Change Password"}
         </button>
       </form>
+      <div>
+        <h2>Warning: This action is irreversible.</h2>
+        <p>
+          Deleting your account will permanently remove your user and all pets.
+        </p>
+        <button
+          onClick={async () => {
+            if (!confirm("Are you sure you want to delete your account?"))
+              return;
+            if (!confirm("Really delete? This cannot be undone.")) return;
+            try {
+              setLoading(true);
+              await deleteUserApi(userId);
+              localStorage.removeItem("userId");
+              navigate("/login");
+            } catch (e) {
+              alert(e.message || "Failed to delete account");
+            }
+            finally {
+              setLoading(false);
+            }
+          }}
+        >
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 }
