@@ -50,14 +50,10 @@ export default function Dashboard() {
     <div>
       <div>
         <h1>Your Pet Dashboard</h1>
-        <button onClick={handleLogout}>
-          Logout
-        </button>
+        <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <form
-        onSubmit={handleAdopt}
-      >
+      <form onSubmit={handleAdopt}>
         <h2>Adopt a new pet</h2>
 
         <input
@@ -77,9 +73,7 @@ export default function Dashboard() {
           <option value="dragon">Dragon</option>
         </select>
 
-        <button>
-          Adopt 🐾
-        </button>
+        <button>Adopt 🐾</button>
       </form>
 
       {pets.length === 0 ? (
@@ -91,31 +85,44 @@ export default function Dashboard() {
               <div>{p.name}</div>
               <div>{p.type}</div>
               <div>
-                Level {p.level} · Hunger {p.hunger} · Happy {p.happiness} · Energy {p.energy}
+                Level {p.level} · Hunger {p.hunger} · Happy {p.happiness} ·
+                Energy {p.energy}
               </div>
               <div>
-                <button onClick={async () => {
-                  const updatedPet = await feedPet(p.id);
-                  setPets((prev) =>
-                    prev.map((pet) => (pet.id === updatedPet.id ? updatedPet : pet))
-                  );
-                }}>
+                <button
+                  onClick={async () => {
+                    const updatedPet = await feedPet(p.id);
+                    setPets((prev) =>
+                      prev.map((pet) =>
+                        pet.id === updatedPet.id ? updatedPet : pet
+                      )
+                    );
+                  }}
+                >
                   Feed
                 </button>
-                <button onClick={async () => {
-                  const updatedPet = await playWithPet(p.id);
-                  setPets((prev) =>
-                    prev.map((pet) => (pet.id === updatedPet.id ? updatedPet : pet))
-                  );
-                }}>
+                <button
+                  onClick={async () => {
+                    const updatedPet = await playWithPet(p.id);
+                    setPets((prev) =>
+                      prev.map((pet) =>
+                        pet.id === updatedPet.id ? updatedPet : pet
+                      )
+                    );
+                  }}
+                >
                   Play
                 </button>
-                <button onClick={async () => {
-                  const updatedPet = await restPet(p.id);
-                  setPets((prev) =>
-                    prev.map((pet) => (pet.id === updatedPet.id ? updatedPet : pet))
-                  );
-                }}>
+                <button
+                  onClick={async () => {
+                    const updatedPet = await restPet(p.id);
+                    setPets((prev) =>
+                      prev.map((pet) =>
+                        pet.id === updatedPet.id ? updatedPet : pet
+                      )
+                    );
+                  }}
+                >
                   Rest
                 </button>
               </div>

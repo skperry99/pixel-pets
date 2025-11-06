@@ -47,12 +47,11 @@ export default function Login() {
           />
         </div>
         {error && <p>{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-        >
+        <button type="submit" disabled={loading}>
           {loading ? "Signing in..." : "Sign in"}
         </button>
+        <p>Don't have an account?</p>
+        <button onClick={() => navigate("/register")}>Register</button>
       </form>
     </div>
   );
