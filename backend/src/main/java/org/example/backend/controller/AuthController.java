@@ -4,8 +4,10 @@ import org.example.backend.dto.LoginRequest;
 import org.example.backend.dto.RegisterRequest;
 import org.example.backend.model.User;
 import org.example.backend.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,7 +28,7 @@ public class AuthController {
         User user = userService.findByUsername(request.getUsername());
 
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
 
         return user.getId(); // Return just the userId for now
