@@ -19,28 +19,27 @@ export async function getPetsByUser(userId) {
   if (!res.ok) throw new Error(`Failed to fetch pets (${res.status})`);
   return res.json();
 }
-export async function addPet(pet) {
-  const res = await fetch(`${BASE}/api/pets`, {
+
+export async function feedPet(petId) {
+  const res = await fetch(`${BASE}/api/pets/${petId}/feed`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(pet),
   });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || `Add pet failed (${res.status})`);
-  }
-  return res.json();  
+  if (!res.ok) throw new Error(`Failed to feed pet (${res.status})`);
+  return res.json();
 }
 
-export async function updatePet(petId, updates) {
-  const res = await fetch(`${BASE}/api/pets/${petId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updates),
+export async function playWithPet(petId) {
+  const res = await fetch(`${BASE}/api/pets/${petId}/play`, {
+    method: "POST",
   });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || `Update pet failed (${res.status})`);
-  }
+  if (!res.ok) throw new Error(`Failed to play with pet (${res.status})`);
+  return res.json();
+}
+
+export async function restPet(petId) {
+  const res = await fetch(`${BASE}/api/pets/${petId}/rest`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error(`Failed to rest pet (${res.status})`);
   return res.json();
 }

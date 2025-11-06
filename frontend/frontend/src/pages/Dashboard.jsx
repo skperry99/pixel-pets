@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPetsByUser } from "../api";
+import { getPetsByUser, feedPet, playWithPet, restPet } from "../api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -86,7 +86,33 @@ export default function Dashboard() {
               <div>{p.name}</div>
               <div>{p.type}</div>
               <div>
-                Lv {p.level} · Hunger {p.hunger} · Happy {p.happiness} · Energy {p.energy}
+                Level {p.level} · Hunger {p.hunger} · Happy {p.happiness} · Energy {p.energy}
+              </div>
+              <div>
+                <button onClick={async () => {
+                  const updatedPet = await feedPet(p.id);
+                  setPets((prev) =>
+                    prev.map((pet) => (pet.id === updatedPet.id ? updatedPet : pet))
+                  );
+                }}>
+                  Feed
+                </button>
+                <button onClick={async () => {
+                  const updatedPet = await playWithPet(p.id);
+                  setPets((prev) =>
+                    prev.map((pet) => (pet.id === updatedPet.id ? updatedPet : pet))
+                  );
+                }}>
+                  Play
+                </button>
+                <button onClick={async () => {
+                  const updatedPet = await restPet(p.id);
+                  setPets((prev) =>
+                    prev.map((pet) => (pet.id === updatedPet.id ? updatedPet : pet))
+                  );
+                }}>
+                  Rest
+                </button>
               </div>
             </li>
           ))}
