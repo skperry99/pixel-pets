@@ -1,21 +1,31 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { getPetsByUser, feedPet, playWithPet, restPet } from "../api";
+import {
+  getPetsByUser,
+  getUserProfile,
+  feedPet,
+  playWithPet,
+  restPet,
+} from "../api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [pets, setPets] = useState([]);
   const userId = localStorage.getItem("userId");
-
+  const [pets, setPets] = useState([]);
+  const [userProfile, setUserProfile] = useState(null); // {id, username, email}
+  
   useEffect(() => {
     if (!userId) {
       navigate("/login");
       return;
     }
-    getPetsByUser(userId)
-      .then(setPets)
-      .catch((e) => console.error(e));
+    Promise.all([getUserProfile(userId), getPetsByUser(userId)])
+      .then(([p, list]) => {
+        setUserProfile(p);
+        setPets(list);
+      })
+      .catch(console.error);
   }, [userId, navigate]);
 
   function handleLogout() {
@@ -50,7 +60,16 @@ export default function Dashboard() {
   return (
     <div>
       <div>
-        <h1>Your Pet Dashboard</h1>
+        <h1>
+          {userProfile
+            ? `Welcome ${userProfile.username}!`
+            : "Your Pet Dashboard"}
+        </h1>
+        <p>
+          {pets.length === 0
+            ? "You don’t have any pets yet — adopt your first friend!"
+            : `You have ${pets.length} ${pets.length === 1 ? "pet" : "pets"}.`}
+        </p>
         <div>
           <Link to="/settings">Settings</Link>
           <button onClick={handleLogout}>Logout</button>
