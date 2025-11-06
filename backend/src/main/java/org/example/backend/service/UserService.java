@@ -54,7 +54,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found" + id));
 
         // username update
-        if (newUsername != null && !newUsername.isEmpty() && !newUsername.equals(user.getUsername())) {
+        if (newUsername != null && !newUsername.isBlank() && !newUsername.equals(user.getUsername())) {
             User existingUser = userRepository.findByUsername(newUsername);
             if (existingUser != null && !existingUser.getId().equals(id)) {
                 throw new RuntimeException("Username already exists");
@@ -63,7 +63,7 @@ public class UserService {
         }
 
         // email update
-        if (newEmail != null && !newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
+        if (newEmail != null && !newEmail.isBlank() && !newEmail.equals(user.getEmail())) {
             User existingUser = userRepository.findByEmail(newEmail);
             if (existingUser != null && !existingUser.getId().equals(id)) {
                 throw new RuntimeException("Email already exists");
@@ -72,7 +72,7 @@ public class UserService {
         }
 
         // password update
-        if (newRawPassword != null && !newRawPassword.isEmpty()) {
+        if (newRawPassword != null && !newRawPassword.isBlank()) {
             String hashedPassword = passwordEncoder.encode(newRawPassword);
             user.setPassword(hashedPassword);
         }
