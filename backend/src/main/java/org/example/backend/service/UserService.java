@@ -80,7 +80,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found" + id));
+        userRepository.delete(user);
     }
 }

@@ -56,13 +56,35 @@ export async function updateUser(id, data) {
 
 // api/auth.js
 export async function registerUser(username, email, password) {
-  const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password }),
-  });
+  const res = await fetch(
+    `${BASE}/api/auth/register`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+    }
+  );
   if (!res.ok) throw new Error("Registration failed");
   const data = await res.json();
   return data.id; // return just the new user ID
 }
 
+export async function getUserProfile(userId) {
+  const res = await fetch(`${BASE}/api/users/${userId}`);
+  if (!res.ok) throw new Error(`Failed to load user profile (${res.status})`);
+  return res.json();
+}
+
+export async function deletePet(petId) {
+  const res = await fetch(`${BASE}/api/pets/${petId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`Failed to delete pet (${res.status})`);
+}
+
+export async function deleteUserApi(userId) {
+  const res = await fetch(`${BASE}/api/users/${userId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`Failed to delete user (${res.status})`);
+}

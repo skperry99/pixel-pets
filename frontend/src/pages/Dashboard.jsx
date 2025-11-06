@@ -1,21 +1,32 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { getPetsByUser, feedPet, playWithPet, restPet } from "../api";
+import {
+  getPetsByUser,
+  getUserProfile,
+  feedPet,
+  playWithPet,
+  restPet,
+  deletePet,
+} from "../api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [pets, setPets] = useState([]);
   const userId = localStorage.getItem("userId");
+  const [pets, setPets] = useState([]);
+  const [userProfile, setUserProfile] = useState(null); // {id, username, email}
 
   useEffect(() => {
     if (!userId) {
       navigate("/login");
       return;
     }
-    getPetsByUser(userId)
-      .then(setPets)
-      .catch((e) => console.error(e));
+    Promise.all([getUserProfile(userId), getPetsByUser(userId)])
+      .then(([p, list]) => {
+        setUserProfile(p);
+        setPets(list);
+      })
+      .catch(console.error);
   }, [userId, navigate]);
 
   function handleLogout() {
@@ -50,7 +61,16 @@ export default function Dashboard() {
   return (
     <div>
       <div>
-        <h1>Your Pet Dashboard</h1>
+        <h1>
+          {userProfile
+            ? `Welcome ${userProfile.username}!`
+            : "Your Pet Dashboard"}
+        </h1>
+        <p>
+          {pets.length === 0
+            ? "You don’t have any pets yet — adopt your first friend!"
+            : `You have ${pets.length} ${pets.length === 1 ? "pet" : "pets"}.`}
+        </p>
         <div>
           <Link to="/settings">Settings</Link>
           <button onClick={handleLogout}>Logout</button>
@@ -72,8 +92,8 @@ export default function Dashboard() {
           required
         >
           <option value="">Select a pet type</option>
-          <option value="dog">Dog</option>
           <option value="cat">Cat</option>
+          <option value="dog">Dog</option>
           <option value="dragon">Dragon</option>
         </select>
 
@@ -128,6 +148,20 @@ export default function Dashboard() {
                   }}
                 >
                   Rest
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!confirm(`Delete ${p.name}? This cannot be undone.`))
+                      return;
+                    try {
+                      await deletePet(p.id);
+                      setPets((prev) => prev.filter((x) => x.id !== p.id));
+                    } catch (e) {
+                      alert(e.message || "Failed to delete pet");
+                    }
+                  }}
+                >
+                  Delete
                 </button>
               </div>
             </li>

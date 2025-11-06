@@ -78,6 +78,9 @@ public class PetService {
     }
 
     public void deletePet(Long id) {
+        if (!petRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found" + id);
+        }
         petRepository.deleteById(id);
     }
 }

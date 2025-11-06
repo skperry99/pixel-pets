@@ -7,6 +7,7 @@ import org.example.backend.model.Pet;
 import org.example.backend.model.User;
 import org.example.backend.service.PetService;
 import org.example.backend.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -95,6 +96,7 @@ public class PetController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePet(@PathVariable Long id) {
         petService.deletePet(id);
     }
