@@ -1,6 +1,7 @@
 package org.example.backend.controller;
 
 import org.example.backend.dto.UserDto;
+import org.example.backend.dto.UserUpdateRequest;
 import org.example.backend.mapper.UserMapper;
 import org.example.backend.model.User;
 import org.example.backend.service.UserService;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
     private final UserService userService;
 
@@ -39,14 +41,11 @@ public class UserController {
         return UserMapper.toUserDto(savedUser);
     }
 
-    @PutMapping
-    public UserDto updateUser(@RequestBody UserDto userDto) {
-        // Convert DTO to entity
-        User user = UserMapper.toEntity(userDto);
-        // Update entity
-        User updatedUser = userService.updateUser(user);
-        // Convert back to DTO and return
-        return UserMapper.toUserDto(updatedUser);
+    @PutMapping("/{id}")
+    public UserDto updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest req) {
+
+        User updatedUser = userService.updateUser(id, req.getUsername(), req.getEmail(), req.getPassword());
+        return new UserDto(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail());
     }
 
     @DeleteMapping("/{id}")

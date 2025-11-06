@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPetsByUser } from "../api";
+import { Link } from "react-router-dom";
+import { getPetsByUser, feedPet, playWithPet, restPet } from "../api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -50,14 +51,13 @@ export default function Dashboard() {
     <div>
       <div>
         <h1>Your Pet Dashboard</h1>
-        <button onClick={handleLogout}>
-          Logout
-        </button>
+        <div>
+          <Link to="/settings">Settings</Link>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
       </div>
 
-      <form
-        onSubmit={handleAdopt}
-      >
+      <form onSubmit={handleAdopt}>
         <h2>Adopt a new pet</h2>
 
         <input
@@ -66,15 +66,18 @@ export default function Dashboard() {
           onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
         />
 
-        <input
-          placeholder="Pet type (dog, cat, dragon...)"
+        <select
           value={newPet.type}
           onChange={(e) => setNewPet({ ...newPet, type: e.target.value })}
-        />
+          required
+        >
+          <option value="">Select a pet type</option>
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+          <option value="dragon">Dragon</option>
+        </select>
 
-        <button>
-          Adopt 🐾
-        </button>
+        <button>Adopt 🐾</button>
       </form>
 
       {pets.length === 0 ? (
@@ -86,7 +89,46 @@ export default function Dashboard() {
               <div>{p.name}</div>
               <div>{p.type}</div>
               <div>
-                Lv {p.level} · Hunger {p.hunger} · Happy {p.happiness} · Energy {p.energy}
+                Level {p.level} · Hunger {p.hunger} · Happy {p.happiness} ·
+                Energy {p.energy}
+              </div>
+              <div>
+                <button
+                  onClick={async () => {
+                    const updatedPet = await feedPet(p.id);
+                    setPets((prev) =>
+                      prev.map((pet) =>
+                        pet.id === updatedPet.id ? updatedPet : pet
+                      )
+                    );
+                  }}
+                >
+                  Feed
+                </button>
+                <button
+                  onClick={async () => {
+                    const updatedPet = await playWithPet(p.id);
+                    setPets((prev) =>
+                      prev.map((pet) =>
+                        pet.id === updatedPet.id ? updatedPet : pet
+                      )
+                    );
+                  }}
+                >
+                  Play
+                </button>
+                <button
+                  onClick={async () => {
+                    const updatedPet = await restPet(p.id);
+                    setPets((prev) =>
+                      prev.map((pet) =>
+                        pet.id === updatedPet.id ? updatedPet : pet
+                      )
+                    );
+                  }}
+                >
+                  Rest
+                </button>
               </div>
             </li>
           ))}
