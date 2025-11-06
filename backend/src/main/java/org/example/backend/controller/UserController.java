@@ -38,4 +38,19 @@ public class UserController {
         // Convert back to DTO and return
         return UserMapper.toUserDto(savedUser);
     }
+
+    @PutMapping
+    public UserDto updateUser(@RequestBody UserDto userDto) {
+        // Convert DTO to entity
+        User user = UserMapper.toEntity(userDto);
+        // Update entity
+        User updatedUser = userService.updateUser(user);
+        // Convert back to DTO and return
+        return UserMapper.toUserDto(updatedUser);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUserById(id);
+    }
 }

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/pets")
+@CrossOrigin(origins = "http://localhost:5173") // Vite default dev server port
 public class PetController {
     private final PetService petService;
     private final UserService userService;
@@ -91,5 +92,10 @@ public class PetController {
     public PetDto rest(@PathVariable Long id) {
         Pet restedPet = petService.restPet(id);
         return PetMapper.toPetDto(restedPet);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletePet(@PathVariable Long id) {
+        petService.deletePet(id);
     }
 }
