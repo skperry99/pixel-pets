@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getPetsByUser, feedPet, playWithPet, restPet } from "../api";
 
 export default function Dashboard() {
@@ -50,7 +51,10 @@ export default function Dashboard() {
     <div>
       <div>
         <h1>Your Pet Dashboard</h1>
-        <button onClick={handleLogout}>Logout</button>
+        <div>
+          <Link to="/settings">Settings</Link>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
       </div>
 
       <form onSubmit={handleAdopt}>

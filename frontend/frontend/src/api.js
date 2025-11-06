@@ -43,3 +43,13 @@ export async function restPet(petId) {
   if (!res.ok) throw new Error(`Failed to rest pet (${res.status})`);
   return res.json();
 }
+
+export async function updateUser(id, data) {
+  const res = await fetch(`${BASE}/api/users/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Failed to update user (${res.status})`);
+  return res.json();
+}
