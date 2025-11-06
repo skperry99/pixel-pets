@@ -66,11 +66,16 @@ export default function Dashboard() {
           onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
         />
 
-        <input
-          placeholder="Pet type (dog, cat, dragon...)"
+        <select
           value={newPet.type}
           onChange={(e) => setNewPet({ ...newPet, type: e.target.value })}
-        />
+          required
+        >
+          <option value="">Select a pet type</option>
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+          <option value="dragon">Dragon</option>
+        </select>
 
         <button>
           Adopt 🐾
