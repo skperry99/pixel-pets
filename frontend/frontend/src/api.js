@@ -53,3 +53,16 @@ export async function updateUser(id, data) {
   if (!res.ok) throw new Error(`Failed to update user (${res.status})`);
   return res.json();
 }
+
+// api/auth.js
+export async function registerUser(username, email, password) {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, email, password }),
+  });
+  if (!res.ok) throw new Error("Registration failed");
+  const data = await res.json();
+  return data.id; // return just the new user ID
+}
+
