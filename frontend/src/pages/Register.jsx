@@ -27,8 +27,7 @@ export default function Register() {
       navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Registration failed");
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   }

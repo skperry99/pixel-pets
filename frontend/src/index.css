@@ -1,0 +1,35 @@
+/* ================================
+   PIXEL PET RETRO 8-BIT STYLES
+   ================================ */
+
+/* --- Font Imports --- */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* --- Root Colors (NES-inspired palette) --- */
+:root {
+  --bg-color: #1a1a2e;
+  --accent-color: #ffcc00;
+  --accent-bright: #ffec27;
+  --secondary-color: #ff66a3;
+  --success-color: #00ffcc;
+  --danger-color: #ff0044;
+  --text-color: #f8f8f8;
+  --panel-color: #2e2e4f;
+  --border-color: #ffffff;
+}
+
+/* --- Global Reset --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+/* --- Body Styles --- */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Press Start 2P', cursive;
+  line-height: 1.5;
+}
