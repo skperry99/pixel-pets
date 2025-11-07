@@ -1,17 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
+import AppLayout from "../components/AppLayout";
 
 export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <> 
-      <header>
-        {/* CTAs */}
-        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", marginTop: "1.25rem" }}>
-          <button onClick={() => navigate("/login")}>▶ START / LOG IN</button>
-          <button onClick={() => navigate("/register")}>★ NEW GAME / REGISTER</button>
-        </div>
-      </header>
+    <AppLayout
+      headerProps={{
+        title: "PIXEL PETS",
+        subtitle: "✨ Because every pixel deserves a little love. 🐾",
+      }}
+    >
+      {/* CTAs */}
+      <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", marginTop: "1.25rem" }}>
+        <button onClick={() => navigate("/login")}>▶ START / LOG IN</button>
+        <button onClick={() => navigate("/register")}>★ NEW GAME / REGISTER</button>
+      </div>
 
       {/* Feature tease panel */}
       <section className="panel" style={{ maxWidth: 720 }}>
@@ -23,6 +27,6 @@ export default function Landing() {
           <li>💾 Real backend (Spring Boot + MySQL)</li>
         </ul>
       </section>
-    </>
+    </AppLayout>
   );
 }
