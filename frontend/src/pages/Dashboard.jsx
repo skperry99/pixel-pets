@@ -10,6 +10,7 @@ import {
 } from "../api";
 import ConfirmAction from "../components/ConfirmAction";
 import AppLayout from "../components/AppLayout";
+import PetSprite from "../components/PetSprite";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -95,9 +96,9 @@ export default function Dashboard() {
           required
         >
           <option value="">Select a pet type</option>
-          <option value="cat">Cat</option>
-          <option value="dog">Dog</option>
-          <option value="dragon">Dragon</option>
+          <option value="Cat">Cat</option>
+          <option value="Dog">Dog</option>
+          <option value="Dragon">Dragon</option>
         </select>
 
         <button>Adopt 🐾</button>
@@ -109,6 +110,7 @@ export default function Dashboard() {
         <ul>
           {pets.map((p) => (
             <li key={p.id}>
+              <PetSprite type={p.type} size={120} title={`${p.name} the ${p.type}`} />
               <div>{p.name}</div>
               <div>{p.type}</div>
               <div>
