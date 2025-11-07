@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import {
   getPetsByUser,
   getUserProfile,
@@ -75,7 +74,7 @@ export default function Dashboard() {
             : `You have ${pets.length} ${pets.length === 1 ? "pet" : "pets"}.`}
         </p>
         <div>
-          <Link to="/settings">Settings</Link>
+          <button onClick={() => navigate("/settings")}>Edit Profile</button>
           <button onClick={handleLogout}>Logout</button>
         </div>
       </div>
