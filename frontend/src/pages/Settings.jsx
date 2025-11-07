@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateUser, deleteUserApi, getUserProfile } from "../api";
+import AppLayout from "../components/AppLayout";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -71,7 +72,11 @@ export default function Settings() {
   }
 
   return (
-    <div>
+    <AppLayout
+      headerProps={{
+        title: "PROFILE SETTINGS",
+      }}
+    >
       <h1>{`${username}'s Profile`}</h1>
       <div>
         <button onClick={() => navigate("/dashboard")}>Dashboard</button>
@@ -165,6 +170,6 @@ export default function Settings() {
           </div>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }

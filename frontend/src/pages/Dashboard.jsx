@@ -9,6 +9,7 @@ import {
   deletePet,
 } from "../api";
 import ConfirmAction from "../components/ConfirmAction";
+import AppLayout from "../components/AppLayout";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
+    <AppLayout headerProps={{ title: "DASHBOARD" }}>
       <div>
         <h1>
           {userProfile
@@ -180,6 +181,6 @@ export default function Dashboard() {
           ))}
         </ul>
       )}
-    </div>
+    </AppLayout>
   );
 }
