@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Spring local/secret configs
+src/main/resources/application-local.properties
+src/main/resources/*-local.properties
+
+# Generic env files
+*.env
+.env
+.env.*.local

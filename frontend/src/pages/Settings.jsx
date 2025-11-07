@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { updateUser, deleteUserApi } from "../api";
+import { useNavigate } from "react-router-dom";
+import { updateUser, deleteUserApi, getUserProfile } from "../api";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -14,11 +14,19 @@ export default function Settings() {
   const [message, setMessage] = useState(""); // success message
   const [error, setError] = useState(""); // error message
   const [loading, setLoading] = useState(false); // disable buttons while processing
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const requiredPhrase = "DELETE";
 
   useEffect(() => {
     if (!userId) {
       navigate("/login");
+      return;
     }
+    getUserProfile(userId).then((user) => {
+      setUsername(user.username);
+      setEmail(user.email);
+    });
   }, [userId, navigate]);
 
   async function handleSubmit(e) {
@@ -64,9 +72,9 @@ export default function Settings() {
 
   return (
     <div>
-      <h1>Settings</h1>
+      <h1>{`${username}'s Profile`}</h1>
       <div>
-        <Link to="/dashboard">Dashboard</Link>
+        <button onClick={() => navigate("/dashboard")}>Dashboard</button>
         <button onClick={handleLogout}>Logout</button>
       </div>
       <div>{(message || error) && <p>{message || error}</p>}</div>
@@ -110,26 +118,51 @@ export default function Settings() {
         <p>
           Deleting your account will permanently remove your user and all pets.
         </p>
+        {!confirmDelete ? (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            disabled={loading}
+          >
+            Delete Account
+          </button>
+        ) : (
+          <div>
+      <p>
+        Type <span>{requiredPhrase}</span> to confirm.
+      </p>
+      <input
+        placeholder={requiredPhrase}
+        value={confirmText}
+        onChange={(e) => setConfirmText(e.target.value)}
+        disabled={loading}
+      />
+      <div>
         <button
+          disabled={loading || confirmText !== requiredPhrase}
           onClick={async () => {
-            if (!confirm("Are you sure you want to delete your account?"))
-              return;
-            if (!confirm("Really delete? This cannot be undone.")) return;
             try {
               setLoading(true);
               await deleteUserApi(userId);
+              setMessage("Your account was deleted.");
               localStorage.removeItem("userId");
               navigate("/login");
-            } catch (e) {
-              alert(e.message || "Failed to delete account");
-            }
-            finally {
+            } catch (err) {
+              setError(err.message || "Account deletion failed");
+            } finally {
               setLoading(false);
             }
           }}
         >
-          Delete Account
+          {loading ? "Deleting..." : "Confirm delete"}
         </button>
+        <button
+        disabled={loading}
+        onClick={() => {setConfirmDelete(false); setConfirmText("")}}>
+          Cancel
+        </button>
+        </div>
+        </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import {
   getPetsByUser,
   getUserProfile,
@@ -9,12 +8,15 @@ import {
   restPet,
   deletePet,
 } from "../api";
+import ConfirmAction from "../components/ConfirmAction";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
   const [pets, setPets] = useState([]);
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
+  const [confirmPetId, setConfirmPetId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
     if (!userId) {
@@ -63,16 +65,16 @@ export default function Dashboard() {
       <div>
         <h1>
           {userProfile
-            ? `Welcome ${userProfile.username}!`
+            ? `Welcome, ${userProfile.username}!`
             : "Your Pet Dashboard"}
         </h1>
         <p>
           {pets.length === 0
-            ? "You don’t have any pets yet — adopt your first friend!"
+            ? "You do not have any pets yet — adopt your first friend!"
             : `You have ${pets.length} ${pets.length === 1 ? "pet" : "pets"}.`}
         </p>
         <div>
-          <Link to="/settings">Settings</Link>
+          <button onClick={() => navigate("/settings")}>Edit Profile</button>
           <button onClick={handleLogout}>Logout</button>
         </div>
       </div>
@@ -149,20 +151,30 @@ export default function Dashboard() {
                 >
                   Rest
                 </button>
-                <button
-                  onClick={async () => {
-                    if (!confirm(`Delete ${p.name}? This cannot be undone.`))
-                      return;
-                    try {
-                      await deletePet(p.id);
-                      setPets((prev) => prev.filter((x) => x.id !== p.id));
-                    } catch (e) {
-                      alert(e.message || "Failed to delete pet");
-                    }
-                  }}
-                >
-                  Delete
-                </button>
+                {confirmPetId === p.id ? (
+                  <ConfirmAction
+                    confirmPrompt={`Are you sure you want to delete ${p.name}? This action cannot be undone.`}
+                    confirmLabel="Yes, delete"
+                    cancelLabel="No, keep"
+                    busy={deleteId === p.id}
+                    onConfirm={async () => {
+                      try {
+                        setDeleteId(p.id);
+                        await deletePet(p.id);
+                        setPets((prev) => prev.filter((x) => x.id !== p.id));
+                        <p>Pet deleted successfully!</p>;
+                      } catch (error) {
+                        <p>Error deleting pet: {error.message}</p>;
+                      } finally {
+                        setDeleteId(null);
+                        setConfirmPetId(null);
+                      }
+                    }}
+                    onCancel={() => setConfirmPetId(null)}
+                  />
+                ) : (
+                  <button onClick={() => setConfirmPetId(p.id)}>Delete</button>
+                )}
               </div>
             </li>
           ))}

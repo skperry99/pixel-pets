@@ -39,8 +39,8 @@ public class UserService {
 
     public User registerNewUser(String username, String email, String rawPassword) {
         // check for existing username or email
-        if (findByUsername(username) != null) throw new RuntimeException("Username already exits");
-        if (findByEmail(email) != null) throw new RuntimeException("Email already exists");
+        if (findByUsername(username) != null) throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+        if (findByEmail(email) != null) throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
 
         User user = new User();
         user.setUsername(username);
