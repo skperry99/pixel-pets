@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { login } from "../api";
+import AppLayout from "../components/AppLayout";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,8 +25,11 @@ export default function Login() {
   }
 
   return (
-    <div>
-      <h1>Log in</h1>
+    <AppLayout
+      headerProps={{
+        title: "LOG IN",
+      }}
+    >
       <form onSubmit={handleSubmit}>
         <div>
           <label>Username</label>
@@ -48,11 +52,11 @@ export default function Login() {
         </div>
         {error && <p>{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? "Signing in..." : "Sign in"}
+          {loading ? "CHECKING..." : "LOG IN"}
         </button>
-        <p>Don't have an account?</p>
-        <button onClick={() => navigate("/register")}>Register</button>
+        <p>New to Pixel Pets?</p>
+        <button onClick={() => navigate("/register")}>Create an account</button>
       </form>
-    </div>
+    </AppLayout>
   );
 }

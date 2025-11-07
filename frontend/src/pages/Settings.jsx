@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateUser, deleteUserApi, getUserProfile } from "../api";
+import AppLayout from "../components/AppLayout";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -71,7 +72,11 @@ export default function Settings() {
   }
 
   return (
-    <div>
+    <AppLayout
+      headerProps={{
+        title: "PROFILE SETTINGS",
+      }}
+    >
       <h1>{`${username}'s Profile`}</h1>
       <div>
         <button onClick={() => navigate("/dashboard")}>Dashboard</button>
@@ -119,51 +124,52 @@ export default function Settings() {
           Deleting your account will permanently remove your user and all pets.
         </p>
         {!confirmDelete ? (
-          <button
-            onClick={() => setConfirmDelete(true)}
-            disabled={loading}
-          >
+          <button onClick={() => setConfirmDelete(true)} disabled={loading}>
             Delete Account
           </button>
         ) : (
           <div>
-      <p>
-        Type <span>{requiredPhrase}</span> to confirm.
-      </p>
-      <input
-        placeholder={requiredPhrase}
-        value={confirmText}
-        onChange={(e) => setConfirmText(e.target.value)}
-        disabled={loading}
-      />
-      <div>
-        <button
-          disabled={loading || confirmText !== requiredPhrase}
-          onClick={async () => {
-            try {
-              setLoading(true);
-              await deleteUserApi(userId);
-              setMessage("Your account was deleted.");
-              localStorage.removeItem("userId");
-              navigate("/login");
-            } catch (err) {
-              setError(err.message || "Account deletion failed");
-            } finally {
-              setLoading(false);
-            }
-          }}
-        >
-          {loading ? "Deleting..." : "Confirm delete"}
-        </button>
-        <button
-        disabled={loading}
-        onClick={() => {setConfirmDelete(false); setConfirmText("")}}>
-          Cancel
-        </button>
-        </div>
-        </div>
+            <p>
+              Type <span>{requiredPhrase}</span> to confirm.
+            </p>
+            <input
+              placeholder={requiredPhrase}
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              disabled={loading}
+            />
+            <div>
+              <button
+                disabled={loading || confirmText !== requiredPhrase}
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+                    await deleteUserApi(userId);
+                    setMessage("Your account was deleted.");
+                    localStorage.removeItem("userId");
+                    navigate("/login");
+                  } catch (err) {
+                    setError(err.message || "Account deletion failed");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+              >
+                {loading ? "Deleting..." : "Confirm delete"}
+              </button>
+              <button
+                disabled={loading}
+                onClick={() => {
+                  setConfirmDelete(false);
+                  setConfirmText("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
