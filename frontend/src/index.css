@@ -63,3 +63,41 @@ input, select {
   background-color: #000;
   color: var(--success-color);
 }
+/* --- Pixel Status Bars --- */
+.status-bar {
+  background-color: #000;
+  border: 3px solid var(--border-color);
+  margin: 0.5rem 0;
+  height: 20px;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.status-fill {
+  height: 100%;
+  background-color: var(--success-color);
+  transition: width 0.3s ease-in-out;
+}
+
+.status-bar.hunger .status-fill {
+  background-color: var(--accent-color);
+}
+.status-bar.happiness .status-fill {
+  background-color: var(--secondary-color);
+}
+.status-bar.energy .status-fill {
+  background-color: var(--success-color);
+}
+
+/* --- Pet Display --- */
+.pet-sprite {
+  width: 120px;
+  height: 120px;
+  image-rendering: pixelated;
+  margin: 1rem auto;
+  display: block;
+  border: 3px solid var(--border-color);
+  background-color: #111;
+}
