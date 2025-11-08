@@ -11,6 +11,7 @@ import {
 import ConfirmAction from "../components/ConfirmAction";
 import AppLayout from "../components/AppLayout";
 import PetSprite from "../components/PetSprite";
+import StatusBarPixel from "../components/StatusBarPixel";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -110,12 +111,25 @@ export default function Dashboard() {
         <ul>
           {pets.map((p) => (
             <li key={p.id}>
-              <PetSprite type={p.type} size={120} title={`${p.name} the ${p.type}`} />
+              <PetSprite
+                type={p.type}
+                size={120}
+                title={`${p.name} the ${p.type}`}
+              />
               <div>{p.name}</div>
-              <div>{p.type}</div>
-              <div>
+              {/* <div>{p.type}</div> */}
+              {/* <div>
                 Level {p.level} · Hunger {p.hunger} · Happy {p.happiness} ·
                 Energy {p.energy}
+              </div> */}
+              <div className="grid gap-2 mt-3">
+                <StatusBarPixel label="Hunger" value={p.hunger} kind="hunger" />
+                <StatusBarPixel
+                  label="Happiness"
+                  value={p.happiness}
+                  kind="happiness"
+                />
+                <StatusBarPixel label="Energy" value={p.energy} kind="energy" />
               </div>
               <div>
                 <button
