@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
   const [confirmPetId, setConfirmPetId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [newPet, setNewPet] = useState({ name: "", type: "" });
+  const [adopting, setAdopting] = useState(false);
 
   useEffect(() => {
     if (!userId) {
@@ -40,24 +42,32 @@ export default function Dashboard() {
     navigate("/login");
   }
 
-  const [newPet, setNewPet] = useState({ name: "", type: "" });
-
   async function handleAdopt(e) {
     e.preventDefault();
+    if (adopting) return;
 
     const name = newPet.name.trim();
     const type = newPet.type;
     const uid = Number(userId);
 
-    if (!newPet.name || !newPet.type) return;
+    if (!name || !uid) return;
 
-    const saved = await createPet({ name, type, userId: uid });
+    try {
+      setAdopting(true);
+      // Optionally, you could add more validation here
 
-    // Refresh pets
-    setPets((prev) => [...prev, saved]);
+      const saved = await createPet({ name, type, userId: uid });
 
-    // Reset form
-    setNewPet({ name: "", type: "" });
+      // Refresh pets
+      setPets((prev) => [...prev, saved]);
+
+      // Reset form
+      setNewPet({ name: "", type: "" });
+    } catch (err) {
+      console.error("Error adopting pet:", err);
+    } finally {
+      setAdopting(false);
+    }
   }
 
   return (
