@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api";
 import AppLayout from "../components/AppLayout";
@@ -30,17 +30,11 @@ export default function Login() {
     const username = form.username.trim();
     const password = form.password;
 
-    // basic client-side validation
     if (!username || !password) {
       const msg = "Username and password are required.";
       setErrorMsg(msg);
       notify.error(msg);
-      // focus first missing field
-      if (!username) {
-        usernameRef.current?.focus();
-      } else if (!password) {
-        passwordRef.current?.focus();
-      }
+      (!username ? usernameRef : passwordRef).current?.focus();
       setLoading(false);
       return;
     }
@@ -53,68 +47,51 @@ export default function Login() {
     } catch (err) {
       const msg =
         err?.message ||
-        (err?.status === 401
-          ? "Invalid username or password."
-          : "Login failed.");
+        (err?.status === 401 ? "Invalid username or password." : "Login failed.");
       setErrorMsg(msg);
       notify.error(msg);
-      // put focus back on username for quick correction
       usernameRef.current?.focus();
     } finally {
       setLoading(false);
     }
   }
 
-  const hasAnyError = Boolean(errorMsg);
-
   return (
     <AppLayout headerProps={{ title: "LOG IN" }}>
       <form onSubmit={handleSubmit} noValidate>
-        <div>
-          <label htmlFor="username">Username</label>
-          <input
-            ref={usernameRef}
-            id="username"
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-            autoComplete="username"
-            required
-            disabled={loading}
-          />
-        </div>
+        <h1>Log in</h1>
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            ref={passwordRef}
-            id="password"
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            autoComplete="current-password"
-            required
-            disabled={loading}
-          />
-        </div>
+        <input
+          ref={usernameRef}
+          name="username"
+          placeholder="Username"
+          value={form.username}
+          onChange={handleChange}
+          autoComplete="username"
+          disabled={loading}
+          required
+        />
 
-        {hasAnyError && (
-          <p id="form-error" role="alert" style={{ marginTop: 8 }}>
-            {errorMsg}
-          </p>
-        )}
+        <input
+          ref={passwordRef}
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          autoComplete="current-password"
+          disabled={loading}
+          required
+        />
+
+        {errorMsg && <p style={{ marginTop: 8 }}>{errorMsg}</p>}
 
         <button type="submit" disabled={loading}>
-          {loading ? "CHECKING..." : "LOG IN"}
+          {loading ? "Checking..." : "Log in"}
         </button>
 
         <p style={{ marginTop: 12 }}>New to Pixel Pets?</p>
-        <button
-          type="button"
-          onClick={() => navigate("/register")}
-          disabled={loading}
-        >
+        <button type="button" onClick={() => navigate("/register")} disabled={loading}>
           Create an account
         </button>
       </form>
