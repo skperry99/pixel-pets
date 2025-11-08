@@ -117,11 +117,6 @@ export default function Dashboard() {
                 title={`${p.name} the ${p.type}`}
               />
               <div>{p.name}</div>
-              {/* <div>{p.type}</div> */}
-              {/* <div>
-                Level {p.level} · Hunger {p.hunger} · Happy {p.happiness} ·
-                Energy {p.energy}
-              </div> */}
               <div className="grid gap-2 mt-3">
                 <StatusBarPixel label="Hunger" value={p.hunger} kind="hunger" />
                 <StatusBarPixel
