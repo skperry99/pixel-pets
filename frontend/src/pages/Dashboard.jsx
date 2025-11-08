@@ -7,6 +7,7 @@ import {
   playWithPet,
   restPet,
   deletePet,
+  createPet,
 } from "../api";
 import ConfirmAction from "../components/ConfirmAction";
 import AppLayout from "../components/AppLayout";
@@ -43,21 +44,17 @@ export default function Dashboard() {
 
   async function handleAdopt(e) {
     e.preventDefault();
+
+    const name = newPet.name.trim();
+    const type = newPet.type;
+    const uid = Number(userId);
+
     if (!newPet.name || !newPet.type) return;
 
-    await fetch(`${import.meta.env.VITE_API_BASE}/api/pets/adopt`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newPet.name,
-        type: newPet.type,
-        userId: userId,
-      }),
-    });
+    const saved = await createPet({ name, type, userId: uid });
 
     // Refresh pets
-    const updatedPets = await getPetsByUser(userId);
-    setPets(updatedPets);
+    setPets((prev) => [...prev, saved]);
 
     // Reset form
     setNewPet({ name: "", type: "" });

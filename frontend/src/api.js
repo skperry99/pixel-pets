@@ -85,3 +85,13 @@ export async function deleteUserApi(userId) {
   });
   if (!res.ok) throw new Error(`Failed to delete user (${res.status})`);
 }
+
+export async function createPet(petData) {
+  const res = await fetch(`${BASE}/api/pets/adopt`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(petData),
+  });
+  if (!res.ok) throw new Error(`Failed to create pet (${res.status})`);
+  return res.json();
+}
