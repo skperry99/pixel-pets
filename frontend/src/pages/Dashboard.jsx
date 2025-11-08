@@ -20,8 +20,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { notify } = useNotice();
 
-  const rawUserId = localStorage.getItem("userId");
-  const userId = rawUserId ? Number(rawUserId) : null;
+  const userId = localStorage.getItem("userId");
 
   const [pets, setPets] = useState([]);
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
@@ -42,7 +41,7 @@ export default function Dashboard() {
     (async () => {
       try {
         const [p, list] = await Promise.all([
-          getUserProfile(userId),
+          getUserProfile(Number(userId)),
           getPetsByUser(userId),
         ]);
         if (!alive) return;
