@@ -1,66 +1,123 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateUser, deleteUserApi, getUserProfile } from "../api";
 import AppLayout from "../components/AppLayout";
+import { useNotice } from "../hooks/useNotice";
 
 export default function Settings() {
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+  const { notify } = useNotice();
 
-  // handle password separately for security
+  const userId = localStorage.getItem("userId");
+
+  const [form, setForm] = useState({ username: "", email: "" });
   const [password, setPassword] = useState("");
 
-  const [message, setMessage] = useState(""); // success message
-  const [error, setError] = useState(""); // error message
-  const [loading, setLoading] = useState(false); // disable buttons while processing
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [headerName, setHeaderName] = useState("");
+
   const requiredPhrase = "DELETE";
+
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmRef = useRef(null);
 
   useEffect(() => {
     if (!userId) {
       navigate("/login");
       return;
     }
-    getUserProfile(userId).then((user) => {
-      setUsername(user.username);
-      setEmail(user.email);
-    });
-  }, [userId, navigate]);
+    (async () => {
+      try {
+        const user = await getUserProfile(userId);
+        setForm({ username: user.username ?? "", email: user.email ?? "" });
+        setHeaderName(user.username ?? ""); // <- display name is decoupled from form
+      } catch (err) {
+        const msg = err?.message || "Failed to load profile.";
+        setErrorMsg(msg);
+        notify.error(msg);
+      }
+    })();
+  }, [userId, navigate, notify]);
 
-  async function handleSubmit(e) {
+  async function handleProfileSubmit(e) {
     e.preventDefault();
-    setError("");
-    setMessage("");
+    if (loading) return;
+
+    setErrorMsg("");
     setLoading(true);
+
+    const username = form.username.trim();
+    const email = form.email.trim();
+
+    if (!username || !email) {
+      const msg = "Username and email are required.";
+      setErrorMsg(msg);
+      notify.error(msg);
+      (!username ? usernameRef : emailRef).current?.focus();
+      setLoading(false);
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      const msg = "Please enter a valid email address.";
+      setErrorMsg(msg);
+      notify.error(msg);
+      emailRef.current?.focus();
+      setLoading(false);
+      return;
+    }
+
     try {
-      const updatedUser = await updateUser(userId, {
-        username,
-        email,
+      const updated = await updateUser(userId, { username, email });
+      setForm({
+        username: updated.username ?? username,
+        email: updated.email ?? email,
       });
-      setMessage("Profile updated!");
-      if (updatedUser.username) setUsername(updatedUser.username);
-      if (updatedUser.email) setEmail(updatedUser.email);
+      setHeaderName(updated.username ?? username); // <- only change header after save
+
+      notify.success("Profile updated!");
     } catch (err) {
-      setError(err.message || "Profile update failed!");
+      const msg = err?.message || "Profile update failed.";
+      setErrorMsg(msg);
+      notify.error(msg);
+      usernameRef.current?.focus();
     } finally {
       setLoading(false);
     }
   }
 
-  async function changePassword(e) {
+  async function handlePasswordSubmit(e) {
     e.preventDefault();
-    setMessage("");
-    setError("");
+    if (loading) return;
+
+    setErrorMsg("");
     setLoading(true);
+
+    const nextPwd = password;
+
+    if (!nextPwd) {
+      const msg = "Password is required.";
+      setErrorMsg(msg);
+      notify.error(msg);
+      passwordRef.current?.focus();
+      setLoading(false);
+      return;
+    }
+
     try {
-      await updateUser(userId, { password });
-      setMessage("Password changed!");
+      await updateUser(userId, { password: nextPwd });
       setPassword("");
+      notify.success("Password changed!");
     } catch (err) {
-      setError(err.message || "Password change failed!");
+      const msg = err?.message || "Password change failed.";
+      setErrorMsg(msg);
+      notify.error(msg);
+      passwordRef.current?.focus();
     } finally {
       setLoading(false);
     }
@@ -71,68 +128,112 @@ export default function Settings() {
     navigate("/login");
   }
 
+  async function handleConfirmDelete() {
+    if (loading) return;
+    if (confirmText !== requiredPhrase) return;
+
+    setErrorMsg("");
+    setLoading(true);
+
+    try {
+      await deleteUserApi(userId);
+      notify.success("Your account was deleted.");
+      localStorage.removeItem("userId");
+      navigate("/login");
+    } catch (err) {
+      const msg = err?.message || "Account deletion failed.";
+      setErrorMsg(msg);
+      notify.error(msg);
+      confirmRef.current?.focus();
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <AppLayout
-      headerProps={{
-        title: "PROFILE SETTINGS",
-      }}
-    >
-      <h1>{`${username}'s Profile`}</h1>
+    <AppLayout headerProps={{ title: "PROFILE SETTINGS" }}>
+      <h1>{headerName ? `${headerName}'s Profile` : "Profile Settings"}</h1>
+
       <div>
-        <button onClick={() => navigate("/dashboard")}>Dashboard</button>
-        <button onClick={handleLogout}>Logout</button>
-      </div>
-      <div>{(message || error) && <p>{message || error}</p>}</div>
-      <form onSubmit={handleSubmit}>
-        <h2>Update Profile</h2>
-        <p>Leave field blank to keep current value</p>
-        <input
-          type="text"
-          placeholder="New username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+        <button
+          type="button"
+          onClick={() => navigate("/dashboard")}
           disabled={loading}
+        >
+          Dashboard
+        </button>
+        <button type="button" onClick={handleLogout} disabled={loading}>
+          Logout
+        </button>
+      </div>
+
+      {errorMsg && <p style={{ marginTop: 8 }}>{errorMsg}</p>}
+
+      <form onSubmit={handleProfileSubmit} noValidate>
+        <h2>Update Profile</h2>
+        <input
+          ref={usernameRef}
+          name="username"
+          type="text"
+          placeholder="Username"
+          value={form.username}
+          onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+          disabled={loading}
+          required
         />
         <input
+          ref={emailRef}
+          name="email"
           type="email"
-          placeholder="New email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          value={form.email}
+          onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           disabled={loading}
+          required
         />
         <button type="submit" disabled={loading}>
           {loading ? "Updating..." : "Update Profile"}
         </button>
       </form>
 
-      <form onSubmit={changePassword}>
+      <form onSubmit={handlePasswordSubmit} noValidate>
         <h2>Change Password</h2>
         <input
+          ref={passwordRef}
+          name="password"
           type="password"
           placeholder="New password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={loading}
+          required
         />
         <button type="submit" disabled={loading}>
           {loading ? "Changing..." : "Change Password"}
         </button>
       </form>
+
       <div>
-        <h2>Warning: This action is irreversible.</h2>
+        <h2>Delete Account</h2>
         <p>
           Deleting your account will permanently remove your user and all pets.
         </p>
+
         {!confirmDelete ? (
-          <button onClick={() => setConfirmDelete(true)} disabled={loading}>
+          <button
+            type="button"
+            onClick={() => setConfirmDelete(true)}
+            disabled={loading}
+          >
             Delete Account
           </button>
         ) : (
           <div>
             <p>
-              Type <span>{requiredPhrase}</span> to confirm.
+              Type <strong>{requiredPhrase}</strong> to confirm.
             </p>
             <input
+              ref={confirmRef}
               placeholder={requiredPhrase}
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
@@ -140,24 +241,14 @@ export default function Settings() {
             />
             <div>
               <button
+                type="button"
                 disabled={loading || confirmText !== requiredPhrase}
-                onClick={async () => {
-                  try {
-                    setLoading(true);
-                    await deleteUserApi(userId);
-                    setMessage("Your account was deleted.");
-                    localStorage.removeItem("userId");
-                    navigate("/login");
-                  } catch (err) {
-                    setError(err.message || "Account deletion failed");
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
+                onClick={handleConfirmDelete}
               >
                 {loading ? "Deleting..." : "Confirm delete"}
               </button>
               <button
+                type="button"
                 disabled={loading}
                 onClick={() => {
                   setConfirmDelete(false);
