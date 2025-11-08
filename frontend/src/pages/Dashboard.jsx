@@ -24,6 +24,10 @@ export default function Dashboard() {
   const [newPet, setNewPet] = useState({ name: "", type: "" });
   const [adopting, setAdopting] = useState(false);
 
+  function replacePet(updated) {
+    setPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  }
+
   useEffect(() => {
     if (!userId) {
       navigate("/login");
@@ -136,36 +140,24 @@ export default function Dashboard() {
               <div>
                 <button
                   onClick={async () => {
-                    const updatedPet = await feedPet(p.id);
-                    setPets((prev) =>
-                      prev.map((pet) =>
-                        pet.id === updatedPet.id ? updatedPet : pet
-                      )
-                    );
+                    const updated = await feedPet(p.id);
+                    replacePet(updated);
                   }}
                 >
                   Feed
                 </button>
                 <button
                   onClick={async () => {
-                    const updatedPet = await playWithPet(p.id);
-                    setPets((prev) =>
-                      prev.map((pet) =>
-                        pet.id === updatedPet.id ? updatedPet : pet
-                      )
-                    );
+                    const updated = await playWithPet(p.id);
+                    replacePet(updated);
                   }}
                 >
                   Play
                 </button>
                 <button
                   onClick={async () => {
-                    const updatedPet = await restPet(p.id);
-                    setPets((prev) =>
-                      prev.map((pet) =>
-                        pet.id === updatedPet.id ? updatedPet : pet
-                      )
-                    );
+                    const updated = await restPet(p.id);
+                    replacePet(updated);
                   }}
                 >
                   Rest
