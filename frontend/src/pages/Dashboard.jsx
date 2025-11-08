@@ -12,6 +12,8 @@ import ConfirmAction from "../components/ConfirmAction";
 import AppLayout from "../components/AppLayout";
 import PetSprite from "../components/PetSprite";
 import StatusBarPixel from "../components/StatusBarPixel";
+import { burstConfetti } from "../utils/confetti";
+import AdoptForm from "../components/AdoptForm";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -20,6 +22,10 @@ export default function Dashboard() {
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
   const [confirmPetId, setConfirmPetId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+
+  function replacePet(updated) {
+    setPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  }
 
   useEffect(() => {
     if (!userId) {
@@ -37,30 +43,6 @@ export default function Dashboard() {
   function handleLogout() {
     localStorage.removeItem("userId");
     navigate("/login");
-  }
-
-  const [newPet, setNewPet] = useState({ name: "", type: "" });
-
-  async function handleAdopt(e) {
-    e.preventDefault();
-    if (!newPet.name || !newPet.type) return;
-
-    await fetch(`${import.meta.env.VITE_API_BASE}/api/pets/adopt`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newPet.name,
-        type: newPet.type,
-        userId: userId,
-      }),
-    });
-
-    // Refresh pets
-    const updatedPets = await getPetsByUser(userId);
-    setPets(updatedPets);
-
-    // Reset form
-    setNewPet({ name: "", type: "" });
   }
 
   return (
@@ -82,28 +64,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <form onSubmit={handleAdopt}>
-        <h2>Adopt a new pet</h2>
-
-        <input
-          placeholder="Pet name"
-          value={newPet.name}
-          onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
-        />
-
-        <select
-          value={newPet.type}
-          onChange={(e) => setNewPet({ ...newPet, type: e.target.value })}
-          required
-        >
-          <option value="">Select a pet type</option>
-          <option value="Cat">Cat</option>
-          <option value="Dog">Dog</option>
-          <option value="Dragon">Dragon</option>
-        </select>
-
-        <button>Adopt 🐾</button>
-      </form>
+      <AdoptForm
+        userId={Number(userId)}
+        petTypes={["Cat", "Dog", "Dragon"]}
+        onAdopt={(savedPet) => {
+          setPets((prev) => {
+            if (prev.length === 0) {
+              burstConfetti();
+            } // 🎉 first pet
+            return [...prev, savedPet];
+          });
+        }}
+      />
 
       {pets.length === 0 ? (
         <p>No pets yet. Try adopting one!</p>
@@ -117,11 +89,6 @@ export default function Dashboard() {
                 title={`${p.name} the ${p.type}`}
               />
               <div>{p.name}</div>
-              {/* <div>{p.type}</div> */}
-              {/* <div>
-                Level {p.level} · Hunger {p.hunger} · Happy {p.happiness} ·
-                Energy {p.energy}
-              </div> */}
               <div className="grid gap-2 mt-3">
                 <StatusBarPixel label="Hunger" value={p.hunger} kind="hunger" />
                 <StatusBarPixel
@@ -134,36 +101,24 @@ export default function Dashboard() {
               <div>
                 <button
                   onClick={async () => {
-                    const updatedPet = await feedPet(p.id);
-                    setPets((prev) =>
-                      prev.map((pet) =>
-                        pet.id === updatedPet.id ? updatedPet : pet
-                      )
-                    );
+                    const updated = await feedPet(p.id);
+                    replacePet(updated);
                   }}
                 >
                   Feed
                 </button>
                 <button
                   onClick={async () => {
-                    const updatedPet = await playWithPet(p.id);
-                    setPets((prev) =>
-                      prev.map((pet) =>
-                        pet.id === updatedPet.id ? updatedPet : pet
-                      )
-                    );
+                    const updated = await playWithPet(p.id);
+                    replacePet(updated);
                   }}
                 >
                   Play
                 </button>
                 <button
                   onClick={async () => {
-                    const updatedPet = await restPet(p.id);
-                    setPets((prev) =>
-                      prev.map((pet) =>
-                        pet.id === updatedPet.id ? updatedPet : pet
-                      )
-                    );
+                    const updated = await restPet(p.id);
+                    replacePet(updated);
                   }}
                 >
                   Rest
