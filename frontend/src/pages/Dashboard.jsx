@@ -14,35 +14,64 @@ import PetSprite from "../components/PetSprite";
 import StatusBarPixel from "../components/StatusBarPixel";
 import { burstConfetti } from "../utils/confetti";
 import AdoptForm from "../components/AdoptForm";
+import { useNotice } from "../hooks/useNotice";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
+  const { notify } = useNotice();
+
+  const rawUserId = localStorage.getItem("userId");
+  const userId = rawUserId ? Number(rawUserId) : null;
+
   const [pets, setPets] = useState([]);
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
   const [confirmPetId, setConfirmPetId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  function replacePet(updated) {
+  const replacePet = (updated) =>
     setPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-  }
 
   useEffect(() => {
     if (!userId) {
       navigate("/login");
       return;
     }
-    Promise.all([getUserProfile(userId), getPetsByUser(userId)])
-      .then(([p, list]) => {
+
+    let alive = true;
+    (async () => {
+      try {
+        const [p, list] = await Promise.all([
+          getUserProfile(userId),
+          getPetsByUser(userId),
+        ]);
+        if (!alive) return;
         setUserProfile(p);
         setPets(list);
-      })
-      .catch(console.error);
-  }, [userId, navigate]);
+      } catch (err) {
+        if (!alive) return;
+        notify.error(err?.message ?? "Failed to load dashboard.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [userId, navigate, notify]);
 
   function handleLogout() {
     localStorage.removeItem("userId");
     navigate("/login");
+  }
+
+  if (loading) {
+    return (
+      <AppLayout headerProps={{ title: "DASHBOARD" }}>
+        <p>Loading your pets…</p>
+      </AppLayout>
+    );
   }
 
   return (
@@ -74,6 +103,7 @@ export default function Dashboard() {
             } // 🎉 first pet
             return [...prev, savedPet];
           });
+          notify.success(`Adopted ${savedPet.name} the ${savedPet.type}!`);
         }}
       />
 
@@ -134,9 +164,9 @@ export default function Dashboard() {
                         setDeleteId(p.id);
                         await deletePet(p.id);
                         setPets((prev) => prev.filter((x) => x.id !== p.id));
-                        <p>Pet deleted successfully!</p>;
-                      } catch (error) {
-                        <p>Error deleting pet: {error.message}</p>;
+                        notify.success(`${p.name} was deleted.`);
+                      } catch (err) {
+                        notify.error(err.message || "Failed to delete pet.");
                       } finally {
                         setDeleteId(null);
                         setConfirmPetId(null);
