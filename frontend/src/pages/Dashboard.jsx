@@ -13,6 +13,7 @@ import ConfirmAction from "../components/ConfirmAction";
 import AppLayout from "../components/AppLayout";
 import PetSprite from "../components/PetSprite";
 import StatusBarPixel from "../components/StatusBarPixel";
+import { burstConfetti } from "../utils/confetti";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -54,16 +55,21 @@ export default function Dashboard() {
     const type = newPet.type;
     const uid = Number(userId);
 
-    if (!name || !uid) return;
+    // basic validation
+    const allowed = ["Cat", "Dog", "Dragon"];
+    if (!name || !allowed.includes(type) || !uid) return;
 
     try {
       setAdopting(true);
-      // Optionally, you could add more validation here
+      const wasFirst = pets.length === 0;
 
       const saved = await createPet({ name, type, userId: uid });
 
-      // Refresh pets
+      // append to state
       setPets((prev) => [...prev, saved]);
+
+      // confetti if this was their first pet 🎉
+      if (wasFirst) burstConfetti();
 
       // Reset form
       setNewPet({ name: "", type: "" });
@@ -114,7 +120,9 @@ export default function Dashboard() {
           <option value="Dragon">Dragon</option>
         </select>
 
-        <button disabled={adopting}>{adopting ? "Adopting..." : "Adopt 🐾"}</button>
+        <button disabled={adopting}>
+          {adopting ? "Adopting..." : "Adopt 🐾"}
+        </button>
       </form>
 
       {pets.length === 0 ? (
