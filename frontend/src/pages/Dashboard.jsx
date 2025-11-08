@@ -7,13 +7,13 @@ import {
   playWithPet,
   restPet,
   deletePet,
-  createPet,
 } from "../api";
 import ConfirmAction from "../components/ConfirmAction";
 import AppLayout from "../components/AppLayout";
 import PetSprite from "../components/PetSprite";
 import StatusBarPixel from "../components/StatusBarPixel";
 import { burstConfetti } from "../utils/confetti";
+import AdoptForm from "../components/AdoptForm";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,8 +22,6 @@ export default function Dashboard() {
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
   const [confirmPetId, setConfirmPetId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
-  const [newPet, setNewPet] = useState({ name: "", type: "" });
-  const [adopting, setAdopting] = useState(false);
 
   function replacePet(updated) {
     setPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
@@ -47,39 +45,6 @@ export default function Dashboard() {
     navigate("/login");
   }
 
-  async function handleAdopt(e) {
-    e.preventDefault();
-    if (adopting) return;
-
-    const name = newPet.name.trim();
-    const type = newPet.type;
-    const uid = Number(userId);
-
-    // basic validation
-    const allowed = ["Cat", "Dog", "Dragon"];
-    if (!name || !allowed.includes(type) || !uid) return;
-
-    try {
-      setAdopting(true);
-      const wasFirst = pets.length === 0;
-
-      const saved = await createPet({ name, type, userId: uid });
-
-      // append to state
-      setPets((prev) => [...prev, saved]);
-
-      // confetti if this was their first pet 🎉
-      if (wasFirst) burstConfetti();
-
-      // Reset form
-      setNewPet({ name: "", type: "" });
-    } catch (err) {
-      console.error("Error adopting pet:", err);
-    } finally {
-      setAdopting(false);
-    }
-  }
-
   return (
     <AppLayout headerProps={{ title: "DASHBOARD" }}>
       <div>
@@ -99,31 +64,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <form onSubmit={handleAdopt}>
-        <h2>Adopt a new pet</h2>
-
-        <input
-          placeholder="Pet name"
-          value={newPet.name}
-          onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
-          required
-        />
-
-        <select
-          value={newPet.type}
-          onChange={(e) => setNewPet({ ...newPet, type: e.target.value })}
-          required
-        >
-          <option value="">Select a pet type</option>
-          <option value="Cat">Cat</option>
-          <option value="Dog">Dog</option>
-          <option value="Dragon">Dragon</option>
-        </select>
-
-        <button disabled={adopting}>
-          {adopting ? "Adopting..." : "Adopt 🐾"}
-        </button>
-      </form>
+      <AdoptForm
+        userId={Number(userId)}
+        petTypes={["Cat", "Dog", "Dragon"]}
+        onAdopt={(savedPet) => {
+          setPets((prev) => {
+            if (prev.length === 0) {
+              burstConfetti();
+            } // 🎉 first pet
+            return [...prev, savedPet];
+          });
+        }}
+      />
 
       {pets.length === 0 ? (
         <p>No pets yet. Try adopting one!</p>
