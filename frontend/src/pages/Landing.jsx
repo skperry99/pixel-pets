@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import PetSprite from "../components/PetSprite";
+import StatusBarPixel from "../components/StatusBarPixel";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -11,10 +13,29 @@ export default function Landing() {
         subtitle: "✨ Because every pixel deserves a little love. 🐾",
       }}
     >
+      {/* “Hero” pet sprite */}
+      <PetSprite type="Dragon" size={240} title="Pixel Pet Preview" />
+
+      {/* Decorative demo bars */}
+      <div style={{ marginTop: "1rem" }}>
+        <StatusBarPixel label="Hunger" value={86} kind="hunger" />
+        <StatusBarPixel label="Happiness" value={72} kind="happiness" />
+        <StatusBarPixel label="Energy" value={63} kind="energy" />
+      </div>
+
       {/* CTAs */}
-      <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", marginTop: "1.25rem" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "0.75rem",
+          justifyContent: "center",
+          marginTop: "1.25rem",
+        }}
+      >
         <button onClick={() => navigate("/login")}>▶ START / LOG IN</button>
-        <button onClick={() => navigate("/register")}>★ NEW GAME / REGISTER</button>
+        <button onClick={() => navigate("/register")}>
+          ★ NEW GAME / REGISTER
+        </button>
       </div>
 
       {/* Feature tease panel */}
