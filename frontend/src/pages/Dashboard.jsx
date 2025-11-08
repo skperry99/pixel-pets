@@ -100,6 +100,7 @@ export default function Dashboard() {
           placeholder="Pet name"
           value={newPet.name}
           onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
+          required
         />
 
         <select
@@ -113,7 +114,7 @@ export default function Dashboard() {
           <option value="Dragon">Dragon</option>
         </select>
 
-        <button>Adopt 🐾</button>
+        <button disabled={adopting}>{adopting ? "Adopting..." : "Adopt 🐾"}</button>
       </form>
 
       {pets.length === 0 ? (
