@@ -1,5 +1,5 @@
-// src/components/NavBar.jsx
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { getStoredUserId } from "../utils/auth";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ export default function NavBar() {
     marginRight: "1rem",
   });
 
-  const isAuthed = Boolean(localStorage.getItem("userId"));
+  const isAuthed = Boolean(getStoredUserId);
   const path = location.pathname;
 
   // LOGGED OUT MENUS
@@ -124,7 +124,6 @@ export default function NavBar() {
 
   return (
     <nav>
-      {/* Brand → navigates to "/" without full page reload */}
       <a
         href="/"
         onClick={(e) => {

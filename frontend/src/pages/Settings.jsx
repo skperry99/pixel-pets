@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { updateUser, deleteUserApi, getUserProfile } from "../api";
 import AppLayout from "../components/AppLayout";
 import { useNotice } from "../hooks/useNotice";
-import { getStoredUserId } from "../utils/auth";
+import { getStoredUserId, clearStoredUserId } from "../utils/auth";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -125,7 +125,7 @@ export default function Settings() {
   }
 
   function handleLogout() {
-    localStorage.removeItem("userId");
+    clearStoredUserId();
     navigate("/login");
   }
 
