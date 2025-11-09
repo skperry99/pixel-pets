@@ -1,17 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import {
-  getPetsByUser,
-  getUserProfile,
-  feedPet,
-  playWithPet,
-  restPet,
-  deletePet,
-} from "../api";
-import ConfirmAction from "../components/ConfirmAction";
+import { getPetsByUser, getUserProfile } from "../api";
 import AppLayout from "../components/AppLayout";
 import PetSprite from "../components/PetSprite";
-import StatusBarPixel from "../components/StatusBarPixel";
 import { burstConfetti } from "../utils/confetti";
 import AdoptForm from "../components/AdoptForm";
 import { useNotice } from "../hooks/useNotice";
@@ -24,12 +15,7 @@ export default function Dashboard() {
 
   const [pets, setPets] = useState([]);
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
-  const [confirmPetId, setConfirmPetId] = useState(null);
-  const [deleteId, setDeleteId] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const replacePet = (updated) =>
-    setPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
 
   useEffect(() => {
     if (!userId) {
@@ -37,26 +23,26 @@ export default function Dashboard() {
       return;
     }
 
-    let alive = true;
+    let isActive = true;
     (async () => {
       try {
         const [p, list] = await Promise.all([
           getUserProfile(Number(userId)),
           getPetsByUser(userId),
         ]);
-        if (!alive) return;
+        if (!isActive) return;
         setUserProfile(p);
         setPets(list);
       } catch (err) {
-        if (!alive) return;
+        if (!isActive) return;
         notify.error(err?.message ?? "Failed to load dashboard.");
       } finally {
-        if (alive) setLoading(false);
+        if (isActive) setLoading(false);
       }
     })();
 
     return () => {
-      alive = false;
+      isActive = false;
     };
   }, [userId, navigate, notify]);
 
@@ -112,73 +98,14 @@ export default function Dashboard() {
         <ul>
           {pets.map((p) => (
             <li key={p.id}>
-                  <Link to={`/pets/${p.id}`}>
-              <PetSprite
-                type={p.type}
-                size={120}
-                title={`${p.name} the ${p.type}`}
-              />
-              </Link>
-               <div>{p.name}</div>
-              {/*<div className="grid gap-2 mt-3">
-                <StatusBarPixel label="Hunger" value={p.hunger} kind="hunger" />
-                <StatusBarPixel
-                  label="Happiness"
-                  value={p.happiness}
-                  kind="happiness"
+              <Link to={`/pets/${p.id}`}>
+                <PetSprite
+                  type={p.type}
+                  size={120}
+                  title={`${p.name} the ${p.type}`}
                 />
-                <StatusBarPixel label="Energy" value={p.energy} kind="energy" />
-              </div> */}
-              <div>
-                <button
-                  onClick={async () => {
-                    const updated = await feedPet(p.id);
-                    replacePet(updated);
-                  }}
-                >
-                  Feed
-                </button>
-                <button
-                  onClick={async () => {
-                    const updated = await playWithPet(p.id);
-                    replacePet(updated);
-                  }}
-                >
-                  Play
-                </button>
-                <button
-                  onClick={async () => {
-                    const updated = await restPet(p.id);
-                    replacePet(updated);
-                  }}
-                >
-                  Rest
-                </button>
-                {confirmPetId === p.id ? (
-                  <ConfirmAction
-                    confirmPrompt={`Are you sure you want to delete ${p.name}? This action cannot be undone.`}
-                    confirmLabel="Yes, delete"
-                    cancelLabel="No, keep"
-                    busy={deleteId === p.id}
-                    onConfirm={async () => {
-                      try {
-                        setDeleteId(p.id);
-                        await deletePet(p.id);
-                        setPets((prev) => prev.filter((x) => x.id !== p.id));
-                        notify.success(`${p.name} was deleted.`);
-                      } catch (err) {
-                        notify.error(err.message || "Failed to delete pet.");
-                      } finally {
-                        setDeleteId(null);
-                        setConfirmPetId(null);
-                      }
-                    }}
-                    onCancel={() => setConfirmPetId(null)}
-                  />
-                ) : (
-                  <button onClick={() => setConfirmPetId(p.id)}>Delete</button>
-                )}
-              </div>
+              </Link>
+              <div>{p.name}</div>
             </li>
           ))}
         </ul>
