@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   getPetsByUser,
   getUserProfile,
@@ -112,13 +112,15 @@ export default function Dashboard() {
         <ul>
           {pets.map((p) => (
             <li key={p.id}>
+                  <Link to={`/pets/${p.id}`}>
               <PetSprite
                 type={p.type}
                 size={120}
                 title={`${p.name} the ${p.type}`}
               />
-              <div>{p.name}</div>
-              <div className="grid gap-2 mt-3">
+              </Link>
+               <div>{p.name}</div>
+              {/*<div className="grid gap-2 mt-3">
                 <StatusBarPixel label="Hunger" value={p.hunger} kind="hunger" />
                 <StatusBarPixel
                   label="Happiness"
@@ -126,7 +128,7 @@ export default function Dashboard() {
                   kind="happiness"
                 />
                 <StatusBarPixel label="Energy" value={p.energy} kind="energy" />
-              </div>
+              </div> */}
               <div>
                 <button
                   onClick={async () => {

@@ -95,3 +95,13 @@ export async function createPet(petData) {
   if (!res.ok) throw new Error(`Failed to create pet (${res.status})`);
   return res.json();
 }
+
+export async function getPetById(petId) {
+  const res = await fetch(
+    `${BASE}/api/pets/${petId}`
+  );
+  if (!res.ok) {
+    throw new Error(`Failed to load pet (${res.status})`);
+  }
+  return res.json();
+}
