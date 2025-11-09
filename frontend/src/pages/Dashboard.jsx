@@ -6,19 +6,20 @@ import PetSprite from "../components/PetSprite";
 import { burstConfetti } from "../utils/confetti";
 import AdoptForm from "../components/AdoptForm";
 import { useNotice } from "../hooks/useNotice";
+import { getStoredUserId, clearStoredUserId } from "../utils/auth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { notify } = useNotice();
 
-  const userId = localStorage.getItem("userId");
+  const userId = getStoredUserId();
 
   const [pets, setPets] = useState([]);
   const [userProfile, setUserProfile] = useState(null); // {id, username, email}
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userId) {
+    if (userId == null) {
       navigate("/login");
       return;
     }
@@ -47,7 +48,7 @@ export default function Dashboard() {
   }, [userId, navigate, notify]);
 
   function handleLogout() {
-    localStorage.removeItem("userId");
+    clearStoredUserId();
     navigate("/login");
   }
 
@@ -79,7 +80,7 @@ export default function Dashboard() {
       </div>
 
       <AdoptForm
-        userId={Number(userId)}
+        userId={userId}
         petTypes={["Cat", "Dog", "Dragon"]}
         onAdopt={(savedPet) => {
           setPets((prev) => {

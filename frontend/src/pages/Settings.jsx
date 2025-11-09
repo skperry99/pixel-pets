@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { updateUser, deleteUserApi, getUserProfile } from "../api";
 import AppLayout from "../components/AppLayout";
 import { useNotice } from "../hooks/useNotice";
+import { getStoredUserId, clearStoredUserId } from "../utils/auth";
 
 export default function Settings() {
   const navigate = useNavigate();
   const { notify } = useNotice();
 
-  const userId = localStorage.getItem("userId");
+  const userId = getStoredUserId();
 
   const [form, setForm] = useState({ username: "", email: "" });
   const [password, setPassword] = useState("");
@@ -28,7 +29,7 @@ export default function Settings() {
   const confirmRef = useRef(null);
 
   useEffect(() => {
-    if (!userId) {
+    if (userId == null) {
       navigate("/login");
       return;
     }
@@ -124,7 +125,7 @@ export default function Settings() {
   }
 
   function handleLogout() {
-    localStorage.removeItem("userId");
+    clearStoredUserId();
     navigate("/login");
   }
 

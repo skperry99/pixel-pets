@@ -1,8 +1,10 @@
-import { useState, useRef } from "react";
+// frontend/src/pages/Login.jsx
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api";
 import AppLayout from "../components/AppLayout";
 import { useNotice } from "../hooks/useNotice";
+import { login } from "../api";
+import { getStoredUserId, setStoredUserId } from "../utils/auth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,17 +17,17 @@ export default function Login() {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
+  // If already logged in, bounce to dashboard
+  useEffect(() => {
+    const id = getStoredUserId();
+    if (id != null) navigate("/dashboard");
+  }, [navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (loading) return;
 
     setErrorMsg("");
-    setLoading(true);
 
     const username = form.username.trim();
     const password = form.password;
@@ -35,19 +37,17 @@ export default function Login() {
       setErrorMsg(msg);
       notify.error(msg);
       (!username ? usernameRef : passwordRef).current?.focus();
-      setLoading(false);
       return;
     }
 
     try {
-      const userId = await login(username, password);
-      localStorage.setItem("userId", String(userId));
-      notify.success("Welcome back!");
+      setLoading(true);
+      const userId = await login(username, password); // backend returns a number
+      setStoredUserId(userId);
+      notify.success("Welcome back! 🐾");
       navigate("/dashboard");
     } catch (err) {
-      const msg =
-        err?.message ||
-        (err?.status === 401 ? "Invalid username or password." : "Login failed.");
+      const msg = err?.message || "Login failed.";
       setErrorMsg(msg);
       notify.error(msg);
       usernameRef.current?.focus();
@@ -57,16 +57,16 @@ export default function Login() {
   }
 
   return (
-    <AppLayout headerProps={{ title: "LOG IN" }}>
+    <AppLayout headerProps={{ title: "LOGIN" }}>
       <form onSubmit={handleSubmit} noValidate>
-        <h1>Log in</h1>
+        <h1>Log In</h1>
 
         <input
           ref={usernameRef}
           name="username"
           placeholder="Username"
           value={form.username}
-          onChange={handleChange}
+          onChange={(e) => setForm({ ...form, username: e.target.value })}
           autoComplete="username"
           disabled={loading}
           required
@@ -78,21 +78,25 @@ export default function Login() {
           type="password"
           placeholder="Password"
           value={form.password}
-          onChange={handleChange}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
           autoComplete="current-password"
           disabled={loading}
           required
         />
 
-        {errorMsg && <p style={{ marginTop: 8 }}>{errorMsg}</p>}
+        {errorMsg && <p>{errorMsg}</p>}
 
         <button type="submit" disabled={loading}>
-          {loading ? "Checking..." : "Log in"}
+          {loading ? "Signing in…" : "Log In"}
         </button>
 
-        <p style={{ marginTop: 12 }}>New to Pixel Pets?</p>
-        <button type="button" onClick={() => navigate("/register")} disabled={loading}>
-          Create an account
+        <p>New to Pixel Pets?</p>
+        <button
+          type="button"
+          onClick={() => navigate("/register")}
+          disabled={loading}
+        >
+          Create Account
         </button>
       </form>
     </AppLayout>

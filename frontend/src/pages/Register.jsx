@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api";
+import { setStoredUserId } from "../utils/auth";
 import AppLayout from "../components/AppLayout";
 import { useNotice } from "../hooks/useNotice";
 
@@ -58,7 +59,7 @@ export default function Register() {
 
     try {
       const newUserId = await registerUser(username, email, password);
-      localStorage.setItem("userId", String(newUserId));
+      setStoredUserId(newUserId);
       notify.success("Account created! Welcome to Pixel Pets.");
       navigate("/dashboard");
     } catch (err) {
