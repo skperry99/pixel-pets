@@ -1,106 +1,411 @@
 /* ================================
-   PIXEL PET RETRO 8-BIT STYLES
+   PIXEL PETS — RETRO 8-BIT THEME
+   Dark/Light Mode • Grid BG • Panels • Forms • Buttons • Toasts
    ================================ */
 
-/* --- Font Imports --- */
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+/* ---------- 0) Font ---------- */
+/* @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); */
 
-/* --- Root Colors (NES-inspired palette) --- */
+
+/* ---------- 1) Theme Variables ---------- */
+/* Dark mode (default) */
 :root {
   --bg-color: #1a1a2e;
+  --panel-color: #2e2e4f;
   --accent-color: #ffcc00;
   --accent-bright: #ffec27;
   --secondary-color: #ff66a3;
   --success-color: #00ffcc;
   --danger-color: #ff0044;
   --text-color: #f8f8f8;
-  --panel-color: #2e2e4f;
   --border-color: #ffffff;
+
+  --radius: 0;               /* hard pixel corners */
+  --gap: 16px;
+  --shadow: 6px 6px 0 #000;  /* chunky pixel shadow */
+  --font: 'Press Start 2P', cursive;
 }
 
-/* --- Global Reset --- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  image-rendering: pixelated;
+/* Light mode switch */
+.light-mode {
+  --bg-color: #f0f0f0;
+  --panel-color: #ffffff;
+  --accent-color: #0099ff;
+  --accent-bright: #00ccff;
+  --secondary-color: #ff66a3;
+  --success-color: #00cc99;
+  --danger-color: #ff3366;
+  --text-color: #222;
+  --border-color: #000;
 }
 
-/* --- Body Styles --- */
+.theme-cola {
+  --bg-color: #0e1324;      /* deep cola */
+  --panel-color: #222a4a;   /* indigo can */
+  --accent-color: #ff3b6e;  /* neon cherry */
+  --accent-bright: #ff7aa0; /* lighter neon */
+  --secondary-color: #40e0ff; /* electric cyan */
+  --success-color: #00ff99; /* arcade green */
+  --danger-color: #ff2d2d;  /* bright red */
+  --text-color: #f9f9fb;    /* near-white */
+  --border-color: #ffffff;  /* crisp pixel edge */
+}
+
+.theme-gb {
+  --bg-color: #1b2b1b;      /* dark leaf */
+  --panel-color: #283c28;   /* moss */
+  --accent-color: #a0ff66;  /* lime pixel */
+  --accent-bright: #caff8a; /* bright lime */
+  --secondary-color: #66d9a0; /* jade */
+  --success-color: #7cffc4; /* minty success */
+  --danger-color: #ff6b6b;  /* coral alert */
+  --text-color: #eef7e9;    /* warm pale */
+  --border-color: #e7ffcf;  /* pale green edge */
+}
+
+.theme-sunset {
+  --bg-color: #231319;       /* deep plum */
+  --panel-color: #3a2330;    /* raisin */
+  --accent-color: #ffb347;   /* peachy orange */
+  --accent-bright: #ffd166;  /* sunny highlight */
+  --secondary-color: #ff6f91;/* pink punch */
+  --success-color: #8cffc1;  /* mint */
+  --danger-color: #ff4d4d;   /* candy red */
+  --text-color: #fff3e8;     /* warm paper */
+  --border-color: #ffeed1;   /* pale peach edge */
+}
+
+.theme-grape {
+  --bg-color: #140c22;      /* midnight grape */
+  --panel-color: #261a3d;   /* concord */
+  --accent-color: #b896ff;  /* pastel violet */
+  --accent-bright: #d7bdff; /* light violet */
+  --secondary-color: #5be7ff; /* ice blue */
+  --success-color: #6aff9e; /* gummy green */
+  --danger-color: #ff5e7e;  /* bubblegum red */
+  --text-color: #f6f2ff;    /* soft white */
+  --border-color: #ffffff;  /* crisp */
+}
+
+/* ---------- 2) Reset & Base ---------- */
+* { margin: 0; padding: 0; box-sizing: border-box; image-rendering: pixelated; }
+
+html, body { height: 100%; }
+
 body {
+  font-family: var(--font);
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: "Press Start 2P", cursive;
   font-size: 12px;
   line-height: 1.5;
   text-align: center;
-  background-image: repeating-linear-gradient(
-    45deg,
-    #1a1a2e 0,
-    #1a1a2e 20px,
-    #111122 20px,
-    #111122 40px
-  );
+  overflow-x: hidden;
+
+  /* animated pixel grid */
+  background-image:
+    repeating-linear-gradient(0deg, #0001 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(90deg, #0001 0 1px, transparent 1px 20px);
+  animation: scrollGrid 10s linear infinite;
 }
 
-/* --- Headings --- */
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   color: var(--accent-color);
-  margin-bottom: 1rem;
   text-shadow: 2px 2px #000;
+  margin-bottom: 1rem;
 }
 
-/* --- Buttons --- */
-button {
+
+/* ---------- 3) Layout Helpers ---------- */
+.container { width: 90%; max-width: 1100px; margin: 0 auto; }
+.grid { display: grid; gap: var(--gap); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.stack-sm > * + * { margin-top: .5rem; }
+.stack-md > * + * { margin-top: 1rem; }
+.stack-lg > * + * { margin-top: 1.5rem; }
+
+.center { display: flex; align-items: center; justify-content: center; }
+.actions-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+
+/* ---------- 4) Navigation ---------- */
+/* AppLayout wraps NavBar with <nav> */
+nav {
+  background-color: var(--panel-color);
+  border-bottom: 4px solid var(--border-color);
+  padding: 1rem;
+  box-shadow: 0 4px 0 #000;
+}
+
+.nav-row { display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { color: var(--accent-bright); text-decoration: none; text-shadow: 1px 1px #000; }
+.nav-links { display: flex; align-items: center; gap: .75rem; }
+
+.nav-link { color: var(--accent-color); text-decoration: none; text-shadow: 1px 1px #000; }
+.nav-link.active,
+.nav-link:hover { color: var(--accent-bright); }
+
+.nav-logout { margin-left: .5rem; } /* ghost button aligns with links */
+
+
+/* ---------- 5) Panels / Cards ---------- */
+.panel {
+  background-color: var(--panel-color);
+  border: 4px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1rem auto;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.panel__header { margin-bottom: 1rem; }
+.panel__title { font-size: 14px; }
+.panel__body { }
+
+/* Header block (used by Header.jsx) */
+.header-panel { max-width: 720px; margin: 0 auto; }
+.header-title { margin: 0; }
+.header-subtitle { color: var(--accent-bright); text-shadow: 2px 2px #000; margin-bottom: .75rem; }
+
+/* Pixel toast panels (narrow) */
+.pixel-toast.panel { max-width: 360px; width: 360px; margin: 0; box-shadow: var(--shadow); }
+
+
+/* ---------- 6) Buttons ---------- */
+button, .btn {
   background-color: var(--accent-color);
   color: #000;
-  font-family: "Press Start 2P", cursive;
+  border: 3px solid var(--border-color);
+  padding: .5rem 1rem;
+  cursor: pointer;
+  transition: all .1s ease-in-out;
+  box-shadow: 3px 3px 0 #000;
+  font-family: var(--font);
+  font-weight: 400;
 }
 
-/* --- Inputs --- */
-input,
-select {
-  font-family: "Press Start 2P", cursive;
+button:hover, .btn:hover {
+  background-color: var(--accent-bright);
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 #000;
+}
+
+button:active, .btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent-color);
+  border-color: var(--border-color);
+}
+
+.btn--secondary { background: var(--secondary-color); color: #000; }
+.btn--danger { background: var(--danger-color); color: #000; }
+
+button:disabled,
+input:disabled,
+select:disabled { opacity: .7; cursor: not-allowed; }
+
+button:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
+
+
+/* ---------- 7) Forms & Inputs ---------- */
+.form { display: grid; gap: .75rem; justify-items: center; }
+.form__row { width: 100%; max-width: 420px; }
+.label { display: block; margin-bottom: .25rem; }
+
+input, select {
+  font-family: var(--font);
   background-color: #000;
   color: var(--success-color);
+  border: 3px solid var(--border-color);
+  padding: .5rem;
+  width: 100%;
+  display: block;
 }
-/* --- Pixel Status Bars --- */
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.form-error {
+  color: var(--danger-color);
+  text-shadow: 1px 1px #000;
+  margin: .5rem 0;
+  font-size: 10px;
+}
+
+
+/* ---------- 8) Status Bars ---------- */
 .status-bar {
   background-color: #000;
   border: 3px solid var(--border-color);
-  margin: 0.5rem 0;
   height: 20px;
-  width: 80%;
+  width: 100%;
+  max-width: 420px;
   margin-left: auto;
   margin-right: auto;
   position: relative;
 }
 
-.status-fill {
-  height: 100%;
-  background-color: var(--success-color);
-  transition: width 0.3s ease-in-out;
+.status-fill { height: 100%; background-color: var(--success-color); transition: width .3s ease-in-out; }
+
+/* per-kind colors */
+.status-bar.fullness  .status-fill { background-color: var(--accent-color); }
+.status-bar.happiness .status-fill { background-color: var(--secondary-color); }
+.status-bar.energy    .status-fill { background-color: var(--success-color); }
+
+/* low state */
+.status-bar.low .status-fill { background-color: var(--danger-color); }
+
+/* centered overlay label */
+.status-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-color);
+  font-size: 10px; text-shadow: 1px 1px #000;
+  pointer-events: none;
 }
 
-.status-bar.fullness .status-fill {
-  background-color: var(--accent-color);
-}
-.status-bar.happiness .status-fill {
-  background-color: var(--secondary-color);
-}
-.status-bar.energy .status-fill {
-  background-color: var(--success-color);
-}
 
-/* --- Pet Display --- */
+/* ---------- 9) Sprites ---------- */
 .pet-sprite {
-  width: 120px;
-  height: 120px;
   image-rendering: pixelated;
-  margin: 1rem auto;
-  display: block;
   border: 3px solid var(--border-color);
   background-color: #111;
+  box-shadow: 3px 3px 0 #000;
+  display: block;
+  margin: 0 auto;
+}
+.pet-sprite--sm { width: 80px;  height: 80px; }
+.pet-sprite--md { width: 120px; height: 120px; }
+.pet-sprite--lg { width: 160px; height: 160px; }
+
+
+/* ---------- 10) Notices (Alerts) ---------- */
+.notice {
+  max-width: 720px;
+  margin: .5rem auto 0;
+  text-align: left;
+  border-width: 4px;
+}
+
+.notice__row { display: flex; gap: 12px; align-items: flex-start; }
+.notice__icon { text-shadow: 1px 1px #000; line-height: 1; }
+.notice__body { flex: 1; }
+.notice__dismiss { font-size: 10px; padding: .25rem .5rem; }
+
+/* variants */
+.notice--info    { background-color: var(--panel-color);   color: var(--text-color); border-color: var(--border-color); }
+.notice--success { background-color: var(--success-color); color: #000;              border-color: var(--border-color); }
+.notice--error   { background-color: var(--danger-color);  color: #fff;              border-color: var(--border-color); }
+.notice--warn    { background-color: var(--accent-color);  color: #000;              border-color: var(--border-color); }
+
+
+/* ---------- 11) Toast Stack ---------- */
+.toast-container {
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 1000;
+  display: grid; gap: .75rem; max-width: 360px;
+}
+.toast-container.is-top { bottom: auto; top: 1rem; }
+
+
+/* ---------- 12) Pages / Sections ---------- */
+/* Landing hero extras */
+.demo-bars { width: 100%; max-width: 420px; margin: 0 auto; }
+.feature-list { list-style: none; padding-left: 0; text-align: left; max-width: 540px; margin: 0 auto; }
+.feature-list li + li { margin-top: .5rem; }
+
+/* Pet profile grid */
+.profile-grid { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 24px; }
+
+/* Footer */
+.site-footer { text-align: center; margin-top: 2rem; font-size: 10px; color: var(--secondary-color); text-shadow: 1px 1px #000; }
+.footer-tagline { margin: 0 0 .25rem 0; }
+.footer-credit  { margin: 0; }
+.footer-accent  { color: var(--accent-color); }
+
+
+/* ---------- 13) Toggle (Light/Dark) ---------- */
+.toggle-container { position: fixed; top: 1rem; right: 1rem; z-index: 1000; }
+.toggle-btn {
+  background-color: var(--panel-color);
+  border: 3px solid var(--border-color);
+  color: var(--accent-color);
+  padding: .5rem .75rem;
+  font-size: 10px;
+  box-shadow: 3px 3px 0 #000;
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+.toggle-btn:hover { background-color: var(--accent-color); color: #000; }
+
+
+/* ---------- 14) Animations ---------- */
+@keyframes scrollGrid { from { background-position: 0 0, 0 0; } to { background-position: 20px 20px, 20px 20px; } }
+
+@keyframes blink { 50% { opacity: 0; } }
+.blink { animation: blink 1s step-start infinite; }
+
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+.pulse { animation: pulse 1s infinite; }
+
+
+/* ---------- 15) Responsive Media Queries ---------- */
+/* Grids & nav collapse */
+@media (max-width: 1024px) {
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .nav-row { flex-direction: column; gap: .5rem; }
+  .nav-links { flex-wrap: wrap; justify-content: center; }
+  .notice__row { gap: 8px; }
+}
+
+/* Make the nav have three zones: left (brand), center (page title), right (links) */
+.nav-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* left / center / right */
+  align-items: center;
+}
+
+/* Left & right containers */
+.nav-left  { justify-self: start; }
+.nav-right { justify-self: end; }
+
+/* Centered header text inside the nav (no panel/border) */
+.nav-center { text-align: center; }
+.nav-header-title {
+  margin: 0;
+  font-size: 14px;
+  color: var(--accent-color);
+  text-shadow: 2px 2px #000;
+}
+.nav-header-subtitle {
+  margin: .25rem 0 0 0;
+  color: var(--accent-bright);
+  text-shadow: 1px 1px #000;
+  font-size: 10px;
+}
+
+/* Responsive: stack nicely on small screens */
+@media (max-width: 640px) {
+  .nav-grid {
+    grid-template-columns: 1fr;
+    row-gap: .25rem;
+  }
+  .nav-left, .nav-right { justify-self: center; }
 }
