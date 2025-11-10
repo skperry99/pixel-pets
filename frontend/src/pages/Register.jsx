@@ -9,64 +9,70 @@ export default function Register() {
   const navigate = useNavigate();
   const { notify } = useNotice();
 
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
-  const passwordRef = useRef(null);
+  const errorRef = useRef(null);
+
+  function setAndFocusError(msg) {
+    setErrorMsg(msg);
+    queueMicrotask(() => errorRef.current?.focus());
+  }
+
+  function isValidEmail(v) {
+    return /\S+@\S+\.\S+/.test(v);
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (loading) return;
 
     setErrorMsg("");
-    setLoading(true);
-
     const username = form.username.trim();
     const email = form.email.trim();
     const password = form.password;
 
-    // basic validation
+    // client-side validation (mirror of backend rules, loosely)
     if (!username || !email || !password) {
       const msg = "All fields are required.";
-      setErrorMsg(msg);
+      setAndFocusError(msg);
       notify.error(msg);
-      // focus first missing field
-      (!username
-        ? usernameRef
-        : !email
-        ? emailRef
-        : passwordRef
-      ).current?.focus();
-
-      setLoading(false);
+      if (!username) return usernameRef.current?.focus();
+      if (!email) return emailRef.current?.focus();
       return;
     }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      const msg = "Please enter a valid email address.";
-      setErrorMsg(msg);
+    if (username.length < 3 || username.length > 30) {
+      const msg = "Username must be 3–30 characters.";
+      setAndFocusError(msg);
       notify.error(msg);
-      emailRef.current?.focus();
-      setLoading(false);
+      return usernameRef.current?.focus();
+    }
+    if (!isValidEmail(email)) {
+      const msg = "Please enter a valid email address.";
+      setAndFocusError(msg);
+      notify.error(msg);
+      return emailRef.current?.focus();
+    }
+    if (password.length < 8) {
+      const msg = "Password must be at least 8 characters.";
+      setAndFocusError(msg);
+      notify.error(msg);
       return;
     }
 
     try {
+      setLoading(true);
       const newUserId = await registerUser(username, email, password);
       setStoredUserId(newUserId);
       notify.success("Account created! Welcome to Pixel Pets.");
       navigate("/dashboard");
     } catch (err) {
       const msg = err?.message || "Registration failed.";
-      setErrorMsg(msg);
+      setAndFocusError(msg);
       notify.error(msg);
-      // put focus on username for correction
       usernameRef.current?.focus();
     } finally {
       setLoading(false);
@@ -75,55 +81,110 @@ export default function Register() {
 
   return (
     <AppLayout headerProps={{ title: "REGISTER" }}>
-      <form onSubmit={handleSubmit} noValidate>
-        <h1>Create Account</h1>
-        <input
-          ref={usernameRef}
-          name="username"
-          placeholder="Username"
-          value={form.username}
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-          autoComplete="username"
-          disabled={loading}
-          required
-        />
+      <section className="panel">
+        <header className="panel__header">
+          <h1 className="panel__title">Create Account</h1>
+        </header>
 
-        <input
-          ref={emailRef}
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          autoComplete="email"
-          disabled={loading}
-          required
-        />
-        <input
-          ref={passwordRef}
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          autoComplete="new-password"
-          disabled={loading}
-          required
-        />
-        {errorMsg && <p>{errorMsg}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
-        </button>
+        <div className="panel__body">
+          <form className="form" onSubmit={handleSubmit} noValidate>
+            {/* Username */}
+            <div className="form__row">
+              <label className="label" htmlFor="reg-username">
+                Username
+              </label>
+              <input
+                id="reg-username"
+                ref={usernameRef}
+                name="username"
+                placeholder="username"
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                autoComplete="username"
+                disabled={loading}
+                required
+                aria-required="true"
+                aria-invalid={
+                  !!errorMsg &&
+                  (!form.username.trim() || form.username.trim().length < 3)
+                }
+              />
+            </div>
 
-        <p>Already have an account?</p>
-        <button
-          type="button"
-          onClick={() => navigate("/login")}
-          disabled={loading}
-        >
-          Login
-        </button>
-      </form>
+            {/* Email */}
+            <div className="form__row">
+              <label className="label" htmlFor="reg-email">
+                Email
+              </label>
+              <input
+                id="reg-email"
+                ref={emailRef}
+                name="email"
+                type="email"
+                placeholder="email@example.com"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                autoComplete="email"
+                disabled={loading}
+                required
+                aria-required="true"
+                aria-invalid={!!errorMsg && !isValidEmail(form.email)}
+              />
+            </div>
+
+            {/* Password */}
+            <div className="form__row">
+              <label className="label" htmlFor="reg-password">
+                Password
+              </label>
+              <input
+                id="reg-password"
+                name="password"
+                type="password"
+                placeholder="minimum 8 characters"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                autoComplete="new-password"
+                disabled={loading}
+                required
+                aria-required="true"
+                aria-invalid={!!errorMsg && form.password.length < 8}
+              />
+            </div>
+
+            {/* Error (role=alert + focusable) */}
+            {errorMsg && (
+              <div
+                className="form-error"
+                role="alert"
+                tabIndex={-1}
+                ref={errorRef}
+              >
+                {errorMsg}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="form__row center">
+              <button className="btn" type="submit" disabled={loading}>
+                {loading ? "Registering..." : "Register"}
+              </button>
+            </div>
+
+            <div className="form__row center">
+              <p>Already have an account?</p>
+              <button
+                className="btn btn--secondary"
+                type="button"
+                onClick={() => navigate("/login")}
+                disabled={loading}
+              >
+                Log In
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
     </AppLayout>
   );
 }
