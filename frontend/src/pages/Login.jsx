@@ -1,4 +1,3 @@
-// frontend/src/pages/Login.jsx
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
@@ -15,13 +14,19 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const usernameRef = useRef(null);
-  const passwordRef = useRef(null);
+  const errorRef = useRef(null);
 
   // If already logged in, bounce to dashboard
   useEffect(() => {
     const id = getStoredUserId();
     if (id != null) navigate("/dashboard");
   }, [navigate]);
+
+  function setAndFocusError(msg) {
+    setErrorMsg(msg);
+    // shift focus to the alert text for SR users
+    queueMicrotask(() => errorRef.current?.focus());
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -34,9 +39,9 @@ export default function Login() {
 
     if (!username || !password) {
       const msg = "Username and password are required.";
-      setErrorMsg(msg);
+      setAndFocusError(msg);
       notify.error(msg);
-      (!username ? usernameRef : passwordRef).current?.focus();
+      if (!username) usernameRef.current?.focus();
       return;
     }
 
@@ -48,7 +53,7 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err) {
       const msg = err?.message || "Login failed.";
-      setErrorMsg(msg);
+      setAndFocusError(msg);
       notify.error(msg);
       usernameRef.current?.focus();
     } finally {
@@ -58,47 +63,86 @@ export default function Login() {
 
   return (
     <AppLayout headerProps={{ title: "LOGIN" }}>
-      <form onSubmit={handleSubmit} noValidate>
-        <h1>Log In</h1>
+      <section className="panel">
+        <header className="panel__header">
+          <h1 className="panel__title">Log In</h1>
+        </header>
 
-        <input
-          ref={usernameRef}
-          name="username"
-          placeholder="Username"
-          value={form.username}
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-          autoComplete="username"
-          disabled={loading}
-          required
-        />
+        <div className="panel__body">
+          <form className="form" onSubmit={handleSubmit} noValidate>
+            {/* Username */}
+            <div className="form__row">
+              <label className="label" htmlFor="login-username">
+                Username
+              </label>
+              <input
+                id="login-username"
+                ref={usernameRef}
+                name="username"
+                placeholder="username"
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                autoComplete="username"
+                disabled={loading}
+                required
+                aria-required="true"
+                aria-invalid={!!errorMsg && !form.username.trim()}
+              />
+            </div>
 
-        <input
-          ref={passwordRef}
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          autoComplete="current-password"
-          disabled={loading}
-          required
-        />
+            {/* Password */}
+            <div className="form__row">
+              <label className="label" htmlFor="login-password">
+                Password
+              </label>
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                placeholder="password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                autoComplete="current-password"
+                disabled={loading}
+                required
+                aria-required="true"
+                aria-invalid={!!errorMsg && !form.password}
+              />
+            </div>
 
-        {errorMsg && <p>{errorMsg}</p>}
+            {/* Error (role=alert + focusable) */}
+            {errorMsg && (
+              <div
+                className="form-error"
+                role="alert"
+                tabIndex={-1}
+                ref={errorRef}
+              >
+                {errorMsg}
+              </div>
+            )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Signing in…" : "Log In"}
-        </button>
+            {/* Actions */}
+            <div className="form__row" style={{ textAlign: "center" }}>
+              <button className="btn" type="submit" disabled={loading}>
+                {loading ? "Signing in…" : "Log In"}
+              </button>
+            </div>
 
-        <p>New to Pixel Pets?</p>
-        <button
-          type="button"
-          onClick={() => navigate("/register")}
-          disabled={loading}
-        >
-          Create Account
-        </button>
-      </form>
+            <div className="form__row" style={{ textAlign: "center" }}>
+              <p>New to Pixel Pets?</p>
+              <button
+                className="btn btn--secondary"
+                type="button"
+                onClick={() => navigate("/register")}
+                disabled={loading}
+              >
+                Create Account
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
     </AppLayout>
   );
 }
