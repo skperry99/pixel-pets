@@ -55,62 +55,150 @@ export default function Dashboard() {
   if (loading) {
     return (
       <AppLayout headerProps={{ title: "DASHBOARD" }}>
-        <p>Loading your pets…</p>
+        <main className="container">
+          <section className="panel">
+            <header className="panel__header">
+              <h2 className="panel__title">Loading your pets…</h2>
+            </header>
+            <div className="panel__body">
+              <p>Please wait 🐾</p>
+            </div>
+          </section>
+        </main>
       </AppLayout>
     );
   }
 
+  const petCountText =
+    pets.length === 0
+      ? "You do not have any pets yet — adopt your first friend!"
+      : `You have ${pets.length} ${pets.length === 1 ? "pet" : "pets"}.`;
+
   return (
     <AppLayout headerProps={{ title: "DASHBOARD" }}>
-      <div>
-        <h1>
-          {userProfile
-            ? `Welcome, ${userProfile.username}!`
-            : "Your Pet Dashboard"}
-        </h1>
-        <p>
-          {pets.length === 0
-            ? "You do not have any pets yet — adopt your first friend!"
-            : `You have ${pets.length} ${pets.length === 1 ? "pet" : "pets"}.`}
-        </p>
-        <div>
-          <button onClick={() => navigate("/settings")}>Edit Profile</button>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      </div>
+      <main className="container stack-lg">
+        {/* Welcome / Profile panel */}
+        <section className="panel">
+          <header className="panel__header">
+            <h1 className="panel__title">
+              {userProfile
+                ? `Welcome, ${userProfile.username}!`
+                : "Your Pet Dashboard"}
+            </h1>
+          </header>
+          <div className="panel__body stack-md">
+            <p>{petCountText}</p>
+            <div className="stack-sm" style={{ display: "inline-grid" }}>
+              <button className="btn" onClick={() => navigate("/settings")}>
+                Edit Profile
+              </button>
+              <button className="btn btn--ghost" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </section>
 
-      <AdoptForm
-        userId={userId}
-        petTypes={["Cat", "Dog", "Dragon"]}
-        onAdopt={(savedPet) => {
-          setPets((prev) => {
-            if (prev.length === 0) {
-              burstConfetti();
-            } // 🎉 first pet
-            return [...prev, savedPet];
-          });
-          notify.success(`Adopted ${savedPet.name} the ${savedPet.type}!`);
-        }}
-      />
+        {/* Adopt panel */}
+        <section className="panel">
+          <header className="panel__header">
+            <h2 className="panel__title">Adopt a New Friend</h2>
+          </header>
+          <div className="panel__body">
+            <AdoptForm
+              userId={userId}
+              petTypes={["Cat", "Dog", "Dragon"]}
+              onAdopt={(savedPet) => {
+                setPets((prev) => {
+                  if (prev.length === 0) {
+                    burstConfetti(); // 🎉 first pet celebration
+                  }
+                  return [...prev, savedPet];
+                });
+                notify.success(
+                  `Adopted ${savedPet.name} the ${savedPet.type}!`
+                );
+              }}
+            />
+          </div>
+        </section>
 
-      {pets.length === 0 ? (
-        <p>No pets yet. Try adopting one!</p>
-      ) : (
-        <ul>
-          {pets.map((p) => (
-            <li key={p.id}>
-              <Link to={`/pets/${p.id}`}>
-                <PetSprite
-                  type={p.type}
-                  size={120}
-                  title={`${p.name} the ${p.type}`}
-                />
-              </Link>
-              <div>{p.name}</div>
-            </li>
-          ))}
-        </ul>
-      )}
+        {/* Pets grid panel */}
+        <section className="panel">
+          <header className="panel__header">
+            <h2 className="panel__title">Your Pets</h2>
+          </header>
+          <div className="panel__body">
+            {pets.length === 0 ? (
+              <p>No pets yet. Try adopting one!</p>
+            ) : (
+              <div className="grid grid-3">
+                {pets.map((p) => (
+                  <article key={p.id} className="panel">
+                    <div className="panel__body stack-md">
+                      <Link
+                        to={`/pets/${p.id}`}
+                        title={`${p.name} the ${p.type}`}
+                      >
+                        <PetSprite
+                          type={p.type}
+                          size={120}
+                          title={`${p.name} the ${p.type}`}
+                          className="pet-sprite"
+                        />
+                      </Link>
+
+                      <div className="stack-sm">
+                        <h3>{p.name}</h3>
+                        {/* Stat bars: only render if present */}
+                        {typeof p.fullness === "number" && (
+                          <div
+                            className="status-bar fullness"
+                            aria-label="Fullness"
+                          >
+                            <div
+                              className="status-fill"
+                              style={{ width: `${p.fullness}%` }}
+                            />
+                          </div>
+                        )}
+                        {typeof p.happiness === "number" && (
+                          <div
+                            className="status-bar happiness"
+                            aria-label="Happiness"
+                          >
+                            <div
+                              className="status-fill"
+                              style={{ width: `${p.happiness}%` }}
+                            />
+                          </div>
+                        )}
+                        {typeof p.energy === "number" && (
+                          <div
+                            className="status-bar energy"
+                            aria-label="Energy"
+                          >
+                            <div
+                              className="status-fill"
+                              style={{ width: `${p.energy}%` }}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <Link to={`/pets/${p.id}`}>
+                        <button className="btn btn--secondary">
+                          View Profile
+                        </button>
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
     </AppLayout>
   );
 }
