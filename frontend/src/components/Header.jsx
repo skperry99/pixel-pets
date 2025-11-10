@@ -4,22 +4,13 @@ export default function Header({
   children,
 }) {
   return (
-    <header className="panel" style={{ maxWidth: 720 }}>
-      <h1 className="pulse" aria-label={title}>🐾 {title}</h1>
-      {subtitle && (
-        <p
-          style={{
-            color: "var(--accent-bright)",
-            marginBottom: "0.75rem",
-            textShadow: "2px 2px #000",
-          }}
-        >
-          {subtitle}
-        </p>
-      )}
-
-      {/* For future use. */}
-      {children}
-    </header>
+    <section className="panel header-panel">
+      <div className="panel__body stack-sm">
+        <h1 className="header-title pulse">🐾 {title}</h1>
+        {subtitle && <p className="header-subtitle">{subtitle}</p>}
+        {/* Optional slot for actions/filters */}
+        {children}
+      </div>
+    </section>
   );
 }

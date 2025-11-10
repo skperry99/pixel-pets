@@ -1,4 +1,3 @@
-// src/pages/PetProfile.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
@@ -8,13 +7,14 @@ import Notice from "../components/Notice";
 import ConfirmAction from "../components/ConfirmAction";
 import { useNotice } from "../hooks/useNotice";
 import { getPetById, feedPet, playWithPet, restPet, deletePet } from "../api";
+import { getStoredUserId } from "../utils/auth";
 
 export default function PetProfile() {
   const navigate = useNavigate();
   const { petId } = useParams();
   const { notify } = useNotice();
 
-  const userId = localStorage.getItem("userId");
+  const userId = getStoredUserId();
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [inlineError, setInlineError] = useState("");
@@ -22,7 +22,7 @@ export default function PetProfile() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    if (!userId) {
+    if (userId == null) {
       navigate("/login");
       return;
     }
@@ -90,7 +90,16 @@ export default function PetProfile() {
   if (loading) {
     return (
       <AppLayout headerProps={{ title: "PET PROFILE" }}>
-        <p>Loading pet…</p>
+        <main className="container">
+          <section className="panel">
+            <header className="panel__header">
+              <h2 className="panel__title">Loading pet…</h2>
+            </header>
+            <div className="panel__body">
+              <p>Please wait 🐾</p>
+            </div>
+          </section>
+        </main>
       </AppLayout>
     );
   }
@@ -98,172 +107,151 @@ export default function PetProfile() {
   if (!pet) {
     return (
       <AppLayout headerProps={{ title: "PET PROFILE" }}>
-        <div style={{ maxWidth: 720, margin: "0 auto" }}>
-          <Link
-            to="/dashboard"
-            className="btn btn-secondary"
-            style={{ marginBottom: 12 }}
-          >
-            ← Back to Dashboard
-          </Link>
-          {inlineError && (
-            <Notice type="error" className="pixel-toast">
-              {inlineError}
-            </Notice>
-          )}
-          {!inlineError && <p>Pet not found.</p>}
-        </div>
+        <main className="container">
+          <section className="panel stack-md">
+            <header className="panel__header">
+              <h2 className="panel__title">Pet not found</h2>
+            </header>
+            <div className="panel__body stack-md">
+              <Link to="/dashboard" className="btn btn--ghost">
+                ← Back to Dashboard
+              </Link>
+              {inlineError && (
+                <Notice type="error" className="pixel-toast">
+                  {inlineError}
+                </Notice>
+              )}
+              {!inlineError && <p>We couldn’t find that pet.</p>}
+            </div>
+          </section>
+        </main>
       </AppLayout>
     );
   }
 
   return (
     <AppLayout headerProps={{ title: "PET PROFILE" }}>
-      <div
-        className="page"
-        style={{ maxWidth: 900, margin: "0 auto", padding: 20 }}
-      >
-        <div
-          className="page-header"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 16,
-          }}
-        >
-          <h1 className="page-title" style={{ margin: 0 }}>
-            {pet.name}
-          </h1>
-          <div className="page-actions">
-            <Link to="/dashboard" className="btn btn-secondary">
-              ← Back to Dashboard
-            </Link>
+      <main className="container stack-lg">
+        {/* Header actions */}
+        <section className="panel">
+          <header className="panel__header">
+            <h1 className="panel__title">{pet.name}</h1>
+          </header>
+          <div className="panel__body">
+            <div className="actions-row">
+              <Link to="/dashboard" className="btn btn--ghost">
+                ← Back to Dashboard
+              </Link>
+            </div>
           </div>
-        </div>
+        </section>
 
         {inlineError && (
-          <Notice type="error" className="pixel-toast">
-            {inlineError}
-          </Notice>
+          <section className="panel">
+            <div className="panel__body">
+              <Notice type="error" className="pixel-toast">
+                {inlineError}
+              </Notice>
+            </div>
+          </section>
         )}
 
-        <div
-          className="card pet-profile"
-          style={{
-            background: "var(--panel-color, #1b1b1b)",
-            border: "4px solid var(--border-color, #333)",
-            borderRadius: 12,
-            padding: 16,
-            display: "grid",
-            gridTemplateColumns: "minmax(240px, 320px) 1fr",
-            gap: 24,
-          }}
-        >
-          <div
-            className="pet-profile__media"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <PetSprite
-              type={pet.type}
-              size={256}
-              title={`${pet.name} the ${pet.type}`}
-            />
-          </div>
-
-          <div className="pet-profile__body">
-            <div
-              className="muted"
-              style={{ color: "var(--text-muted, #aaa)", marginBottom: 12 }}
-            >
-              {pet.type} • Level {pet.level ?? 1}
-            </div>
-
-            <div className="stats-grid" style={{ display: "grid", gap: 12 }}>
-              <StatusBarPixel
-                label="Fullness"
-                value={pet.fullness}
-                kind="fullness"
-              />
-              <StatusBarPixel
-                label="Happiness"
-                value={pet.happiness}
-                kind="happiness"
-              />
-              <StatusBarPixel label="Energy" value={pet.energy} kind="energy" />
-            </div>
-
-            {/* Actions */}
-            <div
-              style={{
-                display: "flex",
-                gap: 8,
-                marginTop: 16,
-                flexWrap: "wrap",
-              }}
-            >
-              <button
-                className="btn"
-                disabled={actionsDisabled}
-                onClick={() => runAction("feed", feedPet)}
-              >
-                {busy === "feed" ? "Feeding…" : "Feed"}
-              </button>
-              <button
-                className="btn"
-                disabled={actionsDisabled}
-                onClick={() => runAction("play", playWithPet)}
-              >
-                {busy === "play" ? "Playing…" : "Play"}
-              </button>
-              <button
-                className="btn"
-                disabled={actionsDisabled}
-                onClick={() => runAction("rest", restPet)}
-              >
-                {busy === "rest" ? "Resting…" : "Rest"}
-              </button>
-
-              {/* Delete */}
-              {confirmDelete ? (
-                <ConfirmAction
-                  confirmPrompt={`Are you sure you want to delete ${pet.name}? This action cannot be undone.`}
-                  confirmLabel="Yes, delete"
-                  cancelLabel="No, keep"
-                  busy={busy === "delete"}
-                  onConfirm={confirmDeleteAndNavigate}
-                  onCancel={() => setConfirmDelete(false)}
+        {/* Profile content */}
+        <section className="panel">
+          <div className="panel__body">
+            <div className="profile-grid">
+              <div className="center">
+                <PetSprite
+                  type={pet.type}
+                  size={256}
+                  title={`${pet.name} the ${pet.type}`}
+                  className="pet-sprite"
                 />
-              ) : (
-                <button
-                  className="btn"
-                  disabled={actionsDisabled}
-                  onClick={() => setConfirmDelete(true)}
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-
-            <div
-              className="meta"
-              style={{ marginTop: 16, color: "var(--text-muted, #aaa)" }}
-            >
-              <div>
-                Adopted:{" "}
-                {pet.createdAt
-                  ? new Date(pet.createdAt).toLocaleDateString()
-                  : "—"}
               </div>
-              <div>Pet ID: {pet.id}</div>
+
+              <div className="stack-md">
+                <div className="muted">
+                  {pet.name} • Level {pet.level ?? 1}
+                </div>
+
+                <div className="stack-sm">
+                  <StatusBarPixel
+                    label="Fullness"
+                    value={pet.fullness}
+                    kind="fullness"
+                  />
+                  <StatusBarPixel
+                    label="Happiness"
+                    value={pet.happiness}
+                    kind="happiness"
+                  />
+                  <StatusBarPixel
+                    label="Energy"
+                    value={pet.energy}
+                    kind="energy"
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="actions-row">
+                  <button
+                    className="btn"
+                    disabled={actionsDisabled}
+                    onClick={() => runAction("feed", feedPet)}
+                  >
+                    {busy === "feed" ? "Feeding…" : "Feed"}
+                  </button>
+                  <button
+                    className="btn"
+                    disabled={actionsDisabled}
+                    onClick={() => runAction("play", playWithPet)}
+                  >
+                    {busy === "play" ? "Playing…" : "Play"}
+                  </button>
+                  <button
+                    className="btn"
+                    disabled={actionsDisabled}
+                    onClick={() => runAction("rest", restPet)}
+                  >
+                    {busy === "rest" ? "Resting…" : "Rest"}
+                  </button>
+
+                  {/* Delete flow */}
+                  {confirmDelete ? (
+                    <ConfirmAction
+                      confirmPrompt={`Are you sure you want to delete ${pet.name}? This action cannot be undone.`}
+                      confirmLabel="Yes, delete"
+                      cancelLabel="No, keep"
+                      busy={busy === "delete"}
+                      onConfirm={confirmDeleteAndNavigate}
+                      onCancel={() => setConfirmDelete(false)}
+                    />
+                  ) : (
+                    <button
+                      className="btn btn--danger"
+                      disabled={actionsDisabled}
+                      onClick={() => setConfirmDelete(true)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+
+                {/* Meta */}
+                <div className="meta">
+                  <div>
+                    Adopted:{" "}
+                    {pet.createdAt
+                      ? new Date(pet.createdAt).toLocaleDateString()
+                      : "—"}
+                  </div>
+                  <div>Pet ID: {pet.id}</div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </AppLayout>
   );
 }

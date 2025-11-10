@@ -1,5 +1,5 @@
 export default function StatusBarPixel({
-  label, // "Fullness" | "Happiness" | "Energy"
+  label = "Fullness", // "Fullness" | "Happiness" | "Energy"
   value = 0, // 0..100
   kind = "fullness", // "fullness" | "happiness" | "energy"
 }) {
@@ -11,26 +11,13 @@ export default function StatusBarPixel({
       className={`status-bar ${kind} ${low ? "low" : ""}`}
       role="progressbar"
       // aria-label={label}
+      // aria-valuenow={v}
       // aria-valuemin={0}
       // aria-valuemax={100}
-      // aria-valuenow={v}
       title={`${label}: ${v}%`}
     >
       <div className="status-fill" style={{ width: `${v}%` }} />
-      {/* percentage overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "var(--text-color)",
-          fontSize: "10px",
-          textShadow: "1px 1px #000",
-          pointerEvents: "none",
-        }}
-      >
+      <div className="status-label">
         {label}: {v}%
       </div>
     </div>

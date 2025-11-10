@@ -1,145 +1,71 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { getStoredUserId } from "../utils/auth";
+import { NavLink, useNavigate } from "react-router-dom";
+import { getStoredUserId, clearStoredUserId } from "../utils/auth";
 
-export default function NavBar() {
+export default function NavBar({
+  headerTitle = "PIXEL PETS",
+  headerSubtitle = "✨ Because every pixel deserves a little love. 🐾",
+}) {
   const navigate = useNavigate();
-  const location = useLocation();
+  const isAuthed = Boolean(getStoredUserId());
 
-  const linkStyle = ({ isActive }) => ({
-    color: isActive ? "var(--accent-bright)" : "var(--accent-color)",
-    textShadow: "1px 1px #000",
-    marginRight: "1rem",
-  });
+  const linkClass = ({ isActive }) => `nav__link ${isActive ? "active" : ""}`;
 
-  const isAuthed = Boolean(getStoredUserId);
-  const path = location.pathname;
+  function handleHomeClick(e) {
+    e.preventDefault();
+    navigate("/");
+  }
 
-  // LOGGED OUT MENUS
-  const LoggedOutMenu = () => {
-    if (path === "/") {
-      // Landing → show Login + Register
-      return (
-        <>
-          <NavLink to="/login" style={linkStyle}>
-            Log In
-          </NavLink>
-          <NavLink to="/register" style={linkStyle}>
-            Register
-          </NavLink>
-        </>
-      );
-    }
-    if (path === "/login") {
-      // Login → show Home + Register
-      return (
-        <>
-          <NavLink to="/" style={linkStyle} end>
-            Home
-          </NavLink>
-          <NavLink to="/register" style={linkStyle}>
-            Register
-          </NavLink>
-        </>
-      );
-    }
-    if (path === "/register") {
-      // Register → show Home + Login
-      return (
-        <>
-          <NavLink to="/" style={linkStyle} end>
-            Home
-          </NavLink>
-          <NavLink to="/login" style={linkStyle}>
-            Log In
-          </NavLink>
-        </>
-      );
-    }
-    // Fallback (unknown public page) → Home + Login + Register
-    return (
-      <>
-        <NavLink to="/" style={linkStyle} end>
-          Home
-        </NavLink>
-        <NavLink to="/login" style={linkStyle}>
-          Log In
-        </NavLink>
-        <NavLink to="/register" style={linkStyle}>
-          Register
-        </NavLink>
-      </>
-    );
-  };
-
-  // LOGGED IN MENUS
-  const LoggedInMenu = () => {
-    const onDashboard = path === "/dashboard";
-    const onSettings = path === "/settings";
-
-    // Always show Home
-    const homeLink = (
-      <NavLink to="/" style={linkStyle} end>
-        Home
-      </NavLink>
-    );
-
-    // Show the *other* link depending on current page:
-    // - On /dashboard → show Edit Profile
-    // - On /settings → show Dashboard
-    // - On any other authed page → show both
-    const dashLink = !onDashboard ? (
-      <NavLink to="/dashboard" style={linkStyle}>
-        Dashboard
-      </NavLink>
-    ) : null;
-
-    const settingsLink = !onSettings ? (
-      <NavLink to="/settings" style={linkStyle}>
-        Edit Profile
-      </NavLink>
-    ) : null;
-
-    return (
-      <>
-        {homeLink}
-        {onDashboard && (
-          <NavLink to="/settings" style={linkStyle}>
-            Edit Profile
-          </NavLink>
-        )}
-        {onSettings && (
-          <NavLink to="/dashboard" style={linkStyle}>
-            Dashboard
-          </NavLink>
-        )}
-        {!onDashboard && !onSettings && (
-          <>
-            {dashLink}
-            {settingsLink}
-          </>
-        )}
-      </>
-    );
-  };
+  function handleLogout(e) {
+    e.preventDefault();
+    clearStoredUserId();
+    navigate("/login");
+  }
 
   return (
-    <nav>
-      <a
-        href="/"
-        onClick={(e) => {
-          e.preventDefault();
-          navigate("/");
-        }}
-        style={{
-          color: "var(--accent-bright)",
-          marginRight: "1rem",
-          textDecoration: "none",
-        }}
-      >
+    <div className="nav container">
+      {/* Left: brand */}
+      <a href="/" onClick={handleHomeClick} className="nav__brand">
         🐾 Pixel Pets
       </a>
 
-      {isAuthed ? <LoggedInMenu /> : <LoggedOutMenu />}
-    </nav>
+      {/* Center: page title/subtitle */}
+      <div className="nav__center">
+        {headerTitle && <h1 className="nav__title pulse">🐾 {headerTitle}</h1>}
+        {headerSubtitle && <p className="nav__subtitle">{headerSubtitle}</p>}
+      </div>
+
+      {/* Right: links */}
+      <div className="nav__links">
+        <NavLink to="/" end className={linkClass}>
+          Home
+        </NavLink>
+
+        {isAuthed ? (
+          <>
+            <NavLink to="/dashboard" className={linkClass}>
+              Dashboard
+            </NavLink>
+            <NavLink to="/settings" className={linkClass}>
+              Edit Profile
+            </NavLink>
+            <button
+              className="btn btn--ghost nav__logout"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login" className={linkClass}>
+              Log In
+            </NavLink>
+            <NavLink to="/register" className={linkClass}>
+              Register
+            </NavLink>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
