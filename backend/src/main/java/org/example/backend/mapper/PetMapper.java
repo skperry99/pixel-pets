@@ -4,10 +4,24 @@ import org.example.backend.dto.PetDto;
 import org.example.backend.model.Pet;
 import org.example.backend.model.User;
 
-public class PetMapper {
+/**
+ * Maps between Pet entities and PetDto API objects.
+ * - Uses safe defaults when DTO omits stats/level
+ * - Does not touch server-managed fields like lastTickAt
+ */
+public final class PetMapper {
 
+    // Prevent instantiation
+    private PetMapper() {
+    }
+
+    // ===== Entity -> DTO =====
+
+    /**
+     * Convert a Pet entity to API-safe PetDto.
+     */
     public static PetDto toPetDto(Pet pet) {
-        Long userId = pet.getUser() != null ? pet.getUser().getId() : null;
+        Long userId = (pet.getUser() != null) ? pet.getUser().getId() : null;
 
         return new PetDto(
                 pet.getId(),
@@ -21,21 +35,40 @@ public class PetMapper {
         );
     }
 
-    public static Pet toEntity(PetDto petDto, User user) {
+    // ===== DTO -> Entity (create) =====
+
+    /**
+     * Build a new Pet entity from a DTO and its owner.
+     * Applies sensible defaults when fields are missing.
+     */
+    public static Pet toEntity(PetDto dto, User owner) {
         Pet pet = new Pet();
 
-        if (petDto.getId() != null) {
-            pet.setId(petDto.getId());
+        if (dto.getId() != null) {
+            pet.setId(dto.getId());
         }
 
-        pet.setName(petDto.getName());
-        pet.setType(petDto.getType());
-        pet.setLevel(petDto.getLevel());
-        pet.setFullness(petDto.getFullness());
-        pet.setHappiness(petDto.getHappiness());
-        pet.setEnergy(petDto.getEnergy());
-        pet.setUser(user);
+        pet.setName(dto.getName());
+        pet.setType(dto.getType());
+
+        // Level & stats (nullable in DTO → default if missing)
+        pet.setLevel(defaultOr(dto.getLevel(), 1));
+        pet.setFullness(defaultOr(dto.getFullness(), 80));
+        pet.setHappiness(defaultOr(dto.getHappiness(), 80));
+        pet.setEnergy(defaultOr(dto.getEnergy(), 80));
+
+        pet.setUser(owner);
+        // lastTickAt is set by @PrePersist; service may also initialize
 
         return pet;
+    }
+
+    // ===== Helpers =====
+
+    /**
+     * Return value if not null, otherwise the provided default.
+     */
+    private static int defaultOr(Integer value, int fallback) {
+        return (value != null) ? value : fallback;
     }
 }

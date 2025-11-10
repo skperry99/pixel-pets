@@ -2,27 +2,57 @@ package org.example.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
+/**
+ * Pet data transfer object (API shape).
+ * - Keeps API backward-compatible: accepts "hunger" but returns "fullness".
+ * - Allows nullable stats so the server can apply sensible defaults.
+ */
 @Getter
+@Setter
 public class PetDto {
+
+    // ===== Identity =====
     private Long id;
+
+    // ===== Basic info =====
     private String name;
     private String type;
-    private int level;
+
+    /**
+     * Pet level; nullable so server can default (e.g., to 1) when omitted.
+     */
+    private Integer level;
+
+    // ===== Stats (0–100) =====
+    /**
+     * Output as "fullness"; still accepts legacy "hunger" on input.
+     */
     @JsonProperty("fullness")
-    @JsonAlias("hunger")        // accept old field name on input
-    private int fullness;
-    private int happiness;
-    private int energy;
+    @JsonAlias("hunger")
+    private Integer fullness;
+
+    private Integer happiness;
+    private Integer energy;
+
+    // ===== Ownership =====
     private Long userId;
 
-    public PetDto() {}
+    // ===== Constructors =====
+    public PetDto() { /* for Jackson */ }
 
-    public PetDto(Long id, String name, String type, int level, int fullness, int happiness, int energy, Long userId) {
+    public PetDto(
+            Long id,
+            String name,
+            String type,
+            Integer level,
+            Integer fullness,
+            Integer happiness,
+            Integer energy,
+            Long userId
+    ) {
         this.id = id;
         this.name = name;
         this.type = type;
