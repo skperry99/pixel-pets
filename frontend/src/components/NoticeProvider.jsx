@@ -1,18 +1,17 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Notice from "./Notice";
 import { NoticeCtx } from "../hooks/useNotice";
 
-let nextId = 1;
-
 export function NoticeProvider({ children }) {
   const [toasts, setToasts] = useState([]); // {id,type,msg,ms}
+  const idRef = useRef(1);
 
   const remove = useCallback((id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const push = useCallback((type, msg, ms = 3000) => {
-    const id = nextId++;
+    const id = idRef.current++;
     setToasts((prev) => [...prev, { id, type, msg, ms }]);
     return id;
   }, []);
@@ -32,19 +31,9 @@ export function NoticeProvider({ children }) {
   return (
     <NoticeCtx.Provider value={api}>
       {children}
-      <div
-        aria-live="polite"
-        style={{
-          position: "fixed",
-          right: 16,
-          top: 16,
-          zIndex: 1000,
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          maxWidth: 360,
-        }}
-      >
+
+      {/* Toast stack (screen readers will get per-notice aria-live from Notice) */}
+      <div className="toast-container is-top" aria-live="polite">
         {toasts.map((t) => (
           <Notice
             key={t.id}

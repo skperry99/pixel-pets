@@ -1,26 +1,10 @@
 import { useEffect } from "react";
 
-const palette = {
-  info: {
-    bg: "var(--panel-color)",
-    fg: "var(--text-color)",
-    border: "var(--border-color)",
-  },
-  success: {
-    bg: "var(--success-color)",
-    fg: "#000",
-    border: "var(--border-color)",
-  },
-  error: {
-    bg: "var(--danger-color)",
-    fg: "#fff",
-    border: "var(--border-color)",
-  },
-  warn: {
-    bg: "var(--accent-color)",
-    fg: "#000",
-    border: "var(--border-color)",
-  },
+const ICON = {
+  success: "✅",
+  error: "❌",
+  warn: "⚠️",
+  info: "🛈",
 };
 
 export default function Notice({
@@ -36,36 +20,22 @@ export default function Notice({
     return () => clearTimeout(t);
   }, [autoHideMs, onClose]);
 
-  const c = palette[type] ?? palette.info;
+  const role = "status";
+  const live = type === "error" ? "assertive" : "polite";
+  const icon = ICON[type] ?? ICON.info;
+  const variantClass = `notice--${type}`;
 
   return (
     <div
-      role="status"
-      aria-live={type === "error" ? "assertive" : "polite"}
-      className={`panel ${className}`}
-      style={{
-        maxWidth: 720,
-        marginTop: "0.5rem",
-        backgroundColor: c.bg,
-        color: c.fg,
-        borderColor: c.border,
-        borderWidth: 4,
-        textAlign: "left",
-      }}
+      role={role}
+      aria-live={live}
+      className={`panel notice ${variantClass} ${className}`.trim()}
     >
-      <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-        <span style={{ textShadow: "1px 1px #000" }}>
-          {type === "success"
-            ? "✅"
-            : type === "error"
-            ? "❌"
-            : type === "warn"
-            ? "⚠️"
-            : "🛈"}
-        </span>
-        <div style={{ flex: 1 }}>{children}</div>
+      <div className="notice__row">
+        <span className="notice__icon">{icon}</span>
+        <div className="notice__body">{children}</div>
         {onClose && (
-          <button onClick={onClose} style={{ fontSize: 10 }}>
+          <button className="btn btn--ghost notice__dismiss" onClick={onClose}>
             dismiss
           </button>
         )}
