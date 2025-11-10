@@ -14,7 +14,7 @@ public class PetMapper {
                 pet.getName(),
                 pet.getType(),
                 pet.getLevel(),
-                pet.getHunger(),
+                pet.getFullness(),
                 pet.getHappiness(),
                 pet.getEnergy(),
                 userId
@@ -31,7 +31,7 @@ public class PetMapper {
         pet.setName(petDto.getName());
         pet.setType(petDto.getType());
         pet.setLevel(petDto.getLevel());
-        pet.setHunger(petDto.getHunger());
+        pet.setFullness(petDto.getFullness());
         pet.setHappiness(petDto.getHappiness());
         pet.setEnergy(petDto.getEnergy());
         pet.setUser(user);

@@ -1,6 +1,9 @@
 package org.example.backend.model;
 
 import jakarta.persistence.*;
+
+import java.time.Instant;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +19,8 @@ public class Pet {
     private String name;
     private String type;
     private int level;
-    private int hunger;
+    @Column(name = "fullness")
+    private int fullness;
     private int happiness;
     private int energy;
 
@@ -24,13 +28,24 @@ public class Pet {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Pet() {}
+    @Column(nullable = false)
+    private Instant lastTickAt;
+
+    @PrePersist
+    public void onCreate() {
+        if (lastTickAt == null) {
+            lastTickAt = Instant.now();
+        }
+    }
+
+    public Pet() {
+    }
 
     public Pet(String name, String type) {
         this.name = name;
         this.type = type;
         this.level = 1;
-        this.hunger = 100;
+        this.fullness = 100;
         this.happiness = 100;
         this.energy = 100;
     }
