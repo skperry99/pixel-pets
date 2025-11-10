@@ -5,71 +5,87 @@ import org.example.backend.model.User;
 import org.example.backend.repository.PetRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+/*
+ * Domain logic for Pets:
+ * - “Lazy ticking” applies time-based stat decay on reads/writes
+ * - Simple actions (feed, play, rest) mutate stats with clamping
+ * - Per-tick and total backdated caps prevent extreme jumps
+ */
 @Service
 public class PetService {
+
+    // ===== Dependencies =====
     private final PetRepository petRepository;
-
-    // --- Decay tuning knobs ---
-    private static final double FULLNESS_DECAY_PER_MIN = 0.20;   // fullness goes DOWN over time
-    private static final double ENERGY_DECAY_PER_MIN = 0.10;
-    private static final double HAPPINESS_DECAY_PER_MIN = 0.05;
-
-    private static final double HAPPINESS_PENALTY_FULLNESS_LOW_PER_MIN = 0.15; // if fullness < 30
-    private static final double HAPPINESS_PENALTY_ENERGY_LOW_PER_MIN = 0.10; // if energy < 30
-    private static final double HAPPINESS_BONUS_WELL_CARED_PER_MIN = 0.05; // if fullness>70 && energy>70
-
-    // Caps
-    private static final long MAX_MINUTES_PER_TICK = 24 * 60;          // cap per tick
-    private static final long MAX_BACKDATED_MINUTES = 3L * 24 * 60;    // 0 = no cap; here: 3 days
 
     public PetService(PetRepository petRepository) {
         this.petRepository = petRepository;
     }
 
-    // ---------- Helpers ----------
+    // ===== Tuning knobs (decay & caps) =====
+    // Natural per-minute decay (higher = faster drift)
+    private static final double FULLNESS_DECAY_PER_MIN = 0.20; // fullness goes DOWN over time
+    private static final double ENERGY_DECAY_PER_MIN = 0.10;
+    private static final double HAPPINESS_DECAY_PER_MIN = 0.05;
+
+    // Conditional mood effects (per minute)
+    private static final double HAPPINESS_PENALTY_FULLNESS_LOW_PER_MIN = 0.15; // fullness < 30
+    private static final double HAPPINESS_PENALTY_ENERGY_LOW_PER_MIN = 0.10; // energy   < 30
+    private static final double HAPPINESS_BONUS_WELL_CARED_PER_MIN = 0.05; // fullness>70 && energy>70
+
+    // Decay caps
+    private static final long MAX_MINUTES_PER_TICK = 24 * 60;       // at most 24h of decay per single tick()
+    private static final long MAX_BACKDATED_MINUTES = 3L * 24 * 60;  // total cap during long absences (0 = no cap)
+
+    // ===== Helpers =====
+    /* Clamp stat into [0, 100]. */
     private int clamp(int value) {
         return (value < 0) ? 0 : Math.min(value, 100);
     }
 
+    /* Fetch or 404. */
     private Pet requirePet(Long id) {
         return petRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found: " + id));
     }
 
-    // Apply time-based stat changes since lastTickAt, then stamp now.
-    private void tick(Pet pet) {
+    /*
+     * Apply time-based decay since lastTickAt, then stamp now.
+     * @return true if any stat changed (to avoid unnecessary saves)
+     */
+    private boolean tick(Pet pet) {
         Instant now = Instant.now();
         Instant last = pet.getLastTickAt();
-        if (last == null) {
+        if (last == null) { // first touch
             pet.setLastTickAt(now);
-            return;
+            return true;
         }
 
         long rawMinutes = Math.max(0, ChronoUnit.MINUTES.between(last, now));
 
-        // Optional total cap across long absences; 0 means "no cap"
+        // Cap total backdated minutes (e.g., long absences)
         long cappedRaw = (MAX_BACKDATED_MINUTES > 0)
                 ? Math.min(rawMinutes, MAX_BACKDATED_MINUTES)
                 : rawMinutes;
 
-        // Per-tick cap (prevents a single tick from applying more than 24h)
+        // Cap per-tick minutes (avoid huge single jumps)
         long minutes = Math.min(cappedRaw, MAX_MINUTES_PER_TICK);
         if (minutes == 0) {
-            return; // less than a minute elapsed; skip
+            return false; // nothing to change
         }
 
+        // Current values
         double fullness = pet.getFullness();
         double energy = pet.getEnergy();
         double happiness = pet.getHappiness();
 
-        // Natural decay
+        // Base decay
         fullness -= FULLNESS_DECAY_PER_MIN * minutes;
         energy -= ENERGY_DECAY_PER_MIN * minutes;
         happiness -= HAPPINESS_DECAY_PER_MIN * minutes;
@@ -79,24 +95,38 @@ public class PetService {
         if (energy < 30) happiness -= HAPPINESS_PENALTY_ENERGY_LOW_PER_MIN * minutes;
         if (fullness > 70 && energy > 70) happiness += HAPPINESS_BONUS_WELL_CARED_PER_MIN * minutes;
 
-        // Clamp and write back
-        pet.setFullness(clamp((int) Math.round(fullness)));
-        pet.setEnergy(clamp((int) Math.round(energy)));
-        pet.setHappiness(clamp((int) Math.round(happiness)));
+        // Round, clamp, and detect changes
+        int newFullness = clamp((int) Math.round(fullness));
+        int newEnergy = clamp((int) Math.round(energy));
+        int newHappiness = clamp((int) Math.round(happiness));
+
+        boolean changed = (newFullness != pet.getFullness())
+                || (newEnergy != pet.getEnergy())
+                || (newHappiness != pet.getHappiness())
+                || (pet.getLastTickAt() == null)
+                || !now.equals(pet.getLastTickAt());
+
+        // Write back
+        pet.setFullness(newFullness);
+        pet.setEnergy(newEnergy);
+        pet.setHappiness(newHappiness);
         pet.setLastTickAt(now);
+
+        return changed;
     }
 
-    // ---------- Read methods ----------
+    // ===== Read methods (apply lazy tick) =====
     public List<Pet> getAllPets() {
         List<Pet> pets = petRepository.findAll();
-        pets.forEach(this::tick);
-        return petRepository.saveAll(pets);
+        boolean anyChanged = false;
+        for (Pet p : pets) anyChanged |= tick(p);
+        if (anyChanged) petRepository.saveAll(pets);
+        return pets;
     }
 
     public Pet getPetById(Long id) {
         Pet pet = petRepository.findById(id).orElse(null);
-        if (pet != null) {
-            tick(pet);
+        if (pet != null && tick(pet)) {
             pet = petRepository.save(pet);
         }
         return pet;
@@ -104,25 +134,29 @@ public class PetService {
 
     public List<Pet> getPetsByUserId(Long userId) {
         List<Pet> pets = petRepository.findByUserId(userId);
-        pets.forEach(this::tick);
-        return petRepository.saveAll(pets);
+        boolean anyChanged = false;
+        for (Pet p : pets) anyChanged |= tick(p);
+        if (anyChanged) petRepository.saveAll(pets);
+        return pets;
     }
 
-    // ---------- Write methods ----------
+    // ===== Write methods =====
+    /* Save a pet after applying a tick (to persist latest drift). */
     public Pet savePet(Pet pet) {
         tick(pet);
-        return petRepository.save(pet);
+        return petRepository.save(pet); // still persist explicit edits
     }
 
+    /* Create a new pet for a user with an initial timestamp. */
     public Pet createPetForUser(String name, String type, User user) {
         Pet pet = new Pet(name, type);
         pet.setUser(user);
         pet.setLastTickAt(Instant.now());
-        // Optionally initialize:
-        // pet.setFullness(80); pet.setEnergy(80); pet.setHappiness(80);
+
         return petRepository.save(pet);
     }
 
+    // ===== Actions =====
     @Transactional
     public Pet feedPet(Long petId) {
         Pet pet = requirePet(petId);
@@ -152,6 +186,7 @@ public class PetService {
         return petRepository.save(pet);
     }
 
+    // ===== Delete =====
     public void deletePet(Long id) {
         if (!petRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found: " + id);
