@@ -18,5 +18,9 @@
     "titleBar.inactiveBackground": "#02042599",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#020425"
+  "peacock.color": "#020425",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.run": "onType"
 }
