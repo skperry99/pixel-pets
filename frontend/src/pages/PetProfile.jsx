@@ -99,7 +99,11 @@ export default function PetProfile() {
     return (
       <AppLayout headerProps={{ title: "PET PROFILE" }}>
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
-          <Link to="/dashboard" className="btn btn-secondary" style={{ marginBottom: 12 }}>
+          <Link
+            to="/dashboard"
+            className="btn btn-secondary"
+            style={{ marginBottom: 12 }}
+          >
             ← Back to Dashboard
           </Link>
           {inlineError && (
@@ -115,10 +119,18 @@ export default function PetProfile() {
 
   return (
     <AppLayout headerProps={{ title: "PET PROFILE" }}>
-      <div className="page" style={{ maxWidth: 900, margin: "0 auto", padding: 20 }}>
+      <div
+        className="page"
+        style={{ maxWidth: 900, margin: "0 auto", padding: 20 }}
+      >
         <div
           className="page-header"
-          style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 16,
+          }}
         >
           <h1 className="page-title" style={{ margin: 0 }}>
             {pet.name}
@@ -150,24 +162,50 @@ export default function PetProfile() {
         >
           <div
             className="pet-profile__media"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <PetSprite type={pet.type} size={256} title={`${pet.name} the ${pet.type}`} />
+            <PetSprite
+              type={pet.type}
+              size={256}
+              title={`${pet.name} the ${pet.type}`}
+            />
           </div>
 
           <div className="pet-profile__body">
-            <div className="muted" style={{ color: "var(--text-muted, #aaa)", marginBottom: 12 }}>
+            <div
+              className="muted"
+              style={{ color: "var(--text-muted, #aaa)", marginBottom: 12 }}
+            >
               {pet.type} • Level {pet.level ?? 1}
             </div>
 
             <div className="stats-grid" style={{ display: "grid", gap: 12 }}>
-              <StatusBarPixel label="Hunger" value={pet.hunger} kind="hunger" />
-              <StatusBarPixel label="Happiness" value={pet.happiness} kind="happiness" />
+              <StatusBarPixel
+                label="Fullness"
+                value={pet.fullness}
+                kind="fullness"
+              />
+              <StatusBarPixel
+                label="Happiness"
+                value={pet.happiness}
+                kind="happiness"
+              />
               <StatusBarPixel label="Energy" value={pet.energy} kind="energy" />
             </div>
 
             {/* Actions */}
-            <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                marginTop: 16,
+                flexWrap: "wrap",
+              }}
+            >
               <button
                 className="btn"
                 disabled={actionsDisabled}
@@ -211,8 +249,16 @@ export default function PetProfile() {
               )}
             </div>
 
-            <div className="meta" style={{ marginTop: 16, color: "var(--text-muted, #aaa)" }}>
-              <div>Adopted: {pet.createdAt ? new Date(pet.createdAt).toLocaleDateString() : "—"}</div>
+            <div
+              className="meta"
+              style={{ marginTop: 16, color: "var(--text-muted, #aaa)" }}
+            >
+              <div>
+                Adopted:{" "}
+                {pet.createdAt
+                  ? new Date(pet.createdAt).toLocaleDateString()
+                  : "—"}
+              </div>
               <div>Pet ID: {pet.id}</div>
             </div>
           </div>

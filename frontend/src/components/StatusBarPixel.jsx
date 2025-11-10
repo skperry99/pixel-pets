@@ -1,7 +1,7 @@
 export default function StatusBarPixel({
-  label,          // "Hunger" | "Happiness" | "Energy"
-  value = 0,      // 0..100
-  kind = "hunger" // "hunger" | "happiness" | "energy"
+  label, // "Fullness" | "Happiness" | "Energy"
+  value = 0, // 0..100
+  kind = "fullness", // "fullness" | "happiness" | "energy"
 }) {
   const v = Math.max(0, Math.min(100, Number(value) || 0));
   const low = v < 25; // show danger style under 25%
@@ -10,10 +10,10 @@ export default function StatusBarPixel({
     <div
       className={`status-bar ${kind} ${low ? "low" : ""}`}
       role="progressbar"
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={v}
+      // aria-label={label}
+      // aria-valuemin={0}
+      // aria-valuemax={100}
+      // aria-valuenow={v}
       title={`${label}: ${v}%`}
     >
       <div className="status-fill" style={{ width: `${v}%` }} />

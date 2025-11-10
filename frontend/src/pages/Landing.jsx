@@ -18,7 +18,7 @@ export default function Landing() {
 
       {/* Decorative demo bars */}
       <div style={{ marginTop: "1rem" }}>
-        <StatusBarPixel label="Hunger" value={86} kind="hunger" />
+        <StatusBarPixel label="Fullness" value={86} kind="fullness" />
         <StatusBarPixel label="Happiness" value={72} kind="happiness" />
         <StatusBarPixel label="Energy" value={63} kind="energy" />
       </div>
