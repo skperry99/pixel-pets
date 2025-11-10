@@ -1,19 +1,23 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createPet } from "../api";
 
 export default function AdoptForm({
-  userId,                 // required (number)
-  onAdopt,                // required: (savedPet) => void
-  petTypes,               // optional: ["Cat","Dog","Dragon"]; if omitted, we'll fall back to a default
+  userId, // required (number)
+  onAdopt, // required: (savedPet) => void
+  petTypes, // optional: ["Cat","Dog","Dragon"]; fallback used if omitted
   className = "",
 }) {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const errorRef = useRef(null);
 
-  // If you later add /api/pets/types, you can fetch here. For now, use prop or default:
-  const options = useMemo(() => petTypes?.length ? petTypes : ["Cat", "Dog", "Dragon"], [petTypes]);
+  // Use prop or default list
+  const options = useMemo(
+    () => (petTypes?.length ? petTypes : ["Cat", "Dog", "Dragon"]),
+    [petTypes]
+  );
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,51 +25,102 @@ export default function AdoptForm({
     setErr("");
 
     const trimmed = name.trim();
-    if (!trimmed) { setErr("Please enter a pet name."); return; }
-    if (!type)     { setErr("Please select a pet type."); return; }
-    if (!userId)   { setErr("Missing user ID."); return; }
-    if (options.length && !options.includes(type)) { setErr("Invalid pet type."); return; }
+    if (!trimmed) return setAndFocusError("Please enter a pet name.");
+    if (!type) return setAndFocusError("Please select a pet type.");
+    if (!userId) return setAndFocusError("Missing user ID.");
+    if (options.length && !options.includes(type))
+      return setAndFocusError("Invalid pet type.");
 
     try {
       setBusy(true);
-      const saved = await createPet({ name: trimmed, type, userId: Number(userId) });
-      onAdopt?.(saved);         // hand result back to parent
+      const saved = await createPet({
+        name: trimmed,
+        type,
+        userId: Number(userId),
+      });
+      onAdopt?.(saved);
       setName("");
       setType("");
     } catch (e) {
-      setErr(e.message || "Adoption failed.");
+      setAndFocusError(e?.message || "Adoption failed.");
     } finally {
       setBusy(false);
     }
   }
 
+  function setAndFocusError(message) {
+    setErr(message);
+    // Move screen reader focus to the error
+    queueMicrotask(() => errorRef.current?.focus());
+  }
+
   return (
-    <form onSubmit={handleSubmit} className={`panel ${className}`} style={{ maxWidth: 720 }}>
-      <h2>Adopt a new pet</h2>
+    <section className={`panel ${className}`}>
+      <header className="panel__header">
+        <h2 className="panel__title">Adopt a New Pet</h2>
+      </header>
 
-      <input
-        placeholder="Pet name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
+      <div className="panel__body">
+        <form className="form" onSubmit={handleSubmit} noValidate>
+          <div className="form__row">
+            <label className="label" htmlFor="adopt-name">
+              Pet name
+            </label>
+            <input
+              id="adopt-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              aria-required="true"
+              aria-invalid={!!err && !name.trim()}
+              aria-describedby={err && !name.trim() ? "adopt-error" : undefined}
+              disabled={busy}
+              placeholder="Pixel Paws"
+            />
+          </div>
 
-      <select
-        value={type}
-        onChange={(e) => setType(e.target.value)}
-        required
-      >
-        <option value="">Select a pet type</option>
-        {options.map(t => <option key={t} value={t}>{t}</option>)}
-      </select>
+          <div className="form__row">
+            <label className="label" htmlFor="adopt-type">
+              Pet type
+            </label>
+            <select
+              id="adopt-type"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              required
+              aria-required="true"
+              aria-invalid={!!err && !type}
+              aria-describedby={err && !type ? "adopt-error" : undefined}
+              disabled={busy}
+            >
+              <option value="">Select a pet type</option>
+              {options.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {err && (
-        <div style={{ color: "var(--danger-color)", margin: "0.5rem 0", textShadow: "1px 1px #000" }}>
-          {err}
-        </div>
-      )}
+          {err && (
+            <div
+              id="adopt-error"
+              className="form-error"
+              role="alert"
+              tabIndex={-1}
+              ref={errorRef}
+            >
+              {err}
+            </div>
+          )}
 
-      <button disabled={busy}>{busy ? "Adopting..." : "Adopt 🐾"}</button>
-    </form>
+          <div className="form__row" style={{ textAlign: "center" }}>
+            <button className="btn" type="submit" disabled={busy}>
+              {busy ? "Adopting..." : "Adopt 🐾"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 }
