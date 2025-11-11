@@ -173,6 +173,16 @@ h3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Slightly denser grid on big displays */
+.grid.grid-3 {
+  gap: var(--space-4);
+}
+@media (min-width: 1200px) {
+  .grid.grid-3 {
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+  }
+}
+
 .u-stack-sm > * + * {
   margin-top: var(--space-2);
 }
@@ -180,6 +190,17 @@ h3 {
   margin-top: var(--space-3);
 }
 .u-stack-lg > * + * {
+  margin-top: var(--space-4);
+}
+
+/* --- Utility aliases so both "stack-*" and "u-stack-*" work --- */
+.stack-sm > * + * {
+  margin-top: var(--space-2);
+}
+.stack-md > * + * {
+  margin-top: var(--space-3);
+}
+.stack-lg > * + * {
   margin-top: var(--space-4);
 }
 
@@ -313,20 +334,46 @@ h3 {
 }
 
 .panel {
-  composes: card;
+  /* merged “card frame” styles so it works in global CSS (no CSS Modules) */
+  background-color: var(--panel-color);
+  border: var(--border-3) solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pixel-lg);
+
+  /* panel-specific spacing/layout */
   padding: 1.5rem;
   margin: 1rem auto;
   width: 90%;
   max-width: 500px;
   text-align: left;
 }
+
+/* Ensure wide panels center even inside grid/flex parents */
+.panel--center {
+  margin-left: auto;
+  margin-right: auto;     /* margin-inline:auto works too */
+  justify-self: center;   /* centers inside CSS Grid */
+  align-self: start;      /* avoids vertical stretching in some grids */
+}
+
+/* In case some cascade overrides max-width, bump specificity a notch */
+.panel.panel--wide { max-width: 720px; }
+
+
 .panel__header {
   margin-bottom: 1rem;
 }
 .panel__title {
   font-size: var(--fs-14);
 }
-.panel__body {
+.panel--narrow {
+  max-width: 420px;
+}
+.panel--wide {
+  max-width: 720px;
+}
+.panel--full {
+  max-width: var(--container-lg);
 }
 
 .header-panel {
@@ -883,4 +930,10 @@ select:focus {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Ensure obvious focus on links too */
+a:focus-visible {
+  outline: var(--border-2) solid var(--accent-color);
+  outline-offset: 2px;
 }

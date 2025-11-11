@@ -105,7 +105,8 @@ export default function PetProfile() {
   if (loading) {
     return (
       <AppLayout headerProps={{ title: 'PET PROFILE' }}>
-        <section className="panel">
+        <section className="panel panel--wide panel--center">
+          {' '}
           <header className="panel__header">
             <h2 className="panel__title">Loading your pet…</h2>
           </header>
@@ -120,7 +121,8 @@ export default function PetProfile() {
   if (error || !pet) {
     return (
       <AppLayout headerProps={{ title: 'PET PROFILE' }}>
-        <section className="panel">
+        <section className="panel panel--wide panel--center">
+          {' '}
           <header className="panel__header">
             <h2 className="panel__title">Not Found</h2>
           </header>
@@ -139,11 +141,11 @@ export default function PetProfile() {
 
   return (
     <AppLayout headerProps={{ title: 'PET PROFILE' }}>
-      <section className="panel">
+      <section className="panel panel--wide panel--center">
+        {' '}
         <header className="panel__header">
           <h1 className="panel__title">{name ? `${name} the ${type}` : 'Pet Profile'}</h1>
         </header>
-
         <div className="panel__body u-stack-lg">
           <div className="u-center">
             <PetSprite

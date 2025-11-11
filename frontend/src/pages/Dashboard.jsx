@@ -108,7 +108,7 @@ export default function Dashboard() {
       {/* Adopt panel */}
       <section className="panel">
         <header className="panel__header">
-          <h2 className="panel__title">Adopt a New Friend</h2>
+          {/* <h2 className="panel__title">Adopt a New Friend</h2> */}
         </header>
         <div className="panel__body">
           <AdoptForm
@@ -128,7 +128,7 @@ export default function Dashboard() {
       </section>
 
       {/* Pets grid panel */}
-      <section className="panel">
+      <section className="panel panel--full">
         <header className="panel__header">
           <h2 className="panel__title">Your Pets</h2>
         </header>
@@ -138,7 +138,7 @@ export default function Dashboard() {
           ) : (
             <div className="grid grid-3">
               {pets.map((p) => (
-                <article key={p.id} className="panel">
+                <article key={p.id} className="panel panel--full">
                   <div className="panel__body stack-md">
                     <Link to={`/pets/${p.id}`} title={`${p.name} the ${p.type}`}>
                       <PetSprite
