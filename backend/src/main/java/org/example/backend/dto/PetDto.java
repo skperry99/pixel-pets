@@ -6,60 +6,56 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Pet data transfer object (API shape).
- * - Keeps API backward-compatible: accepts "hunger" but returns "fullness".
- * - Allows nullable stats so the server can apply sensible defaults.
+ * Pet data transfer object (API shape). - Keeps API backward-compatible: accepts "hunger" but
+ * returns "fullness". - Allows nullable stats so the server can apply sensible defaults.
  */
 @Getter
 @Setter
 public class PetDto {
 
-    // ===== Identity =====
-    private Long id;
+  // ===== Identity =====
+  private Long id;
 
-    // ===== Basic info =====
-    private String name;
-    private String type;
+  // ===== Basic info =====
+  private String name;
+  private String type;
 
-    /**
-     * Pet level; nullable so server can default (e.g., to 1) when omitted.
-     */
-    private Integer level;
+  /** Pet level; nullable so server can default (e.g., to 1) when omitted. */
+  private Integer level;
 
-    // ===== Stats (0–100) =====
-    /**
-     * Output as "fullness"; still accepts legacy "hunger" on input.
-     */
-    @JsonProperty("fullness")
-    @JsonAlias("hunger")
-    private Integer fullness;
+  // ===== Stats (0–100) =====
+  /** Output as "fullness"; still accepts legacy "hunger" on input. */
+  @JsonProperty("fullness")
+  @JsonAlias("hunger")
+  private Integer fullness;
 
-    private Integer happiness;
-    private Integer energy;
+  private Integer happiness;
+  private Integer energy;
 
-    // ===== Ownership =====
-    private Long userId;
+  // ===== Ownership =====
+  private Long userId;
 
-    // ===== Constructors =====
-    public PetDto() { /* for Jackson */ }
+  // ===== Constructors =====
+  public PetDto() {
+    /* for Jackson */
+  }
 
-    public PetDto(
-            Long id,
-            String name,
-            String type,
-            Integer level,
-            Integer fullness,
-            Integer happiness,
-            Integer energy,
-            Long userId
-    ) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.level = level;
-        this.fullness = fullness;
-        this.happiness = happiness;
-        this.energy = energy;
-        this.userId = userId;
-    }
+  public PetDto(
+      Long id,
+      String name,
+      String type,
+      Integer level,
+      Integer fullness,
+      Integer happiness,
+      Integer energy,
+      Long userId) {
+    this.id = id;
+    this.name = name;
+    this.type = type;
+    this.level = level;
+    this.fullness = fullness;
+    this.happiness = happiness;
+    this.energy = energy;
+    this.userId = userId;
+  }
 }
