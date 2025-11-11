@@ -1,17 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import AppLayout from "../components/AppLayout";
-import { useNotice } from "../hooks/useNotice";
-import { login } from "../api";
-import { getStoredUserId, setStoredUserId } from "../utils/auth";
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AppLayout from '../components/AppLayout';
+import { useNotice } from '../hooks/useNotice';
+import { login } from '../api';
+import { getStoredUserId, setStoredUserId } from '../utils/auth';
 
 export default function Login() {
   const navigate = useNavigate();
   const { notify } = useNotice();
 
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState('');
 
   const usernameRef = useRef(null);
   const errorRef = useRef(null);
@@ -19,7 +19,7 @@ export default function Login() {
   // If already logged in, bounce to dashboard
   useEffect(() => {
     const id = getStoredUserId();
-    if (id != null) navigate("/dashboard");
+    if (id != null) navigate('/dashboard');
   }, [navigate]);
 
   function setAndFocusError(msg) {
@@ -32,37 +32,40 @@ export default function Login() {
     e.preventDefault();
     if (loading) return;
 
-    setErrorMsg("");
+    setErrorMsg('');
 
     const username = form.username.trim();
     const password = form.password;
 
     if (!username || !password) {
-      const msg = "Username and password are required.";
+      const msg = 'Username and password are required.';
       setAndFocusError(msg);
       notify.error(msg);
       if (!username) usernameRef.current?.focus();
       return;
     }
 
-    try {
-      setLoading(true);
-      const userId = await login(username, password); // backend returns a number
-      setStoredUserId(userId);
-      notify.success("Welcome back! 🐾");
-      navigate("/dashboard");
-    } catch (err) {
-      const msg = err?.message || "Login failed.";
+    setLoading(true);
+    const res = await login(username, password);
+    if (!res.ok) {
+      const msg = res.error || 'Login failed.';
       setAndFocusError(msg);
       notify.error(msg);
       usernameRef.current?.focus();
-    } finally {
       setLoading(false);
+      return;
     }
+
+    // API returns numeric userId as JSON
+    const userId = res.data;
+    setStoredUserId(userId);
+    notify.success('Welcome back! 🐾');
+    navigate('/dashboard');
+    setLoading(false);
   }
 
   return (
-    <AppLayout headerProps={{ title: "LOGIN" }}>
+    <AppLayout headerProps={{ title: 'LOGIN' }}>
       <section className="panel">
         <header className="panel__header">
           <h1 className="panel__title">Log In</h1>
@@ -115,6 +118,7 @@ export default function Login() {
               <div
                 className="form-error"
                 role="alert"
+                aria-live="assertive"
                 tabIndex={-1}
                 ref={errorRef}
               >
@@ -123,18 +127,18 @@ export default function Login() {
             )}
 
             {/* Actions */}
-            <div className="form__row" style={{ textAlign: "center" }}>
+            <div className="form__row" style={{ textAlign: 'center' }}>
               <button className="btn" type="submit" disabled={loading}>
-                {loading ? "Signing in…" : "Log In"}
+                {loading ? 'Signing in…' : 'Log In'}
               </button>
             </div>
 
-            <div className="form__row" style={{ textAlign: "center" }}>
+            <div className="form__row" style={{ textAlign: 'center' }}>
               <p>New to Pixel Pets?</p>
               <button
                 className="btn btn--secondary"
                 type="button"
-                onClick={() => navigate("/register")}
+                onClick={() => navigate('/register')}
                 disabled={loading}
               >
                 Create Account

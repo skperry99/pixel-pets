@@ -1,17 +1,17 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { registerUser } from "../api";
-import { setStoredUserId } from "../utils/auth";
-import AppLayout from "../components/AppLayout";
-import { useNotice } from "../hooks/useNotice";
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../api';
+import { setStoredUserId } from '../utils/auth';
+import AppLayout from '../components/AppLayout';
+import { useNotice } from '../hooks/useNotice';
 
 export default function Register() {
   const navigate = useNavigate();
   const { notify } = useNotice();
 
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState('');
 
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
@@ -30,14 +30,14 @@ export default function Register() {
     e.preventDefault();
     if (loading) return;
 
-    setErrorMsg("");
+    setErrorMsg('');
     const username = form.username.trim();
     const email = form.email.trim();
     const password = form.password;
 
     // client-side validation (mirror of backend rules, loosely)
     if (!username || !email || !password) {
-      const msg = "All fields are required.";
+      const msg = 'All fields are required.';
       setAndFocusError(msg);
       notify.error(msg);
       if (!username) return usernameRef.current?.focus();
@@ -45,42 +45,45 @@ export default function Register() {
       return;
     }
     if (username.length < 3 || username.length > 30) {
-      const msg = "Username must be 3–30 characters.";
+      const msg = 'Username must be 3–30 characters.';
       setAndFocusError(msg);
       notify.error(msg);
       return usernameRef.current?.focus();
     }
     if (!isValidEmail(email)) {
-      const msg = "Please enter a valid email address.";
+      const msg = 'Please enter a valid email address.';
       setAndFocusError(msg);
       notify.error(msg);
       return emailRef.current?.focus();
     }
     if (password.length < 8) {
-      const msg = "Password must be at least 8 characters.";
+      const msg = 'Password must be at least 8 characters.';
       setAndFocusError(msg);
       notify.error(msg);
       return;
     }
 
-    try {
-      setLoading(true);
-      const newUserId = await registerUser(username, email, password);
-      setStoredUserId(newUserId);
-      notify.success("Account created! Welcome to Pixel Pets.");
-      navigate("/dashboard");
-    } catch (err) {
-      const msg = err?.message || "Registration failed.";
+    setLoading(true);
+    const res = await registerUser(username, email, password);
+    if (!res.ok) {
+      const msg = res.error || 'Registration failed.';
       setAndFocusError(msg);
       notify.error(msg);
       usernameRef.current?.focus();
-    } finally {
       setLoading(false);
+      return;
     }
+
+    // API returns the new user id as JSON (number)
+    const newUserId = res.data;
+    setStoredUserId(newUserId);
+    notify.success('Account created! Welcome to Pixel Pets.');
+    navigate('/dashboard');
+    setLoading(false);
   }
 
   return (
-    <AppLayout headerProps={{ title: "REGISTER" }}>
+    <AppLayout headerProps={{ title: 'REGISTER' }}>
       <section className="panel">
         <header className="panel__header">
           <h1 className="panel__title">Create Account</h1>
@@ -105,8 +108,7 @@ export default function Register() {
                 required
                 aria-required="true"
                 aria-invalid={
-                  !!errorMsg &&
-                  (!form.username.trim() || form.username.trim().length < 3)
+                  !!errorMsg && (!form.username.trim() || form.username.trim().length < 3)
                 }
               />
             </div>
@@ -157,6 +159,7 @@ export default function Register() {
               <div
                 className="form-error"
                 role="alert"
+                aria-live="assertive"
                 tabIndex={-1}
                 ref={errorRef}
               >
@@ -167,7 +170,7 @@ export default function Register() {
             {/* Actions */}
             <div className="form__row center">
               <button className="btn" type="submit" disabled={loading}>
-                {loading ? "Registering..." : "Register"}
+                {loading ? 'Registering...' : 'Register'}
               </button>
             </div>
 
@@ -176,7 +179,7 @@ export default function Register() {
               <button
                 className="btn btn--secondary"
                 type="button"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate('/login')}
                 disabled={loading}
               >
                 Log In
