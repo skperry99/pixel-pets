@@ -1,4 +1,3 @@
-// frontend/src/components/ErrorBoundary.jsx
 import React from 'react';
 import AppLayout from './AppLayout';
 
@@ -16,11 +15,6 @@ export default class ErrorBoundary extends React.Component {
     // Mark as used to satisfy eslint/@typescript-eslint no-unused-vars
     void error;
     void info;
-
-    // Optional dev logging:
-    // if (import.meta.env.DEV) {
-    //   console.error("ErrorBoundary caught:", error, info);
-    // }
   }
 
   render() {
