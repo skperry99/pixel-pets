@@ -21,11 +21,15 @@ public class Pet {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-    public void setId(Long id) { this.id = id; } // if not present
-    public void setId(long id) { this.id = Long.valueOf(id); }
+  public void setId(Long id) {
+    this.id = id;
+  } // if not present
 
+  public void setId(long id) {
+    this.id = Long.valueOf(id);
+  }
 
-    // ========= Basic info =========
+  // ========= Basic info =========
   @Column(nullable = false)
   private String name;
 
