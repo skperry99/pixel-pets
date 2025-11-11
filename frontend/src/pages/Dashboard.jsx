@@ -86,7 +86,7 @@ export default function Dashboard() {
   return (
     <AppLayout headerProps={{ title: 'DASHBOARD' }}>
       {/* Welcome / Profile panel */}
-      <section className="panel">
+      <section className="panel panel--full">
         <header className="panel__header">
           <h1 className="panel__title">
             {userProfile ? `Welcome, ${userProfile.username}!` : 'Your Pet Dashboard'}
@@ -106,7 +106,7 @@ export default function Dashboard() {
       </section>
 
       {/* Adopt panel */}
-      <section className="panel">
+      <section className="panel panel--full">
         <header className="panel__header">
           {/* <h2 className="panel__title">Adopt a New Friend</h2> */}
         </header>

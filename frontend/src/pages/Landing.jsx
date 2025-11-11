@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 import PetSprite from "../components/PetSprite";
 import StatusBarPixel from "../components/StatusBarPixel";
@@ -15,7 +15,7 @@ export default function Landing() {
     >
       <main className="container stack-lg">
         {/* Hero */}
-        <section className="panel">
+        <section className="panel panel--wide">
           <div className="panel__body stack-md center">
             <PetSprite type="Dragon" size={240} title="Pixel Pet Preview" />
 
@@ -42,7 +42,7 @@ export default function Landing() {
         </section>
 
         {/* Feature tease */}
-        <section className="panel">
+        <section className="panel panel--wide">
           <header className="panel__header">
             <h2 className="panel__title">Features</h2>
           </header>
