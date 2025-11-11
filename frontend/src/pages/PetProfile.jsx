@@ -1,257 +1,202 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import AppLayout from "../components/AppLayout";
-import PetSprite from "../components/PetSprite";
-import StatusBarPixel from "../components/StatusBarPixel";
-import Notice from "../components/Notice";
-import ConfirmAction from "../components/ConfirmAction";
-import { useNotice } from "../hooks/useNotice";
-import { getPetById, feedPet, playWithPet, restPet, deletePet } from "../api";
-import { getStoredUserId } from "../utils/auth";
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getPetById, feedPet, playWithPet, restPet, deletePet } from '../api';
+import AppLayout from '../components/AppLayout';
+import PetSprite from '../components/PetSprite';
+import { useNotice } from '../hooks/useNotice';
+import { getStoredUserId } from '../utils/auth';
+import { burstConfetti } from '../utils/confetti';
 
 export default function PetProfile() {
-  const navigate = useNavigate();
   const { petId } = useParams();
+  const navigate = useNavigate();
   const { notify } = useNotice();
 
   const userId = getStoredUserId();
+
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [inlineError, setInlineError] = useState("");
-  const [busy, setBusy] = useState(null); // "feed" | "play" | "rest" | "delete" | null
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (userId == null) {
-      navigate("/login");
+    if (!userId) {
+      navigate('/login');
       return;
     }
-
-    let isActive = true;
+    let alive = true;
     (async () => {
-      setLoading(true);
-      setInlineError("");
-      try {
-        const data = await getPetById(petId);
-        if (!isActive) return;
-        setPet(data);
-        notify.info(`Loaded ${data?.name ?? "pet"}.`, 1500);
-      } catch (err) {
-        if (!isActive) return;
-        const msg = err?.message ?? "Unable to load pet.";
-        setInlineError(msg);
+      const res = await getPetById(petId);
+      if (!alive) return;
+      if (!res.ok) {
+        const msg = res.error || 'Failed to load pet.';
+        setError(msg);
         notify.error(msg);
-      } finally {
-        if (isActive) setLoading(false);
+        setLoading(false);
+        return;
       }
+      setPet(res.data || null);
+      setLoading(false);
     })();
-
     return () => {
-      isActive = false;
+      alive = false;
     };
   }, [petId, userId, navigate, notify]);
 
-  const actionsDisabled = useMemo(
-    () => loading || !pet || !!busy,
-    [loading, pet, busy]
-  );
+  // Helpers
+  const updatePetState = (updated) => {
+    setPet((prev) => ({ ...(prev || {}), ...(updated || {}) }));
+  };
 
-  async function runAction(label, fn) {
-    if (!pet || busy) return;
-    setBusy(label);
-    try {
-      const updated = await fn(pet.id);
-      setPet(updated);
-      const verb =
-        label === "feed" ? "Fed" : label === "play" ? "Played with" : "Rested";
-      notify.success(`${verb} ${updated.name}.`, 1500);
-    } catch (err) {
-      notify.error(err?.message ?? `Failed to ${label} pet.`);
-    } finally {
-      setBusy(null);
+  async function handleFeed() {
+    if (busy) return;
+    setBusy(true);
+    const res = await feedPet(petId);
+    if (!res.ok) {
+      notify.error(res.error || 'Feeding failed.');
+    } else {
+      notify.success('Nom nom! 🍖');
+      updatePetState(res.data);
     }
+    setBusy(false);
   }
 
-  async function confirmDeleteAndNavigate() {
-    if (!pet) return;
-    setBusy("delete");
-    try {
-      await deletePet(pet.id);
-      notify.success(`${pet.name} was deleted.`);
-      navigate("/dashboard");
-    } catch (err) {
-      notify.error(err?.message ?? "Failed to delete pet.");
-    } finally {
-      setBusy(null);
-      setConfirmDelete(false);
+  async function handlePlay() {
+    if (busy) return;
+    setBusy(true);
+    const res = await playWithPet(petId);
+    if (!res.ok) {
+      notify.error(res.error || 'Playtime failed.');
+    } else {
+      notify.success('So much fun! 🎮');
+      burstConfetti();
+      updatePetState(res.data);
     }
+    setBusy(false);
+  }
+
+  async function handleRest() {
+    if (busy) return;
+    setBusy(true);
+    const res = await restPet(petId);
+    if (!res.ok) {
+      notify.error(res.error || 'Rest failed.');
+    } else {
+      notify.success('Zzz… 😴');
+      updatePetState(res.data);
+    }
+    setBusy(false);
+  }
+
+  async function handleDelete() {
+    if (busy) return;
+    if (!confirm(`Release ${pet?.name ?? 'this pet'} back into the wild?`)) return;
+    setBusy(true);
+    const res = await deletePet(petId);
+    if (!res.ok) {
+      notify.error(res.error || 'Could not delete pet.');
+      setBusy(false);
+      return;
+    }
+    notify.success('Pet released. 🐾');
+    navigate('/dashboard');
   }
 
   if (loading) {
     return (
-      <AppLayout headerProps={{ title: "PET PROFILE" }}>
-        <main className="container">
-          <section className="panel">
-            <header className="panel__header">
-              <h2 className="panel__title">Loading pet…</h2>
-            </header>
-            <div className="panel__body">
-              <p>Please wait 🐾</p>
-            </div>
-          </section>
-        </main>
-      </AppLayout>
-    );
-  }
-
-  if (!pet) {
-    return (
-      <AppLayout headerProps={{ title: "PET PROFILE" }}>
-        <main className="container">
-          <section className="panel stack-md">
-            <header className="panel__header">
-              <h2 className="panel__title">Pet not found</h2>
-            </header>
-            <div className="panel__body stack-md">
-              <Link to="/dashboard" className="btn btn--ghost">
-                ← Back to Dashboard
-              </Link>
-              {inlineError && (
-                <Notice type="error" className="pixel-toast">
-                  {inlineError}
-                </Notice>
-              )}
-              {!inlineError && <p>We couldn’t find that pet.</p>}
-            </div>
-          </section>
-        </main>
-      </AppLayout>
-    );
-  }
-
-  return (
-    <AppLayout headerProps={{ title: "PET PROFILE" }}>
-      <main className="container stack-lg">
-        {/* Header actions */}
+      <AppLayout headerProps={{ title: 'PET PROFILE' }}>
         <section className="panel">
           <header className="panel__header">
-            <h1 className="panel__title">{pet.name}</h1>
+            <h2 className="panel__title">Loading your pet…</h2>
           </header>
           <div className="panel__body">
-            <div className="actions-row">
-              <Link to="/dashboard" className="btn btn--ghost">
-                ← Back to Dashboard
-              </Link>
-            </div>
+            <p>Please wait 🐾</p>
           </div>
         </section>
+      </AppLayout>
+    );
+  }
 
-        {inlineError && (
-          <section className="panel">
-            <div className="panel__body">
-              <Notice type="error" className="pixel-toast">
-                {inlineError}
-              </Notice>
-            </div>
-          </section>
-        )}
-
-        {/* Profile content */}
+  if (error || !pet) {
+    return (
+      <AppLayout headerProps={{ title: 'PET PROFILE' }}>
         <section className="panel">
-          <div className="panel__body">
-            <div className="profile-grid">
-              <div className="center">
-                <PetSprite
-                  type={pet.type}
-                  size={256}
-                  title={`${pet.name} the ${pet.type}`}
-                  className="pet-sprite"
-                />
-              </div>
-
-              <div className="stack-md">
-                <div className="muted">
-                  {pet.name} • Level {pet.level ?? 1}
-                </div>
-
-                <div className="stack-sm">
-                  <StatusBarPixel
-                    label="Fullness"
-                    value={pet.fullness}
-                    kind="fullness"
-                  />
-                  <StatusBarPixel
-                    label="Happiness"
-                    value={pet.happiness}
-                    kind="happiness"
-                  />
-                  <StatusBarPixel
-                    label="Energy"
-                    value={pet.energy}
-                    kind="energy"
-                  />
-                </div>
-
-                {/* Actions */}
-                <div className="actions-row">
-                  <button
-                    className="btn"
-                    disabled={actionsDisabled}
-                    onClick={() => runAction("feed", feedPet)}
-                  >
-                    {busy === "feed" ? "Feeding…" : "Feed"}
-                  </button>
-                  <button
-                    className="btn"
-                    disabled={actionsDisabled}
-                    onClick={() => runAction("play", playWithPet)}
-                  >
-                    {busy === "play" ? "Playing…" : "Play"}
-                  </button>
-                  <button
-                    className="btn"
-                    disabled={actionsDisabled}
-                    onClick={() => runAction("rest", restPet)}
-                  >
-                    {busy === "rest" ? "Resting…" : "Rest"}
-                  </button>
-
-                  {/* Delete flow */}
-                  {confirmDelete ? (
-                    <ConfirmAction
-                      confirmPrompt={`Are you sure you want to delete ${pet.name}? This action cannot be undone.`}
-                      confirmLabel="Yes, delete"
-                      cancelLabel="No, keep"
-                      busy={busy === "delete"}
-                      onConfirm={confirmDeleteAndNavigate}
-                      onCancel={() => setConfirmDelete(false)}
-                    />
-                  ) : (
-                    <button
-                      className="btn btn--danger"
-                      disabled={actionsDisabled}
-                      onClick={() => setConfirmDelete(true)}
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-
-                {/* Meta */}
-                <div className="meta">
-                  <div>
-                    Adopted:{" "}
-                    {pet.createdAt
-                      ? new Date(pet.createdAt).toLocaleDateString()
-                      : "—"}
-                  </div>
-                  <div>Pet ID: {pet.id}</div>
-                </div>
-              </div>
-            </div>
+          <header className="panel__header">
+            <h2 className="panel__title">Not Found</h2>
+          </header>
+          <div className="panel__body u-stack-md">
+            <p>{error || 'We couldn’t find that pet.'}</p>
+            <Link to="/dashboard">
+              <button className="btn">← Back to Dashboard</button>
+            </Link>
           </div>
         </section>
-      </main>
+      </AppLayout>
+    );
+  }
+
+  const { name, type, fullness, happiness, energy } = pet;
+
+  return (
+    <AppLayout headerProps={{ title: 'PET PROFILE' }}>
+      <section className="panel">
+        <header className="panel__header">
+          <h1 className="panel__title">{name ? `${name} the ${type}` : 'Pet Profile'}</h1>
+        </header>
+
+        <div className="panel__body u-stack-lg">
+          <div className="u-center">
+            <PetSprite
+              type={type}
+              className="pet-sprite pet-sprite--lg"
+              alt={`${name} the ${type}`}
+            />
+          </div>
+
+          <div className="u-stack-md">
+            {/* Stat bars only if numbers are present */}
+            {typeof fullness === 'number' && (
+              <div className="status-bar status-bar--fullness" aria-label="Fullness">
+                <div className="status-fill" style={{ width: `${fullness}%` }} />
+                <div className="status-label">{Math.round(fullness)}%</div>
+              </div>
+            )}
+            {typeof happiness === 'number' && (
+              <div className="status-bar status-bar--happiness" aria-label="Happiness">
+                <div className="status-fill" style={{ width: `${happiness}%` }} />
+                <div className="status-label">{Math.round(happiness)}%</div>
+              </div>
+            )}
+            {typeof energy === 'number' && (
+              <div className="status-bar status-bar--energy" aria-label="Energy">
+                <div className="status-fill" style={{ width: `${energy}%` }} />
+                <div className="status-label">{Math.round(energy)}%</div>
+              </div>
+            )}
+          </div>
+
+          <div className="u-actions-row">
+            <button className="btn" onClick={handleFeed} disabled={busy}>
+              Feed 🍖
+            </button>
+            <button className="btn btn--secondary" onClick={handlePlay} disabled={busy}>
+              Play 🎮
+            </button>
+            <button className="btn btn--ghost" onClick={handleRest} disabled={busy}>
+              Rest 😴
+            </button>
+            <button className="btn btn--danger" onClick={handleDelete} disabled={busy}>
+              Delete ❌
+            </button>
+          </div>
+
+          <div className="u-text-center">
+            <Link to="/dashboard">
+              <button className="btn btn--ghost">← Back to Dashboard</button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </AppLayout>
   );
 }
