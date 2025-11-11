@@ -1,22 +1,21 @@
-import NavBar from "./NavBar";
-import Footer from "./Footer";
+import NavBar from './NavBar';
+import Footer from './Footer';
 
 /**
  * App shell:
- * - Renders semantic regions (nav, header, main, footer)
- * - Centers page content inside .container
+ * - Renders semantic regions (header, nav (inside header), main, footer)
  */
 export default function AppLayout({ headerProps = {}, children }) {
   return (
     <>
-      <nav aria-label="Primary">
-        <NavBar
-          headerTitle={headerProps.title}
-          headerSubtitle={headerProps.subtitle}
-        />
-      </nav>
+    <header>
+      <NavBar
+      headerTitle={headerProps.title}
+      headerSubtitle={headerProps.subtitle}
+      />
+    </header>
 
-      <main className="container" role="main">
+      <main className="container">
         {children}
       </main>
 
