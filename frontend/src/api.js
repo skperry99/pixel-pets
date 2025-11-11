@@ -1,96 +1,89 @@
-const BASE = import.meta.env.VITE_API_BASE;
+// src/api.js
+const BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080';
+
+/**
+ * Unified request helper.
+ * Always resolves to: { ok: boolean, status: number, data?: any, error?: string }
+ */
+async function request(path, options = {}) {
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      ...options,
+    });
+    const isJson = res.headers.get('content-type')?.includes('application/json');
+    const data = isJson ? await res.json().catch(() => null) : null;
+
+    if (!res.ok) {
+      const message = (data && (data.message || data.error)) || res.statusText || 'Request failed';
+      return { ok: false, status: res.status, error: message, data };
+    }
+    return { ok: true, status: res.status, data };
+  } catch (err) {
+    return { ok: false, status: 0, error: err?.message || 'Network error' };
+  }
+}
 
 // ---------- Auth ----------
 export async function login(username, password) {
-  const res = await fetch(`${BASE}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  return request(`/api/auth/login`, {
+    method: 'POST',
     body: JSON.stringify({ username, password }),
   });
-  if (!res.ok) {
-    throw new Error(`Login failed (${res.status})`);
-  }
-  const id = await res.json();
-  return id;
 }
 
 export async function registerUser(username, email, password) {
-  const res = await fetch(`${BASE}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  return request(`/api/auth/register`, {
+    method: 'POST',
     body: JSON.stringify({ username, email, password }),
   });
-  if (!res.ok) {
-    throw new Error(`Registration failed (${res.status})`);
-  }
-  const id = await res.json();
-  return id;
 }
 
 // ---------- Users ----------
 export async function getUserProfile(userId) {
-  const res = await fetch(`${BASE}/api/users/${userId}`);
-  if (!res.ok) throw new Error(`Failed to load user profile (${res.status})`);
-  return res.json();
+  return request(`/api/users/${userId}`);
 }
 
 export async function updateUser(id, data) {
-  const res = await fetch(`${BASE}/api/users/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
+  return request(`/api/users/${id}`, {
+    method: 'PUT',
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error(`Failed to update user (${res.status})`);
-  return res.json();
 }
 
 export async function deleteUserApi(userId) {
-  const res = await fetch(`${BASE}/api/users/${userId}`, { method: "DELETE" });
-  if (!res.ok) throw new Error(`Failed to delete user (${res.status})`);
+  return request(`/api/users/${userId}`, { method: 'DELETE' });
 }
 
 // ---------- Pets ----------
+// NOTE: keeping your exact endpoints
 export async function getPetsByUser(userId) {
-  const res = await fetch(`${BASE}/api/pets/user/${userId}`);
-  if (!res.ok) throw new Error(`Failed to fetch pets (${res.status})`);
-  return res.json();
+  return request(`/api/pets/user/${userId}`);
 }
 
 export async function getPetById(petId) {
-  const res = await fetch(`${BASE}/api/pets/${petId}`);
-  if (!res.ok) throw new Error(`Failed to load pet (${res.status})`);
-  return res.json();
+  return request(`/api/pets/${petId}`);
 }
 
 export async function createPet(petData) {
-  const res = await fetch(`${BASE}/api/pets/adopt`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  return request(`/api/pets/adopt`, {
+    method: 'POST',
     body: JSON.stringify(petData),
   });
-  if (!res.ok) throw new Error(`Failed to create pet (${res.status})`);
-  return res.json();
 }
 
 export async function feedPet(petId) {
-  const res = await fetch(`${BASE}/api/pets/${petId}/feed`, { method: "POST" });
-  if (!res.ok) throw new Error(`Failed to feed pet (${res.status})`);
-  return res.json();
+  return request(`/api/pets/${petId}/feed`, { method: 'POST' });
 }
 
 export async function playWithPet(petId) {
-  const res = await fetch(`${BASE}/api/pets/${petId}/play`, { method: "POST" });
-  if (!res.ok) throw new Error(`Failed to play with pet (${res.status})`);
-  return res.json();
+  return request(`/api/pets/${petId}/play`, { method: 'POST' });
 }
 
 export async function restPet(petId) {
-  const res = await fetch(`${BASE}/api/pets/${petId}/rest`, { method: "POST" });
-  if (!res.ok) throw new Error(`Failed to rest pet (${res.status})`);
-  return res.json();
+  return request(`/api/pets/${petId}/rest`, { method: 'POST' });
 }
 
 export async function deletePet(petId) {
-  const res = await fetch(`${BASE}/api/pets/${petId}`, { method: "DELETE" });
-  if (!res.ok) throw new Error(`Failed to delete pet (${res.status})`);
+  return request(`/api/pets/${petId}`, { method: 'DELETE' });
 }

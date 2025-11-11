@@ -435,11 +435,28 @@ select:focus {
   border-color: var(--accent-color);
 }
 
+/* --- Form error (inline alert) --- */
 .form-error {
-  color: var(--danger-color);
-  text-shadow: 1px 1px #000;
-  margin: 0.5rem 0;
+  display: inline-block;
+  margin: var(--space-2) 0;
+  padding: var(--space-2) var(--space-3);
+  color: #fff;
+  background: var(--danger-color);
+  border: var(--border-3) solid var(--border-color);
+  box-shadow: var(--shadow-pixel-lg);
+  text-align: left;
   font-size: var(--fs-10);
+  text-shadow: 1px 1px #000;
+  border-radius: var(--radius);
+}
+
+/* Optional: a full-width modifier for multi-line errors */
+.form-error--block {
+  display: block;
+  width: 100%;
+  max-width: var(--container-sm);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ---------- 8) Status Bars ---------- */
