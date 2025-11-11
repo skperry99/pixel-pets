@@ -334,7 +334,6 @@ h3 {
 }
 
 .panel {
-  /* merged “card frame” styles so it works in global CSS (no CSS Modules) */
   background-color: var(--panel-color);
   border: var(--border-3) solid var(--border-color);
   border-radius: var(--radius);
@@ -345,7 +344,7 @@ h3 {
   margin: 1rem auto;
   width: 90%;
   max-width: 500px;
-  text-align: left;
+  text-align: center;
 }
 
 /* Ensure wide panels center even inside grid/flex parents */
@@ -763,6 +762,37 @@ select:focus {
 .pulse {
   animation: pulse 1s infinite;
 }
+
+/* --- Pet animations --- */
+@keyframes pet-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes pet-hop {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+  60% { transform: translateY(0); }
+  80% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+.pet-anim--idle {
+  animation: pet-bob 2.2s ease-in-out infinite;
+}
+.pet-anim--hover {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.pet-anim--hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 8px 0 #000;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pet-anim--idle { animation: none !important; }
+  .pet-anim--hover { transition: none !important; }
+}
+
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
