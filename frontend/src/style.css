@@ -27,7 +27,7 @@
   --container-lg: 1100px;
 
   /* Typography */
-  --font: "Press Start 2P", cursive;
+  --font: 'Press Start 2P', cursive;
   --fs-10: 10px;
   --fs-12: 12px;
   --fs-14: 14px;
@@ -61,7 +61,7 @@
 
 /* Alternate palettes */
 .theme-cola,
-[data-theme="cola"] {
+[data-theme='cola'] {
   --bg-color: #0e1324;
   --panel-color: #222a4a;
   --accent-color: #ff3b6e;
@@ -74,7 +74,7 @@
 }
 
 .theme-gb,
-[data-theme="gb"] {
+[data-theme='gb'] {
   --bg-color: #1b2b1b;
   --panel-color: #283c28;
   --accent-color: #a0ff66;
@@ -87,7 +87,7 @@
 }
 
 .theme-sunset,
-[data-theme="sunset"] {
+[data-theme='sunset'] {
   --bg-color: #231319;
   --panel-color: #3a2330;
   --accent-color: #ffb347;
@@ -100,7 +100,7 @@
 }
 
 .theme-grape,
-[data-theme="grape"] {
+[data-theme='grape'] {
   --bg-color: #140c22;
   --panel-color: #261a3d;
   --accent-color: #b896ff;
@@ -136,17 +136,14 @@ body {
 
 /* Animated pixel grid on a fixed layer so content never overrides it */
 body::before {
-  content: "";
+  content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background-color: var(--bg-color);
-  background-image: repeating-linear-gradient(
-      0deg,
-      #0001 0 1px,
-      transparent 1px 20px
-    ),
+  background-image:
+    repeating-linear-gradient(0deg, #0001 0 1px, transparent 1px 20px),
     repeating-linear-gradient(90deg, #0001 0 1px, transparent 1px 20px);
   animation: scrollGrid 10s linear infinite;
 }
@@ -362,7 +359,9 @@ button,
   box-shadow: var(--shadow-pixel-sm);
   font-family: var(--font);
   font-weight: 400;
-  transition: transform 0.1s ease, box-shadow 0.1s ease,
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
     background-color 0.1s ease;
 }
 button:hover,
@@ -675,10 +674,14 @@ select:focus {
 /* ---------- 14) Animations ---------- */
 @keyframes scrollGrid {
   from {
-    background-position: 0 0, 0 0;
+    background-position:
+      0 0,
+      0 0;
   }
   to {
-    background-position: 20px 20px, 20px 20px;
+    background-position:
+      20px 20px,
+      20px 20px;
   }
 }
 
@@ -768,4 +771,116 @@ select:focus {
   .notice__row {
     gap: var(--space-2);
   }
+}
+
+/* ---------- 404 Not Found ---------- */
+.notfound {
+  text-align: center;
+}
+
+.notfound__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notfound__code {
+  display: inline-block;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-3) solid var(--border-color);
+  background: #000;
+  color: var(--accent-bright);
+  text-shadow: 2px 2px #000;
+  box-shadow: var(--shadow-pixel-lg);
+  font-size: 28px;
+  letter-spacing: 2px;
+  margin-bottom: var(--space-3);
+  animation: pulse 1.2s infinite;
+}
+
+.notfound__lead {
+  color: var(--secondary-color);
+  text-shadow: 1px 1px #000;
+}
+
+.notfound__hint {
+  color: var(--accent-bright);
+  font-size: var(--fs-10);
+  text-shadow: 1px 1px #000;
+}
+
+/* Pixel ghost mascot */
+.notfound__ghost {
+  --g-size: 120px;
+  width: var(--g-size);
+  height: calc(var(--g-size) * 0.85);
+  background: var(--panel-color);
+  border: var(--border-3) solid var(--border-color);
+  box-shadow: var(--shadow-pixel-lg);
+  margin: var(--space-4) auto;
+  position: relative;
+  image-rendering: pixelated;
+  animation: floaty 2s ease-in-out infinite;
+}
+
+.notfound__ghost .eye {
+  position: absolute;
+  top: 36%;
+  width: 14px;
+  height: 14px;
+  background: #000;
+  border: var(--border-2) solid var(--border-color);
+  box-shadow: 1px 1px 0 #000 inset;
+}
+.notfound__ghost .eye:nth-child(1) {
+  left: 32%;
+}
+.notfound__ghost .eye:nth-child(2) {
+  right: 32%;
+}
+
+.notfound__ghost .frill {
+  position: absolute;
+  bottom: -4px;
+  width: 24px;
+  height: 12px;
+  background: var(--panel-color);
+  border: var(--border-2) solid var(--border-color);
+  box-shadow: var(--shadow-pixel-sm);
+}
+.notfound__ghost .frill-1 {
+  left: 6px;
+}
+.notfound__ghost .frill-2 {
+  left: 36px;
+}
+.notfound__ghost .frill-3 {
+  right: 36px;
+}
+.notfound__ghost .frill-4 {
+  right: 6px;
+}
+
+/* Gentle bobbing motion */
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Screen-reader helper */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
