@@ -5,7 +5,7 @@ export default function Header({
 }) {
   return (
     <section className="panel header-panel">
-      <div className="panel__body stack-sm">
+      <div className="panel__body u-stack-sm">
         <h1 className="header-title pulse">🐾 {title}</h1>
         {subtitle && <p className="header-subtitle">{subtitle}</p>}
         {/* Optional slot for actions/filters */}

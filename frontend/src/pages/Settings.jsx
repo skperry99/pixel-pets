@@ -320,7 +320,7 @@ export default function Settings() {
               </button>
             </div>
           ) : (
-            <div className="stack-sm">
+            <div className="u-stack-sm">
               <p>
                 Type <strong>{requiredPhrase}</strong> to confirm.
               </p>

@@ -20,7 +20,7 @@ export default function Landing() {
             <PetSprite type="Dragon" size={240} title="Pixel Pet Preview" />
 
             {/* Decorative demo bars */}
-            <div className="demo-bars stack-sm" aria-hidden="true">
+            <div className="demo-bars u-stack-sm" aria-hidden="true">
               <StatusBarPixel label="Fullness" value={86} kind="fullness" />
               <StatusBarPixel label="Happiness" value={72} kind="happiness" />
               <StatusBarPixel label="Energy" value={63} kind="energy" />

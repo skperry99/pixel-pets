@@ -94,7 +94,7 @@ export default function Dashboard() {
         </header>
         <div className="panel__body stack-md">
           <p>{petCountText}</p>
-          <div className="stack-sm" style={{ display: 'inline-grid' }}>
+          <div className="u-stack-sm" style={{ display: 'inline-grid' }}>
             <button className="btn" onClick={() => navigate('/settings')}>
               Edit Profile
             </button>
@@ -149,7 +149,7 @@ export default function Dashboard() {
                       />
                     </Link>
 
-                    <div className="stack-sm">
+                    <div className="u-stack-sm">
                       <h3>{p.name}</h3>
                       {/* Stat bars: only render if present */}
                       {typeof p.fullness === 'number' && (

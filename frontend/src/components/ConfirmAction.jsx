@@ -42,7 +42,7 @@ export default function ConfirmAction({
       aria-modal="false"
       onKeyDown={onKeyDown}
     >
-      <div className="panel__body stack-sm">
+      <div className="panel__body u-stack-sm">
         <p id={promptId}>{confirmPrompt}</p>
 
         <div className="actions-row">
