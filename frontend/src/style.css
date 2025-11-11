@@ -157,6 +157,14 @@ h3 {
 }
 
 /* ---------- 3) Layout Utilities ---------- */
+/* Center a single section/panel on the page */
+.page-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* leave some room for nav/footer */
+  min-height: calc(100vh - 200px);
+}
 .container {
   width: 90%;
   max-width: var(--container-lg);
@@ -586,13 +594,14 @@ select:focus {
 }
 
 .pet-sprite--hover-bounce {
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
 }
 .pet-sprite--hover-bounce:hover {
   transform: translateY(-3px);
   box-shadow: 8px 8px 0 #000;
 }
-
 
 /* ---------- 10) Notices (Alerts) ---------- */
 .notice {
@@ -765,22 +774,39 @@ select:focus {
 
 /* --- Pet animations --- */
 @keyframes pet-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 @keyframes pet-hop {
-  0% { transform: translateY(0); }
-  30% { transform: translateY(-6px); }
-  60% { transform: translateY(0); }
-  80% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+  60% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .pet-anim--idle {
   animation: pet-bob 2.2s ease-in-out infinite;
 }
 .pet-anim--hover {
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
 .pet-anim--hover:hover {
   transform: translateY(-4px);
@@ -789,10 +815,13 @@ select:focus {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .pet-anim--idle { animation: none !important; }
-  .pet-anim--hover { transition: none !important; }
+  .pet-anim--idle {
+    animation: none !important;
+  }
+  .pet-anim--hover {
+    transition: none !important;
+  }
 }
-
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
