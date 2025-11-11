@@ -34,7 +34,7 @@ export default function PetSprite({
         role="img"
         aria-label={alt}
         title={alt}
-        className={`pet-sprite ${className}`.trim()}
+        className={`pet-sprite pet-anim--idle pet-anim--hover ${className}`.trim()}
         style={{
           width: `${size}px`,
           height: `${size}px`,
@@ -61,7 +61,7 @@ export default function PetSprite({
       decoding="async"
       loading="lazy"
       draggable="false"
-      className={`pet-sprite ${className}`.trim()}
+      className={`pet-sprite pet-anim--idle pet-anim--hover ${className}`.trim()}
       onError={() => setShowEmoji(true)}
     />
   );
