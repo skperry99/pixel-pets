@@ -150,7 +150,7 @@ export default function PetProfile() {
           <div className="u-center">
             <PetSprite
               type={type}
-              className="pet-sprite pet-sprite--lg"
+              className="pet-sprite pet-sprite--lg .pet-sprite--hover-bounce"
               alt={`${name} the ${type}`}
             />
           </div>

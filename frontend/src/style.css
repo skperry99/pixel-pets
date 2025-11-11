@@ -351,14 +351,15 @@ h3 {
 /* Ensure wide panels center even inside grid/flex parents */
 .panel--center {
   margin-left: auto;
-  margin-right: auto;     /* margin-inline:auto works too */
-  justify-self: center;   /* centers inside CSS Grid */
-  align-self: start;      /* avoids vertical stretching in some grids */
+  margin-right: auto; /* margin-inline:auto works too */
+  justify-self: center; /* centers inside CSS Grid */
+  align-self: start; /* avoids vertical stretching in some grids */
 }
 
 /* In case some cascade overrides max-width, bump specificity a notch */
-.panel.panel--wide { max-width: 720px; }
-
+.panel.panel--wide {
+  max-width: 720px;
+}
 
 .panel__header {
   margin-bottom: 1rem;
@@ -584,6 +585,15 @@ select:focus {
   width: 160px;
   height: 160px;
 }
+
+.pet-sprite--hover-bounce {
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.pet-sprite--hover-bounce:hover {
+  transform: translateY(-3px);
+  box-shadow: 8px 8px 0 #000;
+}
+
 
 /* ---------- 10) Notices (Alerts) ---------- */
 .notice {
