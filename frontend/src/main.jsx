@@ -4,7 +4,7 @@ import "./style.css";
 import App from "./App.jsx";
 import { NoticeProvider } from "./components/NoticeProvider";
 
-createRoot(document.getElementById("root")).render(
+createRoot(document.getElementById('root')).render(
   <StrictMode>
     <NoticeProvider>
       <App />
