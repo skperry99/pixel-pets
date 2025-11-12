@@ -60,9 +60,9 @@ export default function AdoptForm({
 
   return (
     <section className={`panel ${className}`}>
-      <header className="panel__header">
+      {/* <header className="panel__header">
         <h2 className="panel__title">Adopt a New Pet</h2>
-      </header>
+      </header> */}
 
       <div className="panel__body">
         <form className="form" onSubmit={handleSubmit} noValidate>

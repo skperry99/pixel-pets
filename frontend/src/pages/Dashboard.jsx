@@ -107,7 +107,7 @@ export default function Dashboard() {
       {/* Adopt panel */}
       <section className="panel panel--full">
         <header className="panel__header">
-          {/* <h2 className="panel__title">Adopt a New Friend</h2> */}
+          <h2 className="panel__title">Adopt a New Friend</h2>
         </header>
         <div className="panel__body">
           <AdoptForm
@@ -137,7 +137,7 @@ export default function Dashboard() {
           ) : (
             <div className="grid grid-3">
               {pets.map((p) => (
-                <article key={p.id} className="panel panel--full">
+                <article key={p.id} className="panel">
                   <div className="panel__body stack-md">
                     <Link to={`/pets/${p.id}`} title={`${p.name} the ${p.type}`}>
                       <PetSprite
@@ -152,24 +152,28 @@ export default function Dashboard() {
                       <h3>{p.name}</h3>
                       {/* Stat bars: only render if present */}
                       {typeof p.fullness === 'number' && (
-                        <div className="status-bar fullness" aria-label="Fullness">
+                        <div className="status-bar status-bar--fullness" aria-label="Fullness">
                           <div className="status-fill" style={{ width: `${p.fullness}%` }} />
                         </div>
                       )}
                       {typeof p.happiness === 'number' && (
-                        <div className="status-bar happiness" aria-label="Happiness">
+                        <div className="status-bar status-bar--happiness" aria-label="Happiness">
                           <div className="status-fill" style={{ width: `${p.happiness}%` }} />
                         </div>
                       )}
                       {typeof p.energy === 'number' && (
-                        <div className="status-bar energy" aria-label="Energy">
+                        <div className="status-bar status-bar--energy" aria-label="Energy">
                           <div className="status-fill" style={{ width: `${p.energy}%` }} />
                         </div>
                       )}
                     </div>
 
-                    <Link to={`/pets/${p.id}`}>
-                      <button className="btn btn--secondary">View Profile</button>
+                    <Link
+                      to={`/pets/${p.id}`}
+                      className="btn btn--secondary"
+                      title={`${p.name} the ${p.type}`}
+                    >
+                      View Profile
                     </Link>
                   </div>
                 </article>

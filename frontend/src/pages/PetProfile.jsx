@@ -129,8 +129,8 @@ export default function PetProfile() {
           </header>
           <div className="panel__body u-stack-md">
             <p>{error || 'We couldn’t find that pet.'}</p>
-            <Link to="/dashboard">
-              <button className="btn">← Back to Dashboard</button>
+            <Link to="/dashboard" className="btn btn--ghost">
+              ← Back to Dashboard
             </Link>
           </div>
         </section>
@@ -152,7 +152,7 @@ export default function PetProfile() {
             <PetSprite
               type={type}
               className="pet-sprite pet-sprite--lg pet-sprite--hover-bounce"
-              alt={`${name} the ${type}`}
+              title={`${name} the ${type}`}
             />
           </div>
 
