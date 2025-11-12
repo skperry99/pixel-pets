@@ -1,4 +1,3 @@
-// frontend/src/components/PetSprite.jsx
 import { useMemo, useState } from 'react';
 
 const SRC_BY_TYPE = {

@@ -8,16 +8,11 @@ import Footer from './Footer';
 export default function AppLayout({ headerProps = {}, children }) {
   return (
     <>
-    <header>
-      <NavBar
-      headerTitle={headerProps.title}
-      headerSubtitle={headerProps.subtitle}
-      />
-    </header>
+      <header>
+        <NavBar headerTitle={headerProps.title} headerSubtitle={headerProps.subtitle} />
+      </header>
 
-      <main className="container">
-        {children}
-      </main>
+      <main className="container">{children}</main>
 
       <footer>
         <Footer />

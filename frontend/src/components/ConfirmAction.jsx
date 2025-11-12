@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 /**
  * Inline confirm UI (can be used inside panels or lists).
@@ -6,18 +6,18 @@ import { useEffect, useRef } from "react";
  * - Keyboard: Enter confirms, Esc cancels
  */
 export default function ConfirmAction({
-  confirmPrompt = "Are you sure?",
-  confirmLabel = "Confirm delete",
-  cancelLabel = "Cancel",
+  confirmPrompt = 'Are you sure?',
+  confirmLabel = 'Confirm delete',
+  cancelLabel = 'Cancel',
   onConfirm,
   onCancel,
   busy = false,
-  className = "",
+  className = '',
   danger = true, // renders confirm as danger button by default
   autoFocusConfirm = true, // focus first action on mount
 }) {
   const confirmRef = useRef(null);
-  const promptId = "confirm-prompt";
+  const promptId = 'confirm-prompt';
 
   useEffect(() => {
     if (autoFocusConfirm) confirmRef.current?.focus();
@@ -25,10 +25,10 @@ export default function ConfirmAction({
 
   function onKeyDown(e) {
     if (busy) return;
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       onConfirm?.();
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       e.preventDefault();
       onCancel?.();
     }
@@ -48,11 +48,11 @@ export default function ConfirmAction({
         <div className="actions-row">
           <button
             ref={confirmRef}
-            className={`btn ${danger ? "btn--danger" : ""}`}
+            className={`btn ${danger ? 'btn--danger' : ''}`}
             onClick={onConfirm}
             disabled={busy}
           >
-            {busy ? "Deleting..." : confirmLabel}
+            {busy ? 'Deleting...' : confirmLabel}
           </button>
           <button className="btn btn--ghost" onClick={onCancel} disabled={busy}>
             {cancelLabel}

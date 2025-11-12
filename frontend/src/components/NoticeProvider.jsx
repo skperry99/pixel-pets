@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import Notice from "./Notice";
-import { NoticeCtx } from "../hooks/useNotice";
+import { useCallback, useMemo, useRef, useState } from 'react';
+import Notice from './Notice';
+import { NoticeCtx } from '../hooks/useNotice';
 
 export function NoticeProvider({ children }) {
   const [toasts, setToasts] = useState([]); // {id,type,msg,ms}
@@ -19,13 +19,13 @@ export function NoticeProvider({ children }) {
   const api = useMemo(
     () => ({
       notify: {
-        info: (m, ms) => push("info", m, ms),
-        success: (m, ms) => push("success", m, ms),
-        error: (m, ms) => push("error", m, ms),
-        warn: (m, ms) => push("warn", m, ms),
+        info: (m, ms) => push('info', m, ms),
+        success: (m, ms) => push('success', m, ms),
+        error: (m, ms) => push('error', m, ms),
+        warn: (m, ms) => push('warn', m, ms),
       },
     }),
-    [push]
+    [push],
   );
 
   return (

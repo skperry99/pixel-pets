@@ -1,6 +1,6 @@
 export default function Header({
-  title = "PIXEL PETS",
-  subtitle = "✨ Because every pixel deserves a little love. 🐾",
+  title = 'PIXEL PETS',
+  subtitle = '✨ Because every pixel deserves a little love. 🐾',
   children,
 }) {
   return (

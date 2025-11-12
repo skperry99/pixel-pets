@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router-dom";
-import AppLayout from "../components/AppLayout";
-import PetSprite from "../components/PetSprite";
-import StatusBarPixel from "../components/StatusBarPixel";
+import { useNavigate } from 'react-router-dom';
+import AppLayout from '../components/AppLayout';
+import PetSprite from '../components/PetSprite';
+import StatusBarPixel from '../components/StatusBarPixel';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -9,8 +9,8 @@ export default function Landing() {
   return (
     <AppLayout
       headerProps={{
-        title: "PIXEL PETS",
-        subtitle: "✨ Because every pixel deserves a little love. 🐾",
+        title: 'PIXEL PETS',
+        subtitle: '✨ Because every pixel deserves a little love. 🐾',
       }}
     >
       <main className="container stack-lg">
@@ -28,13 +28,10 @@ export default function Landing() {
 
             {/* CTAs */}
             <div className="cta-row">
-              <button className="btn" onClick={() => navigate("/login")}>
+              <button className="btn" onClick={() => navigate('/login')}>
                 ▶ START / LOG IN
               </button>
-              <button
-                className="btn btn--secondary"
-                onClick={() => navigate("/register")}
-              >
+              <button className="btn btn--secondary" onClick={() => navigate('/register')}>
                 ★ NEW GAME / REGISTER
               </button>
             </div>
