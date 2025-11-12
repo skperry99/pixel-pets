@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 
 const SRC_BY_TYPE = {
-  Dog: '/pets/dog.png',
-  Cat: '/pets/cat.png',
-  Dragon: '/pets/dragon.png',
+  dog: '/pets/dog.png',
+  cat: '/pets/cat.png',
+  dragon: '/pets/dragon.png',
 };
 
 // Emoji used if the type sprite is missing or fails to load
@@ -13,19 +13,13 @@ const EMOJI_FALLBACK = {
   dragon: '🐲',
 };
 
-export default function PetSprite({
-  type = 'Dog',
-  size = 120, // numeric px size (width/height attributes)
-  title, // label for alt; falls back to type
-  className = '', // extra classes if needed
-}) {
+export default function PetSprite({ type = 'Dog', size = 120, title, className = '' }) {
   const [showEmoji, setShowEmoji] = useState(false);
 
   const kind = useMemo(() => String(type || '').toLowerCase(), [type]);
   const alt = title || `${type} sprite`;
-  const src = SRC_BY_TYPE[type];
+  const src = SRC_BY_TYPE[kind]; // <-- casing-proof
 
-  // If no image path exists for this type OR we already failed -> show emoji
   if (!src || showEmoji) {
     const glyph = EMOJI_FALLBACK[kind] || '🐾';
     return (

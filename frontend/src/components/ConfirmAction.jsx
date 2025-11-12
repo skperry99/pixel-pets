@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 
 /**
  * Inline confirm UI (can be used inside panels or lists).
- * - Accessible: role="alertdialog", labeled/ described, focus trap entry
+ * - Accessible: role="alertdialog", labeled/described, focus on primary
  * - Keyboard: Enter confirms, Esc cancels
  */
 export default function ConfirmAction({
@@ -17,7 +17,7 @@ export default function ConfirmAction({
   autoFocusConfirm = true, // focus first action on mount
 }) {
   const confirmRef = useRef(null);
-  const promptId = 'confirm-prompt';
+  const promptId = useId();
 
   useEffect(() => {
     if (autoFocusConfirm) confirmRef.current?.focus();
@@ -45,7 +45,7 @@ export default function ConfirmAction({
       <div className="panel__body u-stack-sm">
         <p id={promptId}>{confirmPrompt}</p>
 
-        <div className="actions-row">
+        <div className="u-actions-row">
           <button
             ref={confirmRef}
             className={`btn ${danger ? 'btn--danger' : ''}`}

@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../api';
-import { setStoredUserId } from '../utils/auth';
+import { setStoredUserId, getStoredUserId } from '../utils/auth';
 import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
 
@@ -16,6 +16,16 @@ export default function Register() {
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const errorRef = useRef(null);
+
+  // If already authed, bounce; otherwise autofocus username for convenience
+  useEffect(() => {
+    const id = getStoredUserId();
+    if (id != null) {
+      navigate('/dashboard');
+    } else {
+      usernameRef.current?.focus();
+    }
+  }, [navigate]);
 
   function setAndFocusError(msg) {
     setErrorMsg(msg);
@@ -35,7 +45,7 @@ export default function Register() {
     const email = form.email.trim();
     const password = form.password;
 
-    // client-side validation (mirror of backend rules, loosely)
+    // client-side validation
     if (!username || !email || !password) {
       const msg = 'All fields are required.';
       setAndFocusError(msg);
@@ -74,7 +84,7 @@ export default function Register() {
       return;
     }
 
-    // API returns the new user id as JSON (number)
+    // API returns new user id as JSON
     const newUserId = res.data;
     setStoredUserId(newUserId);
     notify.success('Account created! Welcome to Pixel Pets.');
@@ -168,22 +178,24 @@ export default function Register() {
             )}
 
             {/* Actions */}
-            <div className="form__row center">
+            <div className="form__row u-text-center">
               <button className="btn" type="submit" disabled={loading}>
                 {loading ? 'Registering...' : 'Register'}
               </button>
             </div>
 
-            <div className="form__row center">
+            <div className="form__row u-text-center">
               <p>Already have an account?</p>
-              <button
-                className="btn btn--secondary"
-                type="button"
-                onClick={() => navigate('/login')}
-                disabled={loading}
-              >
-                Log In
-              </button>
+              <div className="u-actions-row">
+                <button
+                  className="btn btn--secondary"
+                  type="button"
+                  onClick={() => navigate('/login')}
+                  disabled={loading}
+                >
+                  Log In
+                </button>
+              </div>
             </div>
           </form>
         </div>

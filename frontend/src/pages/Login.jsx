@@ -19,7 +19,12 @@ export default function Login() {
   // If already logged in, bounce to dashboard
   useEffect(() => {
     const id = getStoredUserId();
-    if (id != null) navigate('/dashboard');
+    if (id != null) {
+      navigate('/dashboard');
+    } else {
+      // focus username on first load
+      usernameRef.current?.focus();
+    }
   }, [navigate]);
 
   function setAndFocusError(msg) {

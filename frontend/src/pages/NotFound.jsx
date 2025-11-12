@@ -14,7 +14,7 @@ export default function NotFound() {
   return (
     <AppLayout headerProps={{ title: 'WHOOPS!' }}>
       <div className="page-center">
-        <section className="panel--narrow notfound">
+        <section className="panel panel--narrow notfound">
           <header className="panel__header">
             <h1 className="panel__title notfound__title">
               <span className="notfound__code" aria-hidden="true">

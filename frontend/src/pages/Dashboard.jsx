@@ -7,6 +7,8 @@ import { burstConfetti } from '../utils/confetti';
 import AdoptForm from '../components/AdoptForm';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
+import LoadingCard from '../components/LoadingCard';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -65,14 +67,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <AppLayout headerProps={{ title: 'DASHBOARD' }}>
-        <section className="panel">
-          <header className="panel__header">
-            <h2 className="panel__title">Loading your pets…</h2>
-          </header>
-          <div className="panel__body">
-            <p>Please wait 🐾</p>
-          </div>
-        </section>
+        <LoadingCard title="Loading your pets…" />
       </AppLayout>
     );
   }
@@ -107,7 +102,7 @@ export default function Dashboard() {
       {/* Adopt panel */}
       <section className="panel panel--full">
         <header className="panel__header">
-          {/* <h2 className="panel__title">Adopt a New Friend</h2> */}
+          <h2 className="panel__title">Adopt a New Friend</h2>
         </header>
         <div className="panel__body">
           <AdoptForm
@@ -133,11 +128,20 @@ export default function Dashboard() {
         </header>
         <div className="panel__body">
           {pets.length === 0 ? (
-            <p>No pets yet. Try adopting one!</p>
+            <section className="panel panel--narrow u-stack-md">
+              <p>🧸 {Brand.emptyStates.pets}</p>
+              <button
+                className="btn btn--secondary"
+                onClick={() => document.getElementById('adopt-name')?.focus()}
+              >
+                Adopt your first friend
+              </button>
+              <p className="notfound__hint">{Brand.hints.dashboard}</p>
+            </section>
           ) : (
             <div className="grid grid-3">
               {pets.map((p) => (
-                <article key={p.id} className="panel panel--full">
+                <article key={p.id} className="panel">
                   <div className="panel__body stack-md">
                     <Link to={`/pets/${p.id}`} title={`${p.name} the ${p.type}`}>
                       <PetSprite
@@ -152,24 +156,28 @@ export default function Dashboard() {
                       <h3>{p.name}</h3>
                       {/* Stat bars: only render if present */}
                       {typeof p.fullness === 'number' && (
-                        <div className="status-bar fullness" aria-label="Fullness">
+                        <div className="status-bar status-bar--fullness" aria-label="Fullness">
                           <div className="status-fill" style={{ width: `${p.fullness}%` }} />
                         </div>
                       )}
                       {typeof p.happiness === 'number' && (
-                        <div className="status-bar happiness" aria-label="Happiness">
+                        <div className="status-bar status-bar--happiness" aria-label="Happiness">
                           <div className="status-fill" style={{ width: `${p.happiness}%` }} />
                         </div>
                       )}
                       {typeof p.energy === 'number' && (
-                        <div className="status-bar energy" aria-label="Energy">
+                        <div className="status-bar status-bar--energy" aria-label="Energy">
                           <div className="status-fill" style={{ width: `${p.energy}%` }} />
                         </div>
                       )}
                     </div>
 
-                    <Link to={`/pets/${p.id}`}>
-                      <button className="btn btn--secondary">View Profile</button>
+                    <Link
+                      to={`/pets/${p.id}`}
+                      className="btn btn--secondary"
+                      title={`${p.name} the ${p.type}`}
+                    >
+                      View Profile
                     </Link>
                   </div>
                 </article>
