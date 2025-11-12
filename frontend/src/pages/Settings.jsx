@@ -23,7 +23,7 @@ export default function Settings() {
 
   const requiredPhrase = 'DELETE';
 
-  // Refs for focusing the first invalid field / error text
+  // Refs
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -46,6 +46,8 @@ export default function Settings() {
       const user = res.data || {};
       setForm({ username: user.username ?? '', email: user.email ?? '' });
       setHeaderName(user.username ?? '');
+      // Autofocus username for convenience
+      usernameRef.current?.focus();
     })();
   }, [userId, navigate, notify]);
 
@@ -109,8 +111,8 @@ export default function Settings() {
       username: updated.username ?? username,
       email: updated.email ?? email,
     });
-    setHeaderName(updated.username ?? username);
-    notify.success('Profile updated!');
+    setHeaderName(updated.username ?? username); // header updates only after success
+    notify.success('Profile patched! 🩹');
     setLoading(false);
   }
 
@@ -178,7 +180,7 @@ export default function Settings() {
     }
 
     notify.success('Your account was deleted.');
-    clearStoredUserId(); // ensure local storage is cleared
+    clearStoredUserId();
     navigate('/login');
     setLoading(false);
   }
@@ -193,7 +195,7 @@ export default function Settings() {
           </h1>
         </header>
         <div className="panel__body">
-          <div className="actions-row">
+          <div className="u-actions-row">
             <button
               type="button"
               className="btn btn--ghost"
@@ -222,9 +224,7 @@ export default function Settings() {
         <div className="panel__body">
           <form className="form" onSubmit={handleProfileSubmit} noValidate>
             <div className="form__row">
-              <label className="label" htmlFor="set-username">
-                Username
-              </label>
+              <label className="label" htmlFor="set-username">Username</label>
               <input
                 id="set-username"
                 ref={usernameRef}
@@ -240,9 +240,7 @@ export default function Settings() {
             </div>
 
             <div className="form__row">
-              <label className="label" htmlFor="set-email">
-                Email
-              </label>
+              <label className="label" htmlFor="set-email">Email</label>
               <input
                 id="set-email"
                 ref={emailRef}
@@ -257,7 +255,7 @@ export default function Settings() {
               />
             </div>
 
-            <div className="form__row center">
+            <div className="form__row u-text-center">
               <button className="btn" type="submit" disabled={loading}>
                 {loading ? 'Updating...' : 'Update Profile'}
               </button>
@@ -274,9 +272,7 @@ export default function Settings() {
         <div className="panel__body">
           <form className="form" onSubmit={handlePasswordSubmit} noValidate>
             <div className="form__row">
-              <label className="label" htmlFor="set-password">
-                New password
-              </label>
+              <label className="label" htmlFor="set-password">New password</label>
               <input
                 id="set-password"
                 ref={passwordRef}
@@ -291,7 +287,7 @@ export default function Settings() {
               />
             </div>
 
-            <div className="form__row center">
+            <div className="form__row u-text-center">
               <button className="btn" type="submit" disabled={loading}>
                 {loading ? 'Changing...' : 'Change Password'}
               </button>
@@ -305,15 +301,18 @@ export default function Settings() {
         <header className="panel__header">
           <h2 className="panel__title">Delete Account</h2>
         </header>
-        <div className="panel__body stack-md">
+        <div className="panel__body u-stack-md">
           <p>Deleting your account will permanently remove your user and all pets.</p>
 
           {!confirmDelete ? (
-            <div className="actions-row">
+            <div className="u-actions-row">
               <button
                 type="button"
                 className="btn btn--danger"
-                onClick={() => setConfirmDelete(true)}
+                onClick={() => {
+                  setConfirmDelete(true);
+                  setTimeout(() => confirmRef.current?.focus(), 0);
+                }}
                 disabled={loading}
               >
                 Delete Account
@@ -332,7 +331,7 @@ export default function Settings() {
                 disabled={loading}
                 aria-label="Type DELETE to confirm account deletion"
               />
-              <div className="actions-row">
+              <div className="u-actions-row">
                 <button
                   type="button"
                   className="btn btn--danger"
