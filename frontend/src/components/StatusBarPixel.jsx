@@ -1,14 +1,14 @@
 export default function StatusBarPixel({
-  label = "Fullness", // "Fullness" | "Happiness" | "Energy"
+  label = 'Fullness', // "Fullness" | "Happiness" | "Energy"
   value = 0, // 0..100
-  kind = "fullness", // "fullness" | "happiness" | "energy"
+  kind = 'fullness', // "fullness" | "happiness" | "energy"
 }) {
   const v = Math.max(0, Math.min(100, Number(value) || 0));
   const low = v < 25; // show danger style under 25%
 
   return (
     <div
-      className={`status-bar ${kind} ${low ? "low" : ""}`}
+      className={`status-bar ${kind} ${low ? 'low' : ''}`}
       role="progressbar"
       // aria-label={label}
       // aria-valuenow={v}

@@ -1,18 +1,18 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 const ICON = {
-  success: "✅",
-  error: "❌",
-  warn: "⚠️",
-  info: "🛈",
+  success: '✅',
+  error: '❌',
+  warn: '⚠️',
+  info: '🛈',
 };
 
 export default function Notice({
-  type = "info", // 'success' | 'error' | 'info' | 'warn'
+  type = 'info', // 'success' | 'error' | 'info' | 'warn'
   children, // message text or JSX
   onClose, // () => void
   autoHideMs, // number (e.g., 3000)
-  className = "",
+  className = '',
 }) {
   useEffect(() => {
     if (!autoHideMs || !onClose) return;
@@ -20,8 +20,8 @@ export default function Notice({
     return () => clearTimeout(t);
   }, [autoHideMs, onClose]);
 
-  const role = "status";
-  const live = type === "error" ? "assertive" : "polite";
+  const role = 'status';
+  const live = type === 'error' ? 'assertive' : 'polite';
   const icon = ICON[type] ?? ICON.info;
   const variantClass = `notice--${type}`;
 

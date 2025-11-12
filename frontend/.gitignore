@@ -31,3 +31,72 @@ src/main/resources/*-local.properties
 *.env
 .env
 .env.*.local
+
+# --- Frontend (Vite/React) caches & reports ---
+.vite/
+.eslintcache
+coverage/
+.storybook-out/
+storybook-static/
+
+# If you ever add Cypress (optional)
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# --- Build artifacts (general) ---
+build/
+out/
+
+# --- OS cruft ---
+Thumbs.db
+.DS_Store
+
+# --- Editors/IDEs (extra) ---
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/*.code-workspace
+*.code-workspace
+*.iml
+.project
+.classpath
+.settings/
+.factorypath
+.sts4-cache/
+
+# --- Java / Spring Boot (build outputs & local configs) ---
+target/
+**/*.class
+
+# Keep prod/staging configs under version control; ignore only *local* overrides
+src/main/resources/application-local.properties
+src/main/resources/*-local.properties
+src/main/resources/application-local.yml
+src/main/resources/*-local.yml
+
+# --- Gradle (if you ever use it) ---
+.gradle/
+build/
+# Keep the Gradle wrapper scripts + wrapper JARs committed
+
+# --- Node/Yarn/Bun housekeeping ---
+# Keep lockfiles committed (package-lock.json / yarn.lock / pnpm-lock.yaml / bun.lockb)
+# If you use Yarn Berry, consider:
+#.yarn/*
+#!.yarn/patches
+#!.yarn/plugins
+#!.yarn/releases
+#!.yarn/sdks
+#!.yarn/versions
+
+# --- Local env & tooling (you already cover most) ---
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+
+# --- Hosting platform state (optional: pick the one(s) you use) ---
+.netlify/
+.vercel/
