@@ -7,6 +7,8 @@ import { burstConfetti } from '../utils/confetti';
 import AdoptForm from '../components/AdoptForm';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
+import LoadingCard from '../components/LoadingCard';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -65,14 +67,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <AppLayout headerProps={{ title: 'DASHBOARD' }}>
-        <section className="panel">
-          <header className="panel__header">
-            <h2 className="panel__title">Loading your pets…</h2>
-          </header>
-          <div className="panel__body">
-            <p>Please wait 🐾</p>
-          </div>
-        </section>
+        <LoadingCard title="Loading your pets…" />
       </AppLayout>
     );
   }
@@ -133,7 +128,16 @@ export default function Dashboard() {
         </header>
         <div className="panel__body">
           {pets.length === 0 ? (
-            <p>No pets yet. Try adopting one!</p>
+            <section className="panel panel--narrow u-stack-md">
+              <p>🧸 {Brand.emptyStates.pets}</p>
+              <button
+                className="btn btn--secondary"
+                onClick={() => document.getElementById('adopt-name')?.focus()}
+              >
+                Adopt your first friend
+              </button>
+              <p className="notfound__hint">{Brand.hints.dashboard}</p>
+            </section>
           ) : (
             <div className="grid grid-3">
               {pets.map((p) => (

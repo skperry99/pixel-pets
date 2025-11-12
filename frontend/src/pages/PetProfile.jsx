@@ -7,6 +7,8 @@ import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId } from '../utils/auth';
 import { burstConfetti } from '../utils/confetti';
 import ConfirmDialog from '../components/ConfirmDialog';
+import LoadingCard from '../components/LoadingCard';
+import { moodFor } from '../utils/mood';
 
 export default function PetProfile() {
   const { petId } = useParams();
@@ -105,16 +107,8 @@ export default function PetProfile() {
 
   if (loading) {
     return (
-      <AppLayout headerProps={{ title: 'PET PROFILE' }}>
-        <section className="panel panel--wide panel--center">
-          {' '}
-          <header className="panel__header">
-            <h2 className="panel__title">Loading your pet…</h2>
-          </header>
-          <div className="panel__body">
-            <p>Please wait 🐾</p>
-          </div>
-        </section>
+      <AppLayout headerProps={{ title: 'DASHBOARD' }}>
+        <LoadingCard title="Loading your pets…" />
       </AppLayout>
     );
   }
@@ -139,6 +133,7 @@ export default function PetProfile() {
   }
 
   const { name, type, fullness, happiness, energy } = pet;
+  const mood = moodFor(pet);
 
   return (
     <AppLayout headerProps={{ title: 'PET PROFILE' }}>
@@ -148,6 +143,18 @@ export default function PetProfile() {
           <h1 className="panel__title">{name ? `${name} the ${type}` : 'Pet Profile'}</h1>
         </header>
         <div className="panel__body u-stack-lg">
+          {mood.length > 0 && (
+            <div className="notice notice--warn" role="status" aria-live="polite">
+              <div className="notice__row">
+                <div className="notice__icon" aria-hidden="true">
+                  🧪
+                </div>
+                <div className="notice__body">
+                  <strong>Pet Status:</strong> {mood.join(' · ')}
+                </div>
+              </div>
+            </div>
+          )}
           <div className="u-center">
             <PetSprite
               type={type}
