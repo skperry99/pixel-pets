@@ -4,8 +4,11 @@ import { getStoredUserId } from '../utils/auth';
 export default function RequireAuth({ children }) {
   const id = getStoredUserId();
   const loc = useLocation();
-  if (id == null) {
+
+  // Guard against non-number / zero
+  if (!Number.isFinite(id) || id <= 0) {
     return <Navigate to="/login" replace state={{ from: loc }} />;
   }
+
   return children;
 }
