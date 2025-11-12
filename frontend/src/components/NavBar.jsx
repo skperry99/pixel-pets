@@ -1,7 +1,29 @@
-// src/components/NavBar.jsx
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
+
+/* Pixel "logout" icon (door + arrow) */
+function LogoutIcon({ size = 18 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 18 18"
+      role="img"
+      aria-hidden="true"
+      focusable="false"
+      className="icon-pixel"
+    >
+      {/* door */}
+      <rect x="2" y="3" width="7" height="12" />
+      <rect x="3" y="8" width="1" height="1" /> {/* knob */}
+      {/* arrow */}
+      <rect x="10" y="8" width="6" height="2" />
+      <rect x="14" y="6" width="2" height="2" />
+      <rect x="14" y="10" width="2" height="2" />
+    </svg>
+  );
+}
 
 export default function NavBar({
   headerTitle = 'PIXEL PETS',
@@ -20,7 +42,7 @@ export default function NavBar({
     navigate('/login');
   }
 
-  // Close the menu whenever the route changes
+  // Close menu on route change
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
@@ -45,9 +67,9 @@ export default function NavBar({
         {headerSubtitle && <p className="nav__subtitle">{headerSubtitle}</p>}
       </div>
 
-      {/* Right side: hamburger + links */}
+      {/* Right: hamburger + primary navigation */}
       <div className="nav__controls">
-        {/* Hamburger toggler (shown on small screens by CSS) */}
+        {/* Hamburger (visible on small screens via CSS) */}
         <button
           type="button"
           className="nav__toggle"
@@ -79,8 +101,17 @@ export default function NavBar({
               <NavLink to="/settings" className={linkClass}>
                 Edit Profile
               </NavLink>
-              <button type="button" className="btn btn--ghost nav__logout" onClick={handleLogout}>
-                Logout
+
+              {/* Icon logout (replaces button text) */}
+              <button
+                type="button"
+                className="btn btn--ghost nav__icon-btn"
+                onClick={handleLogout}
+                aria-label="Log out"
+                title="Log out"
+              >
+                <LogoutIcon />
+                <span className="sr-only">Log out</span>
               </button>
             </>
           ) : (
