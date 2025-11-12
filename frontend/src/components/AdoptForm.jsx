@@ -60,9 +60,6 @@ export default function AdoptForm({
 
   return (
     <section className={`panel ${className}`}>
-      {/* <header className="panel__header">
-        <h2 className="panel__title">Adopt a New Pet</h2>
-      </header> */}
 
       <div className="panel__body">
         <form className="form" onSubmit={handleSubmit} noValidate>
@@ -77,7 +74,7 @@ export default function AdoptForm({
               required
               minLength={2}
               maxLength={50}
-              pattern="^[A-Za-z0-9 _'-]{2,50}$"
+              pattern="^[A-Za-z0-9 _'\-]{2,50}$"
               aria-required="true"
               aria-invalid={!!err && !name.trim()}
               aria-describedby={err && !name.trim() ? 'adopt-error' : undefined}
