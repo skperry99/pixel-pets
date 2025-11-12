@@ -201,17 +201,6 @@ h3 {
   margin-top: var(--space-4);
 }
 
-/* --- Utility aliases so both "stack-*" and "u-stack-*" work --- */
-/* .stack-sm > * + * {
-  margin-top: var(--space-2);
-}
-.stack-md > * + * {
-  margin-top: var(--space-3);
-}
-.stack-lg > * + * {
-  margin-top: var(--space-4);
-} */
-
 .u-center {
   display: flex;
   align-items: center;
@@ -303,7 +292,7 @@ h3 {
 .nav-link.active,
 .nav-link:hover {
   color: var(--accent-bright);
-} 
+}
 
 /* legacy */
 

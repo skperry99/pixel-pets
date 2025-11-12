@@ -6,6 +6,7 @@ import PetSprite from '../components/PetSprite';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId } from '../utils/auth';
 import { burstConfetti } from '../utils/confetti';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function PetProfile() {
   const { petId } = useParams();
@@ -18,6 +19,7 @@ export default function PetProfile() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!userId) {
@@ -88,9 +90,8 @@ export default function PetProfile() {
     setBusy(false);
   }
 
-  async function handleDelete() {
+  async function doDelete() {
     if (busy) return;
-    if (!confirm(`Release ${pet?.name ?? 'this pet'} back into the wild?`)) return;
     setBusy(true);
     const res = await deletePet(petId);
     if (!res.ok) {
@@ -150,7 +151,7 @@ export default function PetProfile() {
           <div className="u-center">
             <PetSprite
               type={type}
-              className="pet-sprite pet-sprite--lg .pet-sprite--hover-bounce"
+              className="pet-sprite pet-sprite--lg pet-sprite--hover-bounce"
               alt={`${name} the ${type}`}
             />
           </div>
@@ -187,10 +188,27 @@ export default function PetProfile() {
             <button className="btn btn--ghost" onClick={handleRest} disabled={busy}>
               Rest 😴
             </button>
-            <button className="btn btn--danger" onClick={handleDelete} disabled={busy}>
+            <button
+              className="btn btn--danger"
+              onClick={() => setConfirmOpen(true)}
+              disabled={busy}
+            >
               Delete ❌
             </button>
           </div>
+          <ConfirmDialog
+            open={confirmOpen}
+            title={`Release ${pet?.name ?? 'this pet'}?`}
+            message="This action cannot be undone."
+            confirmLabel="Delete"
+            cancelLabel="Cancel"
+            danger
+            onConfirm={() => {
+              setConfirmOpen(false);
+              doDelete();
+            }}
+            onCancel={() => setConfirmOpen(false)}
+          />
 
           <div className="u-text-center">
             <Link to="/dashboard">
