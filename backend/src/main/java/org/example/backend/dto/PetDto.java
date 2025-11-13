@@ -21,8 +21,9 @@ public class PetDto {
     @NotBlank
     @Size(min = 2, max = 50)
     private String name;
+
     @NotBlank
-    private String type; //cat, dog, dragon, etc.
+    private String type; // cat, dog, dragon, etc.
 
     /**
      * Pet level; nullable so server can default (e.g., to 1) when omitted.
@@ -38,9 +39,11 @@ public class PetDto {
     @Min(0)
     @Max(100)
     private Integer fullness;
+
     @Min(0)
     @Max(100)
     private Integer happiness;
+
     @Min(0)
     @Max(100)
     private Integer energy;
