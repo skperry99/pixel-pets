@@ -172,13 +172,15 @@ export default function Dashboard() {
                       )}
                     </div>
 
-                    <Link
-                      to={`/pets/${p.id}`}
-                      className="btn btn--secondary"
-                      title={`${p.name} the ${p.type}`}
-                    >
-                      View Profile
-                    </Link>
+                    <div className="u-actions-row">
+                      <Link
+                        to={`/pets/${p.id}`}
+                        className="btn btn--secondary"
+                        title={`${p.name} the ${p.type}`}
+                      >
+                        View Profile
+                      </Link>
+                    </div>
                   </div>
                 </article>
               ))}
