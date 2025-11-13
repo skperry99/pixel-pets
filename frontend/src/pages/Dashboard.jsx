@@ -86,7 +86,7 @@ export default function Dashboard() {
             {userProfile ? `Welcome, ${userProfile.username}!` : 'Your Pet Dashboard'}
           </h1>
         </header>
-        <div className="panel__body stack-md">
+        <div className="panel__body u-stack-md">
           <p>{petCountText}</p>
           <div className="u-stack-sm" style={{ display: 'inline-grid' }}>
             <button className="btn" onClick={() => navigate('/settings')}>
@@ -142,7 +142,7 @@ export default function Dashboard() {
             <div className="grid grid-3">
               {pets.map((p) => (
                 <article key={p.id} className="panel">
-                  <div className="panel__body stack-md">
+                  <div className="panel__body u-stack-md">
                     <Link to={`/pets/${p.id}`} title={`${p.name} the ${p.type}`}>
                       <PetSprite
                         type={p.type}

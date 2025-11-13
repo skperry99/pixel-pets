@@ -109,7 +109,9 @@
     <profiles>
         <profile>
             <id>dev-skip-tests</id>
-            <activation><activeByDefault>true</activeByDefault></activation>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <maven.test.skip>true</maven.test.skip>
             </properties>

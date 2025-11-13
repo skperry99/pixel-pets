@@ -18,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequestMapping("/api/pets")
-@CrossOrigin(origins = "http://localhost:5173") // adjust via config for prod
 public class PetController {
 
   // ----- Dependencies -----
