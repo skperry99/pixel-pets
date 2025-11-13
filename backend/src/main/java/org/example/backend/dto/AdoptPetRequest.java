@@ -11,6 +11,7 @@ public class AdoptPetRequest {
     @NotBlank
     @Size(min = 2, max = 50)
     private String name;
+
     @NotBlank
     private String type;
     private Long userId;

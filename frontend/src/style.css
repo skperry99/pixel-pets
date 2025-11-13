@@ -211,6 +211,7 @@ h3 {
   flex-wrap: wrap;
   gap: var(--space-2);
   justify-content: center;
+  margin-top: var(--space-3);
 }
 .u-text-center {
   text-align: center;
@@ -266,6 +267,75 @@ h3 {
   font-size: var(--fs-10);
   color: var(--accent-bright);
   text-shadow: 1px 1px #000;
+}
+
+/* --- Right-side container for toggle + menu --- */
+.nav__controls {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* --- Toggle (hamburger) --- */
+.nav__toggle {
+  display: none; /* hidden on desktop */
+  background: transparent;
+  border: var(--border-2) solid var(--border-color);
+  padding: 0.35rem 0.5rem;
+  box-shadow: var(--shadow-pixel-sm);
+  cursor: pointer;
+}
+.nav__toggle:focus-visible {
+  outline: var(--border-2) solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.nav__toggle-bar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--accent-color);
+  box-shadow: 1px 1px 0 #000;
+  margin: 3px 0;
+}
+
+/* --- Mobile dropdown behavior --- */
+@media (max-width: var(--bp-sm)) {
+  /* anchor dropdown to the nav */
+  .nav {
+    position: relative;
+  }
+
+  /* show hamburger on small screens */
+  .nav__toggle {
+    display: inline-block;
+  }
+
+  /* turn links into a dropdown, hidden by default */
+  .nav__links {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 1rem;
+    background: var(--panel-color);
+    border: var(--border-3) solid var(--border-color);
+    box-shadow: var(--shadow-pixel-lg);
+    padding: 0.5rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 1000;
+    min-width: 180px;
+    justify-self: end; /* keep right aligned if grid reflows */
+  }
+  .nav__links.nav__links--open {
+    display: flex;
+  }
+
+  /* make logout button full-width inside dropdown */
+  .nav__links .nav__logout {
+    width: 100%;
+  }
 }
 
 /* Compatibility with existing classes (NavBar.jsx earlier versions) */
@@ -392,13 +462,16 @@ h3 {
   max-width: 360px;
   width: 360px;
   margin: 0;
+  position: relative;
 }
 
 .pixel-toast.panel::after {
   content: '';
   position: absolute;
-  right: -4px; top: -4px;
-  width: 8px; height: 8px;
+  right: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
   background: var(--accent-color);
   box-shadow: 4px 4px 0 #000;
 }
@@ -520,10 +593,16 @@ select:focus {
   height: 20px;
   width: 100%;
   max-width: var(--container-sm);
+  margin-top: 6px;
   margin-left: auto;
   margin-right: auto;
   position: relative;
 }
+
+.status-bar + .status-bar { 
+  margin-top: 8px; /* stack bars a touch more */
+}
+
 .status-fill {
   height: 100%;
   background-color: var(--success-color);
@@ -621,6 +700,9 @@ select:focus {
   align-items: flex-start;
 }
 .notice__icon {
+  width: 1.5em;
+  display: inline-flex;
+  justify-content: center;
   text-shadow: 1px 1px #000;
   line-height: 1;
 }
@@ -803,6 +885,25 @@ select:focus {
   text-shadow: 1px 1px #000;
 }
 
+.pixel-warn {
+  animation: pixel-shake 180ms steps(2, end) 2;
+}
+@keyframes pixel-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(2px, -2px);
+  }
+  50% {
+    transform: translate(-2px, 2px);
+  }
+  75% {
+    transform: translate(2px, 2px);
+  }
+}
+
 /* --- Pet animations --- */
 @keyframes pet-bob {
   0%,
@@ -890,14 +991,6 @@ select:focus {
   .nav {
     grid-template-columns: 1fr;
     row-gap: var(--space-2);
-  }
-  .nav__brand,
-  .nav__links {
-    justify-self: center;
-  }
-  .nav__links {
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   /* Legacy classes compatibility */
@@ -1049,3 +1142,163 @@ a:focus-visible {
 .dialog {
   max-width: 420px;
 }
+
+/* Compact height (optional) */
+.status-bar--compact {
+  height: 14px;
+}
+
+/* Low-state pulse (friendly, subtle) */
+.status-bar--low .status-fill {
+  animation: pixel-warn 0.8s steps(2, end) infinite;
+}
+@keyframes pixel-warn {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(1px);
+  }
+}
+
+/* Tiny “low” chip (positioned top-right inside the bar) */
+.status-hint {
+  position: absolute;
+  top: -0.9rem;
+  right: 0;
+  font-size: var(--fs-10);
+  color: var(--accent-bright);
+  text-shadow: 1px 1px #000;
+  pointer-events: none;
+}
+
+/* Show hamburger at small screens and dropdown panel */
+.nav__controls { justify-self: end; display: flex; align-items: center; gap: 0.5rem; }
+.nav__toggle { display: none; background: transparent; border: var(--border-2) solid var(--border-color); padding: 0.35rem 0.5rem; box-shadow: var(--shadow-pixel-sm); cursor: pointer; }
+.nav__toggle-bar { display: block; width: 18px; height: 2px; background: var(--accent-color); box-shadow: 1px 1px 0 #000; margin: 3px 0; }
+
+/* dropdown */
+@media (max-width: var(--bp-sm)) {
+  .nav__toggle { display: inline-block; }
+  .nav { position: relative; }
+  .nav__links {
+    position: absolute; top: calc(100% + 4px); right: 1rem;
+    background: var(--panel-color);
+    border: var(--border-3) solid var(--border-color);
+    box-shadow: var(--shadow-pixel-lg);
+    padding: 0.5rem;
+    display: none; flex-direction: column; gap: 0.5rem; z-index: 1000; min-width: 180px;
+  }
+  .nav__links--open { display: flex; }
+  .nav__links .nav__logout, .nav__links .nav__icon-btn { width: 100%; }
+}
+
+/* Pixel SVG inherits theme color */
+.icon-pixel rect { fill: var(--accent-color); filter: drop-shadow(1px 1px 0 #000); }
+.nav__icon-btn:hover .icon-pixel rect { fill: var(--accent-bright); }
+.nav__icon-btn { padding: 0.35rem 0.5rem; line-height: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 32px; }
+
+/* ================================
+   PIXEL BORDERS — Drop-in upgrade
+   (Put near the end of style.css)
+   ================================ */
+
+/* Tunables */
+:root {
+  --px-unit: 5px;     /* nub size at corners */
+  --px-outline: 5px;  /* outline thickness */
+}
+
+/* 1) Convert key components to pixel outlines */
+.panel,
+.card,
+.btn,
+.notice,
+.pixel-toast.panel,
+.pet-sprite,
+.dialog {
+  /* replace smooth border with an outline + chunky step shadow */
+  border: none !important;
+  outline: var(--px-outline) solid var(--border-color);
+  outline-offset: 0;
+  box-shadow:
+    var(--shadow-pixel-lg),  /* you already use this */
+    4px 4px 0 #000;          /* chunky “step” */
+  position: relative;        /* anchor corner nubs */
+}
+
+/* 2) Corner nubs (8-bit studs) */
+.panel::before,
+.panel::after,
+.card::before,
+.card::after,
+.btn::before,
+.btn::after,
+.notice::before,
+.notice::after,
+.pixel-toast.panel::before,
+.pixel-toast.panel::after,
+.pet-sprite::before,
+.pet-sprite::after,
+.dialog::before,
+.dialog::after {
+  content: "";
+  position: absolute;
+  width: var(--px-unit);
+  height: var(--px-unit);
+  background: var(--border-color);
+  box-shadow: 1px 1px 0 #000;
+  z-index: 0; /* under content but above backgrounds */
+}
+
+/* top-left / bottom-right */
+.panel::before,
+.card::before,
+.btn::before,
+.notice::before,
+.pixel-toast.panel::before,
+.pet-sprite::before,
+.dialog::before {
+  left: calc(var(--px-unit) * -1);
+  top: calc(var(--px-unit) * -1);
+}
+.panel::after,
+.card::after,
+.btn::after,
+.notice::after,
+.pixel-toast.panel::after,
+.pet-sprite::after,
+.dialog::after {
+  right: calc(var(--px-unit) * -1);
+  bottom: calc(var(--px-unit) * -1);
+}
+
+/* 3) Scale nubs slightly smaller on compact elements */
+.btn,
+.notice {
+  --px-unit: 3px;
+  --px-outline: 3px;
+}
+
+/* 4) Keep toast corner badge you already add playing nice */
+.pixel-toast.panel { position: relative; }
+/* If your existing ::after badge conflicts, rename it to .pixel-toast .toast-badge */
+
+/* 5) Optional: “double cartridge” variant you can apply ad-hoc */
+.pixelize--double {
+  outline: var(--px-outline) solid var(--border-color);
+  box-shadow:
+    0 0 0 calc(var(--px-outline) + 2px) #000, /* outer black ring */
+    6px 6px 0 #000;
+}
+
+/* 6) Make sure interactive states still pop with pixel shadow */
+.btn:hover {
+  /* keep your existing transform, just ensure shadow stays chunky */
+  box-shadow: 5px 5px 0 #000;
+}
+.btn:active {
+  box-shadow: 1px 1px 0 #000;
+}
+
