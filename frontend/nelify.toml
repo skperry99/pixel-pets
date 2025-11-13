@@ -1,3 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Proxy all /api/* from the frontend to EB backend
 [[redirects]]
   from = "/api/*"
   to = "http://pixel-pets-backend-env.eba-bmjrcjp8.us-east-2.elasticbeanstalk.com/api/:splat"
