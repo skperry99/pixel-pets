@@ -1,4 +1,6 @@
+# -----------------
 # Logs
+# -----------------
 logs
 *.log
 npm-debug.log*
@@ -7,81 +9,96 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# -----------------
+# Node / Vite outputs
+# -----------------
 node_modules
 dist
 dist-ssr
+.vite/
 *.local
 
-# Editor directories and files
+# -----------------
+# Editor & IDE files
+# -----------------
 .vscode/*
 !.vscode/extensions.json
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/*.code-workspace
 .idea
-.DS_Store
+*.code-workspace
+*.iml
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Spring local/secret configs
-src/main/resources/application-local.properties
-src/main/resources/*-local.properties
-
-# Generic env files
-*.env
-.env
-.env.*.local
-
-# --- Frontend (Vite/React) caches & reports ---
-.vite/
-.eslintcache
-coverage/
-.storybook-out/
-storybook-static/
-
-# If you ever add Cypress (optional)
-cypress/videos/
-cypress/screenshots/
-cypress/downloads/
-
-# --- Build artifacts (general) ---
-build/
-out/
-
-# --- OS cruft ---
-Thumbs.db
-.DS_Store
-
-# --- Editors/IDEs (extra) ---
-.vscode/settings.json
-.vscode/tasks.json
-.vscode/launch.json
-.vscode/*.code-workspace
-*.code-workspace
-*.iml
 .project
 .classpath
 .settings/
 .factorypath
 .sts4-cache/
 
-# --- Java / Spring Boot (build outputs & local configs) ---
+# -----------------
+# OS cruft
+# -----------------
+.DS_Store
+Thumbs.db
+
+# -----------------
+# Env / secrets (generic)
+# -----------------
+*.env
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+
+# -----------------
+# Frontend tooling caches & reports
+# -----------------
+.eslintcache
+coverage/
+.storybook-out/
+storybook-static/
+
+# If you ever add Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# -----------------
+# Build artifacts (general)
+# -----------------
+build/
+out/
 target/
 **/*.class
 
-# Keep prod/staging configs under version control; ignore only *local* overrides
+# -----------------
+# Java / Spring Boot configs
+# (keep prod/staging configs committed; ignore only *local* overrides)
+# -----------------
 src/main/resources/application-local.properties
 src/main/resources/*-local.properties
 src/main/resources/application-local.yml
 src/main/resources/*-local.yml
 
-# --- Gradle (if you ever use it) ---
+# -----------------
+# Gradle (if you ever use it)
+# -----------------
 .gradle/
-build/
-# Keep the Gradle wrapper scripts + wrapper JARs committed
+# Keep Gradle wrapper scripts + wrapper JARs committed
 
-# --- Node/Yarn/Bun housekeeping ---
-# Keep lockfiles committed (package-lock.json / yarn.lock / pnpm-lock.yaml / bun.lockb)
+# -----------------
+# Node/Yarn/Bun housekeeping
+# (keep lockfiles committed: package-lock.json / yarn.lock / pnpm-lock.yaml / bun.lockb)
+# -----------------
 # If you use Yarn Berry, consider:
 #.yarn/*
 #!.yarn/patches
@@ -90,13 +107,8 @@ build/
 #!.yarn/sdks
 #!.yarn/versions
 
-# --- Local env & tooling (you already cover most) ---
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.envrc
-
-# --- Hosting platform state (optional: pick the one(s) you use) ---
+# -----------------
+# Hosting platform state (optional)
+# -----------------
 .netlify/
 .vercel/
