@@ -1,3 +1,8 @@
+// src/App.jsx
+// Top-level app routing for Pixel Pets.
+// Public routes: Landing, Login, Register
+// Protected routes: Dashboard, Settings, PetProfile
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Landing from './pages/Landing';
@@ -16,12 +21,12 @@ export default function App() {
     <Router>
       <ErrorBoundary>
         <Routes>
-          {/* Public */}
+          {/* Public routes */}
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Authed */}
+          {/* Authenticated routes */}
           <Route
             path="/dashboard"
             element={
@@ -47,7 +52,7 @@ export default function App() {
             }
           />
 
-          {/* 404 */}
+          {/* 404 fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>
