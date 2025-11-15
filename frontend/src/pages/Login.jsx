@@ -1,3 +1,9 @@
+// src/pages/Login.jsx
+// Login screen:
+// - Redirects to dashboard if already authed
+// - Validates required fields client-side
+// - Uses inline error message + toast notices
+
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
@@ -16,20 +22,19 @@ export default function Login() {
   const usernameRef = useRef(null);
   const errorRef = useRef(null);
 
-  // If already logged in, bounce to dashboard
+  // If already logged in, bounce to dashboard; otherwise focus username.
   useEffect(() => {
     const id = getStoredUserId();
     if (id != null) {
       navigate('/dashboard');
     } else {
-      // focus username on first load
       usernameRef.current?.focus();
     }
   }, [navigate]);
 
-  function setAndFocusError(msg) {
-    setErrorMsg(msg);
-    // shift focus to the alert text for SR users
+  // Helper: set error text and move focus to the alert region for SR users.
+  function setErrorAndFocus(message) {
+    setErrorMsg(message);
     queueMicrotask(() => errorRef.current?.focus());
   }
 
@@ -43,19 +48,20 @@ export default function Login() {
     const password = form.password;
 
     if (!username || !password) {
-      const msg = 'Username and password are required.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = 'Username and password are required.';
+      setErrorAndFocus(message);
+      notify.error(message);
       if (!username) usernameRef.current?.focus();
       return;
     }
 
     setLoading(true);
+
     const res = await login(username, password);
     if (!res.ok) {
-      const msg = res.error || 'Login failed.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = res.error || 'Login failed.';
+      setErrorAndFocus(message);
+      notify.error(message);
       usernameRef.current?.focus();
       setLoading(false);
       return;
