@@ -1,5 +1,28 @@
+// src/components/ConfirmDialog.jsx
+
 import { useEffect, useId, useRef } from 'react';
 
+/**
+ * ConfirmDialog
+ *
+ * Modal confirmation dialog with optional retro "beep" feedback.
+ *
+ * Accessibility:
+ * - Uses role="dialog" with aria-modal, aria-labelledby, aria-describedby.
+ * - Auto-focuses the primary (confirm) button when opened.
+ * - Keyboard: Escape → cancel, Enter → confirm (while open).
+ *
+ * Props:
+ * - open          (bool)   : Controls visibility; returns null if false.
+ * - title         (string) : Dialog title text.
+ * - message       (string) : Body/description text.
+ * - confirmLabel  (string) : Confirm button label.
+ * - cancelLabel   (string) : Cancel button label.
+ * - danger        (bool)   : If true, confirm button uses danger styling.
+ * - onConfirm     (fn)     : Called when user confirms.
+ * - onCancel      (fn)     : Called when user cancels or dismisses.
+ * - beep          (bool)   : If true, plays a tiny retro beep on confirm/cancel.
+ */
 export default function ConfirmDialog({
   open,
   title = 'Are you sure?',
@@ -9,7 +32,6 @@ export default function ConfirmDialog({
   danger = false,
   onConfirm,
   onCancel,
-  // fun: optional beep toggles (no assets)
   beep = false,
 }) {
   const dialogRef = useRef(null);
@@ -18,35 +40,48 @@ export default function ConfirmDialog({
   const descId = useId();
 
   useEffect(() => {
-    if (open) {
-      confirmRef.current?.focus();
-      const onKey = (e) => {
-        if (e.key === 'Escape') onCancel?.();
-        if (e.key === 'Enter') onConfirm?.();
-      };
-      window.addEventListener('keydown', onKey);
-      return () => window.removeEventListener('keydown', onKey);
-    }
+    if (!open) return;
+
+    // Focus the primary action when dialog opens
+    confirmRef.current?.focus();
+
+    const handleKey = (e) => {
+      if (e.key === 'Escape') {
+        onCancel?.();
+      } else if (e.key === 'Enter') {
+        onConfirm?.();
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
   }, [open, onCancel, onConfirm]);
 
   if (!open) return null;
 
-  function onBackdropClick(e) {
-    // close only if clicking the backdrop (not the panel)
-    if (e.target === e.currentTarget) onCancel?.();
+  function handleBackdropClick(e) {
+    // Only close if the click is on the backdrop, not inside the dialog panel
+    if (e.target === e.currentTarget) {
+      onCancel?.();
+    }
   }
 
   async function handleConfirm() {
-    if (beep) tinyBeep(880, 0.05); // A5 quick chirp
+    if (beep) tinyBeep(880, 0.05); // A5 short chirp
     onConfirm?.();
   }
+
   async function handleCancel() {
-    if (beep) tinyBeep(440, 0.05); // A4 quick chirp
+    if (beep) tinyBeep(440, 0.05); // A4 short chirp
     onCancel?.();
   }
 
   return (
-    <div className="dialog-backdrop" role="presentation" onMouseDown={onBackdropClick}>
+    <div
+      className="dialog-backdrop"
+      role="presentation"
+      onMouseDown={handleBackdropClick}
+    >
       <section
         className="panel panel--narrow dialog"
         role="dialog"
@@ -60,17 +95,24 @@ export default function ConfirmDialog({
             {title}
           </h2>
         </header>
+
         <div className="panel__body u-stack-md">
           <p id={descId}>{message}</p>
+
           <div className="u-actions-row">
             <button
+              type="button"
               ref={confirmRef}
-              className={`btn ${danger ? 'btn--danger' : ''}`}
+              className={`btn ${danger ? 'btn--danger' : ''}`.trim()}
               onClick={handleConfirm}
             >
               {confirmLabel}
             </button>
-            <button className="btn btn--ghost" onClick={handleCancel}>
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={handleCancel}
+            >
               {cancelLabel}
             </button>
           </div>
@@ -80,28 +122,34 @@ export default function ConfirmDialog({
   );
 }
 
-/** tiny retro beep with Web Audio (no external assets) */
+/**
+ * tinyBeep
+ *
+ * Minimal Web Audio beep helper for retro feedback.
+ * - Uses a square wave oscillator.
+ * - Swallows audio init/play errors (e.g., autoplay policy) silently.
+ */
 function tinyBeep(freq = 880, dur = 0.06) {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return; // Web Audio not supported
+  if (!AudioCtx) return;
 
   try {
     const ctx = new AudioCtx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
 
-    o.type = 'square';
-    o.frequency.value = freq;
+    osc.type = 'square';
+    osc.frequency.value = freq;
 
     const now = ctx.currentTime;
-    g.gain.setValueAtTime(0.06, now);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
 
-    o.connect(g).connect(ctx.destination);
-    o.start(now);
-    o.stop(now + dur);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + dur);
   } catch {
-    // Swallow audio init/play errors (e.g., autoplay policy) without logging
+    // Ignore Web Audio errors without logging
     return;
   }
 }
