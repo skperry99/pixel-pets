@@ -1,21 +1,39 @@
+// src/components/StatusBarPixel.jsx
+
+/**
+ * StatusBarPixel
+ *
+ * Accessible retro-style status bar used for pet stats.
+ * - Clamps value into [0–100].
+ * - Adds visual + ARIA hints when value is “low”.
+ *
+ * Props:
+ * - label       (string): Human-friendly label, e.g. "Fullness"
+ * - value       (number): Stat value in [0–100]
+ * - kind        (string): Visual variant, e.g. "fullness" | "happiness" | "energy"
+ * - showPercent (bool)  : If true, renders "Label: 42%" inside the bar
+ * - showLowHint (bool)  : If true and value < 25, shows a tiny ⚠️ hint
+ * - compact     (bool)  : Slightly shorter bar height if true
+ */
 export default function StatusBarPixel({
-  label = 'Fullness', // "Fullness" | "Happiness" | "Energy"
-  value = 0, // 0..100
-  kind = 'fullness', // "fullness" | "happiness" | "energy"
-  showPercent = true, // show numeric % inside the bar
-  showLowHint = true, // show a tiny warning when <25%
-  compact = false, // slightly shorter bar height if true
+  label = 'Fullness',
+  value = 0,
+  kind = 'fullness',
+  showPercent = true,
+  showLowHint = true,
+  compact = false,
 }) {
+  // Normalize and clamp into [0, 100]
   const vNum = Number.isFinite(value) ? value : 0;
   const v = Math.max(0, Math.min(100, Math.round(vNum)));
   const low = v < 25;
 
-  // e.g., “Fullness 24 percent (low)”
+  // Example: “Fullness 24 percent (low)”
   const valueText = `${label} ${v} percent${low ? ' (low)' : ''}`;
 
   const classes = [
     'status-bar',
-    `status-bar--${kind}`, // aligns with your newer BEM modifiers
+    `status-bar--${kind}`, // BEM modifier: fullness / happiness / energy
     low ? 'status-bar--low' : '',
     compact ? 'status-bar--compact' : '',
   ]
@@ -32,7 +50,7 @@ export default function StatusBarPixel({
       aria-valuemax={100}
       aria-valuetext={valueText}
       title={`${label}: ${v}%`}
-      data-kind={kind} // handy hook for CSS/analytics
+      data-kind={kind} // handy hooks for CSS/analytics
       data-low={low || undefined}
     >
       <div className="status-fill" style={{ width: `${v}%` }} />
