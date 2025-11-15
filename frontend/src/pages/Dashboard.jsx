@@ -1,25 +1,34 @@
+// src/pages/Dashboard.jsx
+// Player dashboard:
+// - Loads current user's profile + pets
+// - Lets users adopt new pets and navigate to pet profiles
+// - Shows inline empty state, loading state, and toast notices
+
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+
 import { getPetsByUser, getUserProfile } from '../api';
 import AppLayout from '../components/AppLayout';
 import PetSprite from '../components/PetSprite';
-import { burstConfetti } from '../utils/confetti';
 import AdoptForm from '../components/AdoptForm';
+import LoadingCard from '../components/LoadingCard';
+
+import { burstConfetti } from '../utils/confetti';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
 import { Brand } from '../utils/brandText';
-import LoadingCard from '../components/LoadingCard';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { notify } = useNotice();
 
-  const userId = getStoredUserId();
+  const userId = getStoredUserId(); // localStorage user id
 
   const [pets, setPets] = useState([]);
-  const [userProfile, setUserProfile] = useState(null); // {id, username, email}
+  const [userProfile, setUserProfile] = useState(null); // { id, username, email }
   const [loading, setLoading] = useState(true);
 
+  // Load profile + pets when the page mounts / user changes
   useEffect(() => {
     if (userId == null) {
       navigate('/login');
@@ -27,8 +36,9 @@ export default function Dashboard() {
     }
 
     let isActive = true;
+
     (async () => {
-      const [pRes, listRes] = await Promise.all([
+      const [profileRes, petsRes] = await Promise.all([
         getUserProfile(Number(userId)),
         getPetsByUser(userId),
       ]);
@@ -36,18 +46,18 @@ export default function Dashboard() {
       if (!isActive) return;
 
       // Profile
-      if (!pRes.ok) {
-        notify.error(pRes.error || 'Failed to load profile.');
+      if (!profileRes.ok) {
+        notify.error(profileRes.error || 'Failed to load profile.');
       } else {
-        setUserProfile(pRes.data || null);
+        setUserProfile(profileRes.data || null);
       }
 
       // Pets
-      if (!listRes.ok) {
-        notify.error(listRes.error || 'Failed to load pets.');
-        setPets([]); // ensure array
+      if (!petsRes.ok) {
+        notify.error(petsRes.error || 'Failed to load pets.');
+        setPets([]); // always keep an array
       } else {
-        const list = Array.isArray(listRes.data) ? listRes.data : [];
+        const list = Array.isArray(petsRes.data) ? petsRes.data : [];
         setPets(list);
       }
 
@@ -86,8 +96,10 @@ export default function Dashboard() {
             {userProfile ? `Welcome, ${userProfile.username}!` : 'Your Pet Dashboard'}
           </h1>
         </header>
+
         <div className="panel__body u-stack-md">
           <p>{petCountText}</p>
+
           <div className="u-stack-sm" style={{ display: 'inline-grid' }}>
             <button className="btn" onClick={() => navigate('/settings')}>
               Edit Profile
@@ -104,6 +116,7 @@ export default function Dashboard() {
         <header className="panel__header">
           <h2 className="panel__title">Adopt a New Friend</h2>
         </header>
+
         <div className="panel__body">
           <AdoptForm
             userId={userId}
@@ -111,7 +124,8 @@ export default function Dashboard() {
             onAdopt={(savedPet) => {
               setPets((prev) => {
                 if (prev.length === 0) {
-                  burstConfetti(); // 🎉 first pet celebration
+                  // 🎉 celebrate first pet
+                  burstConfetti();
                 }
                 return [...prev, savedPet];
               });
@@ -126,57 +140,63 @@ export default function Dashboard() {
         <header className="panel__header">
           <h2 className="panel__title">Your Pets</h2>
         </header>
+
         <div className="panel__body">
           {pets.length === 0 ? (
             <section className="panel panel--narrow u-stack-md">
               <p>🧸 {Brand.emptyStates.pets}</p>
+
               <button
                 className="btn btn--secondary"
                 onClick={() => document.getElementById('adopt-name')?.focus()}
               >
                 Adopt your first friend
               </button>
+
               <p className="notfound__hint">{Brand.hints.dashboard}</p>
             </section>
           ) : (
             <div className="grid grid-3">
-              {pets.map((p) => (
-                <article key={p.id} className="panel">
+              {pets.map((pet) => (
+                <article key={pet.id} className="panel">
                   <div className="panel__body u-stack-md">
-                    <Link to={`/pets/${p.id}`} title={`${p.name} the ${p.type}`}>
+                    <Link to={`/pets/${pet.id}`} title={`${pet.name} the ${pet.type}`}>
                       <PetSprite
-                        type={p.type}
+                        type={pet.type}
                         size={120}
-                        title={`${p.name} the ${p.type}`}
+                        title={`${pet.name} the ${pet.type}`}
                         className="pet-sprite"
                       />
                     </Link>
 
                     <div className="u-stack-sm">
-                      <h3>{p.name}</h3>
+                      <h3>{pet.name}</h3>
+
                       {/* Stat bars: only render if present */}
-                      {typeof p.fullness === 'number' && (
+                      {typeof pet.fullness === 'number' && (
                         <div className="status-bar status-bar--fullness" aria-label="Fullness">
-                          <div className="status-fill" style={{ width: `${p.fullness}%` }} />
+                          <div className="status-fill" style={{ width: `${pet.fullness}%` }} />
                         </div>
                       )}
-                      {typeof p.happiness === 'number' && (
+
+                      {typeof pet.happiness === 'number' && (
                         <div className="status-bar status-bar--happiness" aria-label="Happiness">
-                          <div className="status-fill" style={{ width: `${p.happiness}%` }} />
+                          <div className="status-fill" style={{ width: `${pet.happiness}%` }} />
                         </div>
                       )}
-                      {typeof p.energy === 'number' && (
+
+                      {typeof pet.energy === 'number' && (
                         <div className="status-bar status-bar--energy" aria-label="Energy">
-                          <div className="status-fill" style={{ width: `${p.energy}%` }} />
+                          <div className="status-fill" style={{ width: `${pet.energy}%` }} />
                         </div>
                       )}
                     </div>
 
                     <div className="u-actions-row">
                       <Link
-                        to={`/pets/${p.id}`}
+                        to={`/pets/${pet.id}`}
                         className="btn btn--secondary"
-                        title={`${p.name} the ${p.type}`}
+                        title={`${pet.name} the ${pet.type}`}
                       >
                         View Profile
                       </Link>
