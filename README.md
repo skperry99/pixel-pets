@@ -1,6 +1,3 @@
-Here’s a themed, ready-to-drop-in `README.md` that leans all the way into the Pixel Pets vibe, pulls in the caffeine/nostalgia line, and covers all your rubric requirements.
-
-````md
 # 🐾 Pixel Pets
 
 **Pixel Pets** is a retro-style virtual pet game where users can **adopt pixel pals**, keep them  
@@ -407,5 +404,3 @@ Please contact the author before using it for commercial purposes.
 ---
 
 Made with 💛 by **Sarah** — because every pixel deserves a little love. 🐾
-
-```
