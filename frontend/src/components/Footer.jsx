@@ -1,19 +1,21 @@
 // src/components/Footer.jsx
 // Site footer for Pixel Pets.
-// - Shows a fun tagline and credits
-// - Auto-updates year so you don’t have to touch it
+// - Fun tagline + theme-y credit line
+// - Caffeine & nostalgia nod
+// - LaunchCode shout out
+// - Auto-updates year
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="site-footer" role="contentinfo">
-      <p className="footer-tagline">
-        ✨ “Because every pixel deserves a little love.” 🐾
-      </p>
+      <p className="footer-tagline">✨ “Because every pixel deserves a little love.” 🐾</p>
+
+      <p className="footer-credit">Powered by caffeine, nostalgia, and a lot of tiny pixel pals.</p>
 
       <p className="footer-credit">
-        Made with 💛 by <span className="footer-accent">Sarah</span> · © {year}
+        Built as a LaunchCode capstone by <span className="footer-accent">Sarah</span> · © {year}
       </p>
     </footer>
   );
