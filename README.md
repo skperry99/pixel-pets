@@ -1,5 +1,3 @@
-Here’s a `README.md` version styled more like that image—title, subtitle, badges, emoji section headers, and clean sections you can drop straight into your repo:
-
 ````markdown
 # 🐾 Pixel Pets
 
