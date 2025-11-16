@@ -1,22 +1,48 @@
+// src/components/NoticeProvider.jsx
+
 import { useCallback, useMemo, useRef, useState } from 'react';
 import Notice from './Notice';
 import { NoticeCtx } from '../hooks/useNotice';
 
-const MAX_TOASTS = 4;
+/**
+ * Global toast/notice provider for the app.
+ *
+ * - Exposes a `notify` API via context (info/success/error/warn).
+ * - Deduplicates identical messages within a small time window.
+ * - Caps the number of visible toasts to avoid overwhelming the UI.
+ */
+const MAX_TOASTS = 4; // maximum number of visible toasts
 const DEDUPE_WINDOW_MS = 1500; // same type+msg within this window won't re-add
-const TYPE_EMOJI = { success: '🎉 ', error: '🛑 ', warn: '⚠️ ', info: '💡 ' };
+
+// Optional emoji prefixes to give each toast type a retro flair
+const TYPE_EMOJI = {
+  success: '🎉 ',
+  error: '🛑 ',
+  warn: '⚠️ ',
+  info: '💡 ',
+};
 
 export function NoticeProvider({ children }) {
-  const [toasts, setToasts] = useState([]); // {id,type,msg,ms,ts}
+  // Toast shape: { id, type, msg, ms, ts }
+  const [toasts, setToasts] = useState([]);
   const idRef = useRef(1);
 
   const remove = useCallback((id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  /**
+   * Add a new toast.
+   *
+   * @param {'success'|'error'|'warn'|'info'} type
+   * @param {string | React.ReactNode} msg
+   * @param {number} ms - auto-hide duration in ms (default 3000)
+   * @returns {number} id of the toast (existing or new)
+   */
   const push = useCallback(
     (type, msg, ms = 3000) => {
       const now = Date.now();
+
       // Dedupe: if same type+msg was shown very recently, skip adding
       const already = toasts.find(
         (t) => t.type === type && t.msg === msg && now - t.ts < DEDUPE_WINDOW_MS,
@@ -32,11 +58,13 @@ export function NoticeProvider({ children }) {
         if (next.length > MAX_TOASTS) next.shift();
         return next;
       });
+
       return id;
     },
     [toasts],
   );
 
+  // Memoized context value to avoid unnecessary re-renders
   const api = useMemo(
     () => ({
       notify: {
@@ -53,7 +81,7 @@ export function NoticeProvider({ children }) {
     <NoticeCtx.Provider value={api}>
       {children}
 
-      {/* Toast stack (screen readers handled inside <Notice/>) */}
+      {/* Toast stack; individual <Notice> handles its own lifecycle & SR behavior */}
       <div className="toast-container is-top" aria-live="polite">
         {toasts.map((t) => (
           <Notice

@@ -1,16 +1,21 @@
+// src/components/AppLayout.jsx
+// App shell layout for authenticated pages.
+// - Renders NavBar inside <header>
+// - Wraps page content in <main> with a centered container
+// - Shows global Footer
+// - Hooks in Konami easter egg + global notifications
+
 import NavBar from './NavBar';
 import Footer from './Footer';
 import { useKonami } from '../hooks/useKonami';
 import { useNotice } from '../hooks/useNotice';
-/**
- * App shell:
- * - Renders semantic regions (header, nav (inside header), main, footer)
- */
-export default function AppLayout({ headerProps = {}, children }) {
 
-  const {notify} = useNotice();
+export default function AppLayout({ headerProps = {}, children }) {
+  const { notify } = useNotice();
+
+  // Enable Konami code: shows a playful success notice when triggered
   useKonami(() => notify.success('Konami unlocked! 🕹️ Theme toggle + confetti!'));
-  
+
   return (
     <>
       <header>

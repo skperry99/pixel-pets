@@ -1,7 +1,9 @@
 // src/utils/mood.js
+// Derives simple “mood” messages for a pet based on low stats.
+
 import { Brand } from './brandText';
 
-// Tweak thresholds anytime
+// Thresholds for when a stat is considered “low”.
 const THRESH = {
   fullness: 30,
   happiness: 30,
@@ -9,12 +11,20 @@ const THRESH = {
 };
 
 /**
- * Returns an array of mood strings based on low stats.
- * Example: ["Hungry! Needs a snack 🍖", "Sleepy… let them rest 😴"]
+ * Compute mood messages for a pet based on its stats.
+ *
+ * @param {Object} pet - Pet object with numeric stats.
+ * @param {number} pet.fullness - 0–100 fullness.
+ * @param {number} pet.happiness - 0–100 happiness.
+ * @param {number} pet.energy - 0–100 energy.
+ * @returns {string[]} Array of mood strings, e.g.
+ *   ["Hungry! Needs a snack 🍖", "Sleepy… let them rest 😴"]
  */
 export function moodFor(pet) {
   if (!pet) return [];
+
   const msgs = [];
+
   if (typeof pet.fullness === 'number' && pet.fullness <= THRESH.fullness) {
     msgs.push(Brand.statuses.lowFood);
   }
@@ -24,5 +34,6 @@ export function moodFor(pet) {
   if (typeof pet.energy === 'number' && pet.energy <= THRESH.energy) {
     msgs.push(Brand.statuses.lowEnergy);
   }
+
   return msgs;
 }

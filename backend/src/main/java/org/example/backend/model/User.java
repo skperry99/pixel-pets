@@ -7,9 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * User entity. - Uses a dedicated "users" table (avoids reserved keyword conflicts) - Enforces
- * unique username/email at the DB level - Owns a 1:N relationship to Pet (with cascade + orphan
- * removal)
+ * User entity.
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *   <li>Maps to a dedicated {@code users} table (avoids reserved keyword conflicts).</li>
+ *   <li>Enforces unique username/email at the DB level.</li>
+ *   <li>Owns a 1:N relationship to {@link Pet} (with cascade + orphan removal).</li>
+ * </ul>
+ *
+ * <p>Note: normalization (trim + lowercase) is handled in the service layer, not here.
  */
 @Getter
 @Setter
@@ -17,48 +24,55 @@ import lombok.Setter;
 @Table(name = "users") // keep in sync with your actual table name
 public class User {
 
-  // ========= Identity =========
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    // ===== Identity =====
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  // ========= Credentials / Profile =========
-  /**
-   * Normalized username (service layer should trim+lowercase). Stored as "user_name" to avoid
-   * clashes and for readability.
-   */
-  @Column(name = "user_name", nullable = false, unique = true)
-  private String username;
+    // ===== Credentials / Profile =====
 
-  /** Normalized email (service layer should trim+lowercase). */
-  @Column(nullable = false, unique = true)
-  private String email;
+    /**
+     * Normalized username (service layer should trim + lowercase).
+     * Stored as {@code user_name} to avoid clashes and improve readability.
+     */
+    @Column(name = "user_name", nullable = false, unique = true)
+    private String username;
 
-  /** BCrypt (or similar) hash; never return this in API responses. */
-  @Column(nullable = false)
-  private String password;
+    /** Normalized email (service layer should trim + lowercase). */
+    @Column(nullable = false, unique = true)
+    private String email;
 
-  // ========= Relationships =========
-  /**
-   * A user can own many pets. Cascade ALL lets us create/update pets via the user.
-   * orphanRemoval=true ensures removing from the list deletes the pet row.
-   */
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Pet> pets = new ArrayList<>();
+    /** BCrypt (or similar) hash; never return this in API responses. */
+    @Column(nullable = false)
+    private String password;
 
-  // ========= Constructors =========
-  public User() {
-    /* for JPA */
-  }
+    // ===== Relationships =====
 
-  public User(String username, String email, String password) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-  }
+    /**
+     * A user can own many pets.
+     *
+     * <p>{@code cascade = ALL} lets us create/update pets via the user.
+     * {@code orphanRemoval = true} ensures removing from the list deletes the pet row.
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pet> pets = new ArrayList<>();
 
-  // ========= Notes =========
-  // - Do NOT include password in toString()/equals()/hashCode().
-  // - Prefer DTOs for API payloads; never expose raw entities with password.
-  // - Ensure unique indexes exist on (user_name) and (email) at the DB level.
+    // ===== Constructors =====
+
+    /** No-arg constructor required by JPA. */
+    public User() {
+        /* for JPA */
+    }
+
+    /** Convenience constructor for quick creation in tests/seed data. */
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
+    // ===== Notes =====
+    // - Do NOT include password in toString()/equals()/hashCode().
+    // - Prefer DTOs for API payloads; never expose raw entities with password.
+    // - Ensure unique indexes exist on (user_name) and (email) at the DB level.
 }

@@ -1,10 +1,14 @@
+# Netlify configuration for the Pixel Pets frontend
+
 [build]
-  base = "frontend"
+  # All paths are relative to the repo root
+  base    = "frontend"
   command = "npm run build"
   publish = "dist"
 
+# Proxy frontend /api/* calls to the Spring Boot backend on Elastic Beanstalk
 [[redirects]]
-  from = "/api/*"
-  to = "http://pixel-pets-backend-env.eba-bmjrcjp8.us-east-2.elasticbeanstalk.com/api/:splat"
+  from   = "/api/*"
+  to     = "http://pixel-pets-backend-env.eba-bmjrcjp8.us-east-2.elasticbeanstalk.com/api/:splat"
   status = 200
-  force = true
+  force  = true

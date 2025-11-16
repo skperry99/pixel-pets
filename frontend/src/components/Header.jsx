@@ -1,3 +1,9 @@
+// src/components/Header.jsx
+// Generic page header/panel.
+// - Lets each page set a title + subtitle
+// - Can render as <header> (default) or any semantic wrapper via `as`
+// - Avoids double <h1> when used with NavBar by toggling isPageTitle
+
 export default function Header({
   title = 'PIXEL PETS',
   subtitle = '✨ Because every pixel deserves a little love. 🐾',
@@ -9,7 +15,8 @@ export default function Header({
   /** Render as <header> by default for semantics */
   as: asProp = 'header',
 }) {
-  const AsTag = asProp; // eslint will see this as used
+  // Keep this pattern so ESLint sees the tag as used
+  const AsTag = asProp;
   const HeadingTag = isPageTitle ? 'h1' : 'h2';
 
   return (
@@ -21,7 +28,8 @@ export default function Header({
         </HeadingTag>
 
         {subtitle && <p className="header-subtitle">{subtitle}</p>}
-        {/* Optional slot for actions/filters */}
+
+        {/* Optional slot for actions/filters/buttons */}
         {children}
       </div>
     </AsTag>

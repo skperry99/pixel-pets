@@ -1,3 +1,9 @@
+// src/pages/Register.jsx
+// Registration screen:
+// - Redirects to dashboard if already authed
+// - Client-side validation for username/email/password
+// - Inline error message + toast notices
+
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../api';
@@ -17,7 +23,7 @@ export default function Register() {
   const emailRef = useRef(null);
   const errorRef = useRef(null);
 
-  // If already authed, bounce; otherwise autofocus username for convenience
+  // If already authed, bounce; otherwise autofocus username for convenience.
   useEffect(() => {
     const id = getStoredUserId();
     if (id != null) {
@@ -27,13 +33,14 @@ export default function Register() {
     }
   }, [navigate]);
 
-  function setAndFocusError(msg) {
-    setErrorMsg(msg);
+  // Helper: set error text and shift focus to alert for SR users.
+  function setErrorAndFocus(message) {
+    setErrorMsg(message);
     queueMicrotask(() => errorRef.current?.focus());
   }
 
-  function isValidEmail(v) {
-    return /\S+@\S+\.\S+/.test(v);
+  function isValidEmail(value) {
+    return /\S+@\S+\.\S+/.test(value);
   }
 
   async function handleSubmit(e) {
@@ -41,44 +48,49 @@ export default function Register() {
     if (loading) return;
 
     setErrorMsg('');
+
     const username = form.username.trim();
     const email = form.email.trim();
     const password = form.password;
 
-    // client-side validation
+    // Client-side validation
     if (!username || !email || !password) {
-      const msg = 'All fields are required.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = 'All fields are required.';
+      setErrorAndFocus(message);
+      notify.error(message);
       if (!username) return usernameRef.current?.focus();
       if (!email) return emailRef.current?.focus();
       return;
     }
+
     if (username.length < 3 || username.length > 30) {
-      const msg = 'Username must be 3–30 characters.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = 'Username must be 3–30 characters.';
+      setErrorAndFocus(message);
+      notify.error(message);
       return usernameRef.current?.focus();
     }
+
     if (!isValidEmail(email)) {
-      const msg = 'Please enter a valid email address.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = 'Please enter a valid email address.';
+      setErrorAndFocus(message);
+      notify.error(message);
       return emailRef.current?.focus();
     }
+
     if (password.length < 8) {
-      const msg = 'Password must be at least 8 characters.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = 'Password must be at least 8 characters.';
+      setErrorAndFocus(message);
+      notify.error(message);
       return;
     }
 
     setLoading(true);
+
     const res = await registerUser(username, email, password);
     if (!res.ok) {
-      const msg = res.error || 'Registration failed.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = res.error || 'Registration failed.';
+      setErrorAndFocus(message);
+      notify.error(message);
       usernameRef.current?.focus();
       setLoading(false);
       return;

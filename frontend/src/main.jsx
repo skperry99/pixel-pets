@@ -1,13 +1,20 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./style.css";
-import App from "./App.jsx";
-import { NoticeProvider } from "./components/NoticeProvider";
+// src/main.jsx
+// Entry point for the Pixel Pets frontend.
+// Mounts the React app and wraps it in global providers (e.g., NoticeProvider).
 
-createRoot(document.getElementById("root")).render(
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import App from './App.jsx';
+import { NoticeProvider } from './components/NoticeProvider';
+import './style.css';
+
+const rootElement = document.getElementById('root');
+
+createRoot(rootElement).render(
   <StrictMode>
     <NoticeProvider>
       <App />
     </NoticeProvider>
-  </StrictMode>
+  </StrictMode>,
 );
