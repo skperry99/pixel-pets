@@ -5,35 +5,45 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * User data transfer object (API shape). - Used for sending/receiving user data over the wire -
- * Keep sensitive fields (e.g., password) out of this DTO - Validation here enforces minimal input
- * guarantees on create/update
+ * User data transfer object (API shape).
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *   <li>Used for sending/receiving non-sensitive user data over the wire.</li>
+ *   <li>Excludes secrets (e.g., password hashes) by design.</li>
+ *   <li>Applies minimal validation for create/update operations.</li>
+ * </ul>
  */
 @Getter
 @Setter
 public class UserDto {
 
-  // ===== Identity (server-assigned) =====
-  private Long id;
+    // ===== Identity (server-assigned) =====
+    /** Database identifier for the user (null on create). */
+    private Long id;
 
-  // ===== Public profile / credentials (non-sensitive) =====
-  @NotBlank(message = "Username is required")
-  @Size(min = 3, max = 30, message = "Username must be 3–30 characters")
-  private String username;
+    // ===== Public profile / credentials (non-sensitive) =====
+    /** Unique username, normalized and validated by the service layer. */
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 30, message = "Username must be 3–30 characters")
+    private String username;
 
-  @NotBlank(message = "Email is required")
-  @Email(message = "Email must be valid")
-  @Size(max = 254, message = "Email is too long")
-  private String email;
+    /** Contact email; must be valid and unique in the system. */
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    @Size(max = 254, message = "Email is too long")
+    private String email;
 
-  // ===== Constructors =====
-  public UserDto() {
-    /* for Jackson */
-  }
+    // ===== Constructors =====
 
-  public UserDto(Long id, String username, String email) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-  }
+    /** Default constructor for Jackson/deserialization. */
+    public UserDto() {
+        // for Jackson
+    }
+
+    public UserDto(Long id, String username, String email) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+    }
 }

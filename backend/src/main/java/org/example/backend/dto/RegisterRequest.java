@@ -4,19 +4,33 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Request payload for user registration (/api/auth/register).
+ *
+ * <p>Validated via Bean Validation annotations:
+ * <ul>
+ *   <li>Username: 3–30 chars, required.</li>
+ *   <li>Email: required, valid format, reasonable max length.</li>
+ *   <li>Password: 8–30 chars, required.</li>
+ * </ul>
+ */
 @Setter
 @Getter
 public class RegisterRequest {
-  @NotBlank(message = "Username is required")
-  @Size(min = 3, max = 30, message = "Username must be 3–30 characters")
-  private String username;
 
-  @NotBlank(message = "Email is required")
-  @Email(message = "Email must be valid")
-  @Size(max = 254, message = "Email is too long")
-  private String email;
+    /** Desired username for the new account. */
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 30, message = "Username must be 3–30 characters")
+    private String username;
 
-  @NotBlank(message = "Password is required")
-  @Size(min = 8, max = 30, message = "Password must be 8–30 characters")
-  private String password;
+    /** Contact email; used for login/notifications and must be unique. */
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    @Size(max = 254, message = "Email is too long")
+    private String email;
+
+    /** Raw password; will be hashed by the service layer before storage. */
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, max = 30, message = "Password must be 8–30 characters")
+    private String password;
 }
