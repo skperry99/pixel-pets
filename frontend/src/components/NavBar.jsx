@@ -7,6 +7,7 @@
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
 
 /** Pixel-style logout icon (door + arrow). */
 function LogoutIcon({ size = 18 }) {
@@ -33,8 +34,8 @@ function LogoutIcon({ size = 18 }) {
 }
 
 export default function NavBar({
-  headerTitle = 'PIXEL PETS',
-  headerSubtitle = '✨ Because every pixel deserves a little love. 🐾',
+  headerTitle = Brand.layout.headerTitle,
+  headerSubtitle = Brand.layout.headerSubtitle,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,7 +74,7 @@ export default function NavBar({
     <div className="nav container">
       {/* Brand (left) */}
       <Link to="/" className="nav__brand" aria-label="Pixel Pets home">
-        🐾 Pixel Pets
+        🐾 {Brand.app}
       </Link>
 
       {/* Page title + subtitle (center) */}

@@ -5,17 +5,18 @@
 // - LaunchCode shout out
 // - Auto-updates year
 
+import { Brand } from '../utils/brandText';
+
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="site-footer" role="contentinfo">
-      <p className="footer-tagline">✨ “Because every pixel deserves a little love.” 🐾</p>
-
-      <p className="footer-credit">Powered by caffeine, nostalgia, and a lot of tiny pixel pals.</p>
+      <p className="footer-tagline">✨ “{Brand.layout.footerTagline}” 🐾</p>
+      <p className="footer-tagline">{Brand.taglines.powered}</p>
 
       <p className="footer-credit">
-        Built as a LaunchCode capstone by <span className="footer-accent">Sarah</span> · © {year}
+        {Brand.layout.footerCredit} · © {year}
       </p>
     </footer>
   );

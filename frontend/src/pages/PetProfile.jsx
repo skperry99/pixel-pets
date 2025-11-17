@@ -18,6 +18,7 @@ import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId } from '../utils/auth';
 import { burstConfetti } from '../utils/confetti';
 import { moodFor } from '../utils/mood';
+import { Brand } from '../utils/brandText';
 
 export default function PetProfile() {
   const { petId } = useParams();
@@ -46,9 +47,9 @@ export default function PetProfile() {
       if (!isActive) return;
 
       if (!res.ok) {
-        const msg = res.error || 'Failed to load pet.';
-        setError(msg);
-        notify.error(msg);
+        const message = res.error || 'Failed to load pet.';
+        setError(message);
+        notify.error(message);
         setLoading(false);
         return;
       }
@@ -75,7 +76,7 @@ export default function PetProfile() {
     if (!res.ok) {
       notify.error(res.error || 'Feeding failed.');
     } else {
-      notify.success('Nom nom! 🍖');
+      notify.success(Brand.toasts.fed);
       updatePetState(res.data);
     }
 
@@ -90,7 +91,7 @@ export default function PetProfile() {
     if (!res.ok) {
       notify.error(res.error || 'Playtime failed.');
     } else {
-      notify.success('So much fun! 🎮');
+      notify.success(Brand.toasts.played);
       burstConfetti();
       updatePetState(res.data);
     }
@@ -106,7 +107,7 @@ export default function PetProfile() {
     if (!res.ok) {
       notify.error(res.error || 'Rest failed.');
     } else {
-      notify.success('Zzz… 😴');
+      notify.success(Brand.toasts.rest);
       updatePetState(res.data);
     }
 
@@ -124,7 +125,7 @@ export default function PetProfile() {
       return;
     }
 
-    notify.success('Pet released. 🐾');
+    notify.success(Brand.toasts.released);
     navigate('/dashboard');
   }
 

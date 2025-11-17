@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import AppLayout from '../components/AppLayout';
 import { burstConfetti } from '../utils/confetti';
+import { Brand } from '../utils/brandText';
 
 export default function NotFound() {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export default function NotFound() {
               </Link>
             </div>
 
-            <p className="notfound__hint">Tip: use the navigation above to find your way.</p>
+            <p className="notfound__hint">{Brand.hints.notFound}</p>
           </div>
         </section>
       </div>

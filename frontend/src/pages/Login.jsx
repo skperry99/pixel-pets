@@ -10,6 +10,7 @@ import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
 import { login } from '../api';
 import { getStoredUserId, setStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function Login() {
     const password = form.password;
 
     if (!username || !password) {
-      const message = 'Username and password are required.';
+      const message = Brand.validation.usernameAndPasswordRequired;
       setErrorAndFocus(message);
       notify.error(message);
       if (!username) usernameRef.current?.focus();
@@ -59,7 +60,7 @@ export default function Login() {
 
     const res = await login(username, password);
     if (!res.ok) {
-      const message = res.error || 'Login failed.';
+      const message = res.error || Brand.errors.loginFailed;
       setErrorAndFocus(message);
       notify.error(message);
       usernameRef.current?.focus();
@@ -70,7 +71,7 @@ export default function Login() {
     // API returns numeric userId as JSON
     const userId = res.data;
     setStoredUserId(userId);
-    notify.success('Welcome back! 🐾');
+    notify.success(Brand.toasts.welcome);
     navigate('/dashboard');
     setLoading(false);
   }
@@ -79,7 +80,7 @@ export default function Login() {
     <AppLayout headerProps={{ title: 'LOGIN' }}>
       <section className="panel">
         <header className="panel__header">
-          <h1 className="panel__title">Log In</h1>
+          <h1 className="panel__title">{Brand.auth.loginTitle}</h1>
         </header>
 
         <div className="panel__body">
@@ -140,19 +141,19 @@ export default function Login() {
             {/* Actions */}
             <div className="form__row" style={{ textAlign: 'center' }}>
               <button className="btn" type="submit" disabled={loading}>
-                {loading ? 'Signing in…' : 'Log In'}
+                {loading ? 'Signing in…' : Brand.auth.loginCta}
               </button>
             </div>
 
             <div className="form__row" style={{ textAlign: 'center' }}>
-              <p>New to Pixel Pets?</p>
+              <p>{Brand.auth.newHere}</p>
               <button
                 className="btn btn--secondary"
                 type="button"
                 onClick={() => navigate('/register')}
                 disabled={loading}
               >
-                Create Account
+                {Brand.auth.createAccountCta}
               </button>
             </div>
           </form>

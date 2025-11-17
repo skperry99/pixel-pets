@@ -10,12 +10,13 @@ import Footer from './Footer';
 import ThemeToggle from './ThemeToggle';
 import { useKonami } from '../hooks/useKonami';
 import { useNotice } from '../hooks/useNotice';
+import { Brand } from '../utils/brandText';
 
 export default function AppLayout({ headerProps = {}, children }) {
   const { notify } = useNotice();
 
   // Enable Konami code: shows a playful success notice when triggered
-  useKonami(() => notify.success('Konami unlocked! 🕹️ Theme toggle + confetti!'));
+  useKonami(() => notify.success(Brand.toasts.konami));
 
   return (
     <>
