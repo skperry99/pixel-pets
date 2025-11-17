@@ -23,17 +23,17 @@ const THRESH = {
 export function moodFor(pet) {
   if (!pet) return [];
 
-  const msgs = [];
+  const messages = [];
 
   if (typeof pet.fullness === 'number' && pet.fullness <= THRESH.fullness) {
-    msgs.push(Brand.statuses.lowFood);
+    messages.push(Brand.statuses.lowFood);
   }
   if (typeof pet.happiness === 'number' && pet.happiness <= THRESH.happiness) {
-    msgs.push(Brand.statuses.lowHappy);
+    messages.push(Brand.statuses.lowHappy);
   }
   if (typeof pet.energy === 'number' && pet.energy <= THRESH.energy) {
-    msgs.push(Brand.statuses.lowEnergy);
+    messages.push(Brand.statuses.lowEnergy);
   }
 
-  return msgs;
+  return messages;
 }
