@@ -18,7 +18,7 @@ export const Brand = {
   layout: {
     headerTitle: 'PIXEL PETS',
     headerSubtitle: '✨ Because every pixel deserves a little love. 🐾',
-    footerTagline: 'Because every pixel deserves a little love. 🐾',
+    footerTagline: 'Because every pixel deserves a little love.',
     footerCredit: 'Made with 💛 by Sarah',
   },
 
