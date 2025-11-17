@@ -23,7 +23,7 @@ const TYPE_EMOJI = {
 };
 
 export function NoticeProvider({ children }) {
-  // Toast shape: { id, type, msg, ms, ts }
+  // Toast shape: { id, type, msg, raw, ms, ts }
   const [toasts, setToasts] = useState([]);
   const idRef = useRef(1);
 
@@ -39,30 +39,35 @@ export function NoticeProvider({ children }) {
    * @param {number} ms - auto-hide duration in ms (default 3000)
    * @returns {number} id of the toast (existing or new)
    */
-  const push = useCallback(
-    (type, msg, ms = 3000) => {
-      const now = Date.now();
+  const push = useCallback((type, msg, ms = 3000) => {
+    const now = Date.now();
+    const raw = typeof msg === 'string' ? msg : String(msg);
+    let returnedId = null;
 
-      // Dedupe: if same type+msg was shown very recently, skip adding
-      const already = toasts.find(
-        (t) => t.type === type && t.msg === msg && now - t.ts < DEDUPE_WINDOW_MS,
+    setToasts((prev) => {
+      // Dedupe: if same type+raw was shown very recently, skip adding
+      const recent = prev.find(
+        (t) => t.type === type && t.raw === raw && now - t.ts < DEDUPE_WINDOW_MS,
       );
-      if (already) return already.id;
+      if (recent) {
+        returnedId = recent.id;
+        return prev;
+      }
 
       const id = idRef.current++;
+      returnedId = id;
+
       const prefixed = typeof msg === 'string' ? `${TYPE_EMOJI[type] ?? ''}${msg}` : msg;
 
-      setToasts((prev) => {
-        const next = [...prev, { id, type, msg: prefixed, ms, ts: now }];
-        // Cap stack (keep newest)
-        if (next.length > MAX_TOASTS) next.shift();
-        return next;
-      });
+      const next = [...prev, { id, type, msg: prefixed, raw, ms, ts: now }];
 
-      return id;
-    },
-    [toasts],
-  );
+      // Cap stack (keep newest)
+      if (next.length > MAX_TOASTS) next.shift();
+      return next;
+    });
+
+    return returnedId;
+  }, []);
 
   // Memoized context value to avoid unnecessary re-renders
   const api = useMemo(
