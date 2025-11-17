@@ -46,8 +46,10 @@
 }
 
 /* ---------- 1) Theme Variants ---------- */
-/* Light mode (class-based) */
-.light-mode {
+/* Light mode (class-based + data-theme) */
+.light-mode,
+.theme-light,
+[data-theme='light'] {
   --bg-color: #f0f0f0;
   --panel-color: #ffffff;
   --accent-color: #0099ff;
