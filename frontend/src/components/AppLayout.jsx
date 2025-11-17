@@ -7,6 +7,7 @@
 
 import NavBar from './NavBar';
 import Footer from './Footer';
+import ThemeToggle from './ThemeToggle';
 import { useKonami } from '../hooks/useKonami';
 import { useNotice } from '../hooks/useNotice';
 
@@ -18,6 +19,11 @@ export default function AppLayout({ headerProps = {}, children }) {
 
   return (
     <>
+      {/* Fixed-position global theme toggle (top-right) */}
+      <div className="toggle-container">
+        <ThemeToggle />
+      </div>
+
       <header>
         <NavBar headerTitle={headerProps.title} headerSubtitle={headerProps.subtitle} />
       </header>
