@@ -28,15 +28,22 @@ export function useKonami(onTrigger) {
 
   useEffect(() => {
     function handleKeyDown(event) {
+      // Ignore if user is typing with modifier keys
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+
       // Push the latest key and trim buffer length
-      bufferRef.current.push(event.key);
+      bufferRef.current.push(key);
       if (bufferRef.current.length > KONAMI_KEYS.length) {
         bufferRef.current.shift();
       }
 
       // Check for exact sequence match
-      const isMatch = KONAMI_KEYS.every((key, index) => bufferRef.current[index] === key);
+      const isMatch = KONAMI_KEYS.every((k, index) => bufferRef.current[index] === k);
       if (!isMatch) return;
+
+      bufferRef.current = []; // optional: reset after success
 
       // Fire callback if provided
       onTrigger?.();

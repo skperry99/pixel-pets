@@ -12,6 +12,7 @@ import { updateUser, deleteUserApi, getUserProfile } from '../api';
 import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export default function Settings() {
       const res = await getUserProfile(userId);
       if (!res.ok) {
         const msg = res.error || 'Failed to load profile.';
-        setAndFocusError(msg);
+        setErrorAndFocus(msg);
         notify.error(msg);
         return;
       }
@@ -74,7 +75,7 @@ export default function Settings() {
   }
 
   /** Set error message and move focus to the error block for SR users. */
-  function setAndFocusError(msg) {
+  function setErrorAndFocus(msg) {
     setErrorMsg(msg);
     queueMicrotask(() => errorRef.current?.focus());
   }
@@ -94,7 +95,7 @@ export default function Settings() {
     // Basic validation
     if (!username || !email) {
       const msg = 'Username and email are required.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       if (!username) usernameRef.current?.focus();
       else emailRef.current?.focus();
@@ -104,7 +105,7 @@ export default function Settings() {
 
     if (username.length < 3 || username.length > 30) {
       const msg = 'Username must be 3–30 characters.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       usernameRef.current?.focus();
       setLoading(false);
@@ -113,7 +114,7 @@ export default function Settings() {
 
     if (!isValidEmail(email)) {
       const msg = 'Please enter a valid email address.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       emailRef.current?.focus();
       setLoading(false);
@@ -123,7 +124,7 @@ export default function Settings() {
     const res = await updateUser(userId, { username, email });
     if (!res.ok) {
       const msg = res.error || 'Profile update failed.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       usernameRef.current?.focus();
       setLoading(false);
@@ -143,7 +144,7 @@ export default function Settings() {
 
     // Header only updates after successful save
     setHeaderName(nextUsername);
-    notify.success('Profile patched! 🩹');
+    notify.success(Brand.toasts.profilePatched);
     setLoading(false);
   }
 
@@ -160,7 +161,7 @@ export default function Settings() {
 
     if (!nextPwd) {
       const msg = 'Password is required.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
@@ -169,7 +170,7 @@ export default function Settings() {
 
     if (nextPwd.length < 8) {
       const msg = 'Password must be at least 8 characters.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
@@ -179,7 +180,7 @@ export default function Settings() {
     const res = await updateUser(userId, { password: nextPwd });
     if (!res.ok) {
       const msg = res.error || 'Password change failed.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
@@ -187,7 +188,7 @@ export default function Settings() {
     }
 
     setPassword('');
-    notify.success('Password changed!');
+    notify.success(Brand.toasts.passwordPatched);
     setLoading(false);
   }
 
@@ -208,7 +209,7 @@ export default function Settings() {
     const res = await deleteUserApi(userId);
     if (!res.ok) {
       const msg = res.error || 'Account deletion failed.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       confirmRef.current?.focus();
       setLoading(false);

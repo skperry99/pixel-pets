@@ -129,7 +129,7 @@ export default function Dashboard() {
                 }
                 return [...prev, savedPet];
               });
-              notify.success(`Adopted ${savedPet.name} the ${savedPet.type}!`);
+              notify.success(Brand.toasts.adopted(savedPet.name, savedPet.type));
             }}
           />
         </div>

@@ -32,7 +32,7 @@ export default function AdoptForm({ userId, onAdopt, petTypes, className = '' })
   );
 
   /** Set an error message and shift focus to the alert region for screen readers. */
-  function setAndFocusError(message) {
+  function setErrorAndFocus(message) {
     setErrorMsg(message);
     // Move screen reader focus to the error
     queueMicrotask(() => errorRef.current?.focus());
@@ -47,16 +47,16 @@ export default function AdoptForm({ userId, onAdopt, petTypes, className = '' })
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      return setAndFocusError('Please enter a pet name.');
+      return setErrorAndFocus('Please enter a pet name.');
     }
     if (!type) {
-      return setAndFocusError('Please select a pet type.');
+      return setErrorAndFocus('Please select a pet type.');
     }
     if (!userId) {
-      return setAndFocusError('Missing user ID.');
+      return setErrorAndFocus('Missing user ID.');
     }
     if (options.length && !options.includes(type)) {
-      return setAndFocusError('Invalid pet type.');
+      return setErrorAndFocus('Invalid pet type.');
     }
 
     setBusy(true);
@@ -68,7 +68,7 @@ export default function AdoptForm({ userId, onAdopt, petTypes, className = '' })
     });
 
     if (!res.ok) {
-      setAndFocusError(res.error || 'Adoption failed.');
+      setErrorAndFocus(res.error || 'Adoption failed.');
       setBusy(false);
       return;
     }
