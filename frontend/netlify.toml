@@ -12,3 +12,8 @@
   to     = "http://pixel-pets-backend-env.eba-bmjrcjp8.us-east-2.elasticbeanstalk.com/api/:splat"
   status = 200
   force  = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
