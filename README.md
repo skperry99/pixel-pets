@@ -4,8 +4,6 @@
 **fed, happy, and rested**, and watch their stats change over time. It’s built as a full-stack  
 capstone project with a **React + Vite** frontend and a **Spring Boot + MySQL** backend.
 
-> Pixel Pets is powered by **caffeine, curiosity, and 8-bit nostalgia**. ☕🕹️
-
 Players can create accounts, adopt pets, and interact with them via **Feed / Play / Rest** actions.  
 Behind the scenes, the backend tracks **time-based stat decay** so pets feel more alive — even when
 the user is away.
