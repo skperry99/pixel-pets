@@ -4,22 +4,22 @@
 // - Applies React hooks + React Refresh/Vite presets
 // - Ignores the build output in /dist
 
-import js from "@eslint/js";
-import globals from "globals";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import { defineConfig, globalIgnores } from "eslint/config";
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
   // Global ignores for the whole project
-  globalIgnores(["dist"]),
+  globalIgnores(['dist']),
 
   {
-    files: ["**/*.{js,jsx}"],
+    files: ['**/*.{js,jsx}'],
 
     extends: [
       js.configs.recommended,
-      reactHooks.configs["recommended-latest"],
+      reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
 
@@ -27,15 +27,26 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
       parserOptions: {
-        ecmaVersion: "latest",
+        ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
-        sourceType: "module",
+        sourceType: 'module',
       },
     },
 
     rules: {
       // Allow unused UPPER_SNAKE_CASE vars (e.g., constants) without errors
-      "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+
+  // ✅ Jest test files
+  {
+    files: ['**/*.test.jsx', '**/*.test.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.jest,
+      },
     },
   },
 ]);
