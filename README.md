@@ -385,14 +385,6 @@ These are areas that are intentionally simplified or not fully complete:
 * **Stat tuning & balancing**
 
   * Decay rates and action boosts are tuned to “feel good” for a demo, but haven’t been play-tested or optimized.
-* **Error handling**
-
-  * Many API errors show up as toasts + inline messages.
-  * Still room for centralized error logging and retry logic for transient network issues.
-* **Accessibility polish**
-
-  * Includes ARIA roles, focus management, and keyboard shortcuts in key places.
-  * A full accessibility audit (screen reader testing, high-contrast themes, etc.) remains future work.
 
 ---
 
@@ -404,18 +396,15 @@ Some ideas for where Pixel Pets could go next:
 
    * New `PetEvent` table to track feed/play/rest events.
    * Achievements for streaks (e.g., “Fed daily for 7 days”).
-   * Timeline or tiny chart on the Pet Profile page.
-     
+   * Timeline or tiny chart on the Pet Profile page.     
 2. **Pet Customization**
 
    * Pick colors, accessories, or alternate sprite sets.
    * Unlock cosmetics based on achievements or pet level.
-
 3. **Social / Shared Features**
 
    * Optional friend codes or leaderboards (e.g., “happiest pet this week”).
-   * Extra care taken around privacy and moderation.
-     
+   * Extra care taken around privacy and moderation.     
 4. **Improved Auth & Security**
 
    * Replace local `userId` with real tokens (JWT/OAuth2).
