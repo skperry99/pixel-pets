@@ -1,5 +1,3 @@
-Here’s the updated README with all the tweaks folded in and the seed-data note assuming no `data.sql` file.
-
 ---
 
 # 🐾 Pixel Pets
@@ -368,9 +366,6 @@ These design artifacts show how the app was planned before implementation.
 
 * **ERD (Entity Relationship Diagram)**
   [https://docs.google.com/presentation/d/13dbNaNI-6SwyrJSFdLaZajFOUuJ16FoRXIglG_MccTc/edit?usp=drive_link](https://docs.google.com/presentation/d/13dbNaNI-6SwyrJSFdLaZajFOUuJ16FoRXIglG_MccTc/edit?usp=drive_link)
-
-> **Future:** Export these to PNG/SVG and check them into the repo under
-> `docs/wireframes/` and `docs/erd/` for easier offline viewing.
 
 ---
 
