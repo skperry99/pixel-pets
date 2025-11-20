@@ -1,5 +1,3 @@
----
-
 # 🐾 Pixel Pets
 
 **Pixel Pets** is a retro-style virtual pet game where players adopt pixelated cats, dogs, and dragons, keep them fed, happy, and rested, and watch their stats change over time. Built as a full-stack capstone project with a **React + Vite** frontend and a **Spring Boot + MySQL** backend, Pixel Pets lets users create accounts, adopt pets, and interact with them via **Feed / Play / Rest** actions, while the backend tracks **time-based stat decay** so pets feel more alive—even when the user is away.
