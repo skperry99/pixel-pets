@@ -1,7 +1,3 @@
-Here’s the updated README with all the tweaks folded in and the seed-data note assuming no `data.sql` file.
-
----
-
 # 🐾 Pixel Pets
 
 **Pixel Pets** is a retro-style virtual pet game where players adopt pixelated cats, dogs, and dragons, keep them fed, happy, and rested, and watch their stats change over time. Built as a full-stack capstone project with a **React + Vite** frontend and a **Spring Boot + MySQL** backend, Pixel Pets lets users create accounts, adopt pets, and interact with them via **Feed / Play / Rest** actions, while the backend tracks **time-based stat decay** so pets feel more alive—even when the user is away.
@@ -368,9 +364,6 @@ These design artifacts show how the app was planned before implementation.
 
 * **ERD (Entity Relationship Diagram)**
   [https://docs.google.com/presentation/d/13dbNaNI-6SwyrJSFdLaZajFOUuJ16FoRXIglG_MccTc/edit?usp=drive_link](https://docs.google.com/presentation/d/13dbNaNI-6SwyrJSFdLaZajFOUuJ16FoRXIglG_MccTc/edit?usp=drive_link)
-
-> **Future:** Export these to PNG/SVG and check them into the repo under
-> `docs/wireframes/` and `docs/erd/` for easier offline viewing.
 
 ---
 
