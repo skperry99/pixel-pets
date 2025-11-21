@@ -255,6 +255,7 @@ export default function PetProfile() {
             confirmLabel="Delete"
             cancelLabel="Cancel"
             danger
+            beep
             onConfirm={() => {
               setConfirmOpen(false);
               handleDeleteConfirmed();
