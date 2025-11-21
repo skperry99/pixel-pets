@@ -32,6 +32,13 @@ export default function PetProfile() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [actionAnim, setActionAnim] = useState('');
+
+  function triggerAnim(kind) {
+    setActionAnim(kind);
+    // clear after the animation duration
+    setTimeout(() => setActionAnim(''), 600);
+  }
 
   // Load pet on mount / when ID changes
   useEffect(() => {
@@ -81,6 +88,7 @@ export default function PetProfile() {
     } else {
       notify.success(Brand.toasts.fed);
       updatePetState(res.data);
+      triggerAnim('eat');
     }
 
     setBusy(false);
@@ -97,6 +105,7 @@ export default function PetProfile() {
       notify.success(Brand.toasts.played);
       burstConfetti();
       updatePetState(res.data);
+      triggerAnim('play');
     }
 
     setBusy(false);
@@ -112,6 +121,7 @@ export default function PetProfile() {
     } else {
       notify.success(Brand.toasts.rest);
       updatePetState(res.data);
+      triggerAnim('rest');
     }
 
     setBusy(false);
@@ -187,7 +197,8 @@ export default function PetProfile() {
           <div className="u-center">
             <PetSprite
               type={type}
-              className="pet-sprite pet-sprite--lg pet-sprite--hover-bounce"
+              className={`pet-sprite pet-sprite--lg pet-sprite--hover-bounce
+                 ${actionAnim ? `pet-anim--${actionAnim}` : ''}`.trim()}
               title={`${name} the ${type}`}
             />
           </div>

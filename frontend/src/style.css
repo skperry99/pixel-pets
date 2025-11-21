@@ -928,6 +928,69 @@ select:focus {
   box-shadow: 8px 8px 0 #000;
 }
 
+/* EAT: quick squash & stretch chomp */
+@keyframes pet-eat-chomp {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  20% {
+    transform: translateY(1px) scale(1.05, 0.95);
+  }
+  40% {
+    transform: translateY(-2px) scale(0.96, 1.06);
+  }
+  60% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+.pet-anim--eat {
+  animation: pet-eat-chomp 400ms steps(2, end);
+}
+
+/* PLAY: excited wiggle + bounce */
+@keyframes pet-play-bounce {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-4px) rotate(-3deg);
+  }
+  40% {
+    transform: translateY(0) rotate(3deg);
+  }
+  60% {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.pet-anim--play {
+  animation: pet-play-bounce 550ms steps(3, end);
+}
+
+/* REST: soft breathing / sway */
+@keyframes pet-rest-breathe {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-anim--rest {
+  animation: pet-rest-breathe 1200ms steps(4, end);
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   body::before {
