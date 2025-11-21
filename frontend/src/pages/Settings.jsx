@@ -127,7 +127,7 @@ export default function Settings() {
     if (!res.ok) {
       const inlineMsg = res.error || Brand.inline.profileUpdateFailed;
 
-      // Inline: more detailed, business-y
+      // Inline: more detailed
       setErrorAndFocus(inlineMsg);
       usernameRef.current?.focus();
 
@@ -213,41 +213,57 @@ export default function Settings() {
   async function handleConfirmDelete() {
     if (loading) return;
 
-    // Client-side phrase check: inline + clear guidance
+    setErrorMsg('');
+
+    // 1) Client-side check: phrase must match exactly
     if (confirmText !== requiredPhrase) {
       const msg = `Please type "${requiredPhrase}" exactly to confirm.`;
 
-      // Inline error under the input
+      // Inline error under the DELETE input
       setDeleteError(msg);
 
-      // Toast error via Notice system (same text for clarity here)
+      // Short, on-brand toast (fun + quick)
       notify.error(msg);
 
-      // Focus + select for quick correction
+      // Force focus back to the confirm field so the user can fix it quickly
       queueMicrotask(() => {
         if (confirmRef.current) {
           confirmRef.current.focus();
           confirmRef.current.select?.();
         }
       });
+      // Extra safety in case anything else tries to grab focus
+      window.setTimeout(() => {
+        if (confirmRef.current) {
+          confirmRef.current.focus();
+          confirmRef.current.select?.();
+        }
+      }, 0);
 
       return;
     }
 
-    setErrorMsg('');
+    // 2) Phrase is correct → actually attempt deletion
     setDeleteError('');
     setLoading(true);
 
     const res = await deleteUserApi(userId);
     if (!res.ok) {
-      const inlineMsg = res.error || Brand.inline.accountDeleteFailed;
+      const inlineMsg = res.error || 'Account deletion failed.';
 
-      // Inline: detailed explanation in header panel
-      setErrorAndFocus(inlineMsg);
-      confirmRef.current?.focus();
+      // Stay in the Delete section: use inline deleteError here
+      setDeleteError(inlineMsg);
 
-      // Toast: short, fun-ish but still serious
-      notify.error(Brand.toasts.accountDeleteError);
+      // Toast: short, themed error
+      notify.error(Brand.toasts.accountDeleteError || 'Account deletion failed. 😿');
+
+      // Keep the user anchored at the DELETE input
+      queueMicrotask(() => {
+        if (confirmRef.current) {
+          confirmRef.current.focus();
+          confirmRef.current.select?.();
+        }
+      });
 
       setLoading(false);
       return;
