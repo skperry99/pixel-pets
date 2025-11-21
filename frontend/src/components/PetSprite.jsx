@@ -2,12 +2,21 @@
 
 import { useMemo, useState } from 'react';
 
-// Mapping from pet type → sprite asset path.
+// Import sprites from src/assets/pets
+import dogImg from '../assets/pets/dog.png';
+import catImg from '../assets/pets/cat.png';
+import dragonImg from '../assets/pets/dragon.png';
+import bunnyImg from '../assets/pets/bunny.png';
+import blobImg from '../assets/pets/blob.png';
+
+// Mapping from pet type → sprite asset.
 // Keys are lowercase; component normalizes incoming type string.
 const SRC_BY_TYPE = {
-  dog: '/pets/dog.png',
-  cat: '/pets/cat.png',
-  dragon: '/pets/dragon.png',
+  dog: dogImg,
+  cat: catImg,
+  dragon: dragonImg,
+  bunny: bunnyImg,
+  blob: blobImg,
 };
 
 // Emoji used if the type sprite is missing or fails to load.
@@ -15,6 +24,8 @@ const EMOJI_FALLBACK = {
   dog: '🐶',
   cat: '🐱',
   dragon: '🐲',
+  bunny: '🐰',
+  blob: '🟢',
 };
 
 /**

@@ -27,7 +27,7 @@ export default function AdoptForm({ userId, onAdopt, petTypes, className = '' })
 
   // Use provided petTypes or a default list
   const options = useMemo(
-    () => (petTypes?.length ? petTypes : ['Cat', 'Dog', 'Dragon']),
+    () => (petTypes?.length ? petTypes : ['Cat', 'Dog', 'Dragon', 'Bunny', 'Blob']),
     [petTypes],
   );
 
