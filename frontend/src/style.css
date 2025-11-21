@@ -553,15 +553,6 @@ select:focus {
   border-radius: var(--radius);
 }
 
-/* Optional: a full-width modifier for multi-line errors */
-.form-error--block {
-  display: block;
-  width: 100%;
-  max-width: var(--container-sm);
-  margin-left: auto;
-  margin-right: auto;
-}
-
 /* ---------- 8) Status Bars ---------- */
 .status-bar {
   background-color: #000;
@@ -767,9 +758,6 @@ select:focus {
 }
 .footer-credit {
   margin: 0;
-}
-.footer-accent {
-  color: var(--accent-color);
 }
 
 /* ---------- 13) Toggle (Light/Dark) ---------- */
