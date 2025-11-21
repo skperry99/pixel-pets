@@ -358,13 +358,6 @@ h3 {
 }
 
 /* ---------- 5) Cards & Panels ---------- */
-.card {
-  background-color: var(--panel-color);
-  border: var(--border-3) solid var(--border-color);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-pixel-lg);
-}
-
 .panel {
   background-color: var(--panel-color);
   border: var(--border-3) solid var(--border-color);
@@ -1553,7 +1546,6 @@ a:focus-visible {
 
 /* 1) Convert key components to pixel outlines */
 .panel,
-.card,
 .btn,
 .notice,
 .pixel-toast.panel,
@@ -1572,8 +1564,6 @@ a:focus-visible {
 /* 2) Corner nubs (8-bit studs) */
 .panel::before,
 .panel::after,
-.card::before,
-.card::after,
 .btn::before,
 .btn::after,
 .notice::before,
@@ -1595,7 +1585,6 @@ a:focus-visible {
 
 /* top-left / bottom-right */
 .panel::before,
-.card::before,
 .btn::before,
 .notice::before,
 .pixel-toast.panel::before,
@@ -1605,7 +1594,6 @@ a:focus-visible {
   top: calc(var(--px-unit) * -1);
 }
 .panel::after,
-.card::after,
 .btn::after,
 .notice::after,
 .pixel-toast.panel::after,
