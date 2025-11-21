@@ -271,6 +271,19 @@ h3 {
   text-shadow: 1px 1px #000;
 }
 
+.nav__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-inline: 0.75rem;
+}
+
+.nav__icon-label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 /* --- Right-side container for toggle + menu --- */
 .nav__controls {
   justify-self: end;
@@ -393,6 +406,26 @@ h3 {
 }
 .panel--full {
   max-width: var(--container-lg);
+}
+
+/* Subtle "hey, look here!" pulse for Adopt panel */
+.panel--highlight {
+  animation: panel-highlight 0.9s ease-out;
+}
+
+@keyframes panel-highlight {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-color, #ffcc00);
+    background-color: rgba(255, 204, 0, 0.18);
+  }
+  40% {
+    box-shadow: 0 0 0 4px rgba(255, 204, 0, 0.6);
+    background-color: rgba(255, 204, 0, 0.26);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    background-color: transparent;
+  }
 }
 
 .header-panel {
