@@ -86,7 +86,8 @@ export default function PetProfile() {
     if (!res.ok) {
       notify.error(Brand.toasts.feedError);
     } else {
-      notify.success(Brand.toasts.fed);
+      // species-aware, name-aware
+      notify.success(Brand.toasts.fed(pet.name, pet.type));
       updatePetState(res.data);
       triggerAnim('eat');
     }
@@ -102,7 +103,7 @@ export default function PetProfile() {
     if (!res.ok) {
       notify.error(Brand.toasts.playError);
     } else {
-      notify.success(Brand.toasts.played);
+      notify.success(Brand.toasts.played(pet.name, pet.type));
       burstConfetti();
       updatePetState(res.data);
       triggerAnim('play');
@@ -119,7 +120,7 @@ export default function PetProfile() {
     if (!res.ok) {
       notify.error(Brand.toasts.restError);
     } else {
-      notify.success(Brand.toasts.rest);
+      notify.success(Brand.toasts.rest(pet.name, pet.type));
       updatePetState(res.data);
       triggerAnim('rest');
     }
@@ -138,7 +139,7 @@ export default function PetProfile() {
       return;
     }
 
-    notify.success(Brand.toasts.released);
+    notify.success(Brand.toasts.released(pet.name, pet.type));
     navigate('/dashboard');
   }
 

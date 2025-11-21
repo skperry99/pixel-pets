@@ -20,8 +20,83 @@ function adoptionMessage(name, type) {
     case 'blob':
       return `You adopted ${name} the Blob — soft, squishy, and surprisingly expressive. 🟢✨`;
     default:
-      // generic fallback for any future pet types
       return `You adopted ${name} the ${type || 'mystery pet'}! 🎉🐾`;
+  }
+}
+
+function feedMessage(name, type) {
+  const key = String(type || '').toLowerCase();
+
+  switch (key) {
+    case 'dog':
+      return `${name} the Dog devours their snack with a happy tail wag! 🐶🍖`;
+    case 'cat':
+      return `${name} the Cat nibbles delicately and pretends they weren’t hungry. 🐱🍗`;
+    case 'dragon':
+      return `${name} the Dragon gulps down a spicy snack and sparks flicker. 🐉🔥`;
+    case 'bunny':
+      return `${name} the Bunny munches in rapid little bites. 🐰🥕`;
+    case 'blob':
+      return `${name} the Blob absorbs the snack and wiggles contentedly. 🟢🍽️`;
+    default:
+      return `${name} enjoys a tasty snack! 🐾🍽️`;
+  }
+}
+
+function playMessage(name, type) {
+  const key = String(type || '').toLowerCase();
+
+  switch (key) {
+    case 'dog':
+      return `${name} the Dog zooms around chasing invisible tennis balls. 🐶🎾`;
+    case 'cat':
+      return `${name} the Cat bats at toys, then pretends it was all on purpose. 🐱🧶`;
+    case 'dragon':
+      return `${name} the Dragon does tiny practice flights and shows off baby firebursts. 🐉✨`;
+    case 'bunny':
+      return `${name} the Bunny does zoomies and tiny binkies across the screen. 🐰💨`;
+    case 'blob':
+      return `${name} the Blob wobbles, bounces, and does surprisingly athletic oozes. 🟢🎮`;
+    default:
+      return `${name} has a great time playing! 🐾🎮`;
+  }
+}
+
+function restMessage(name, type) {
+  const key = String(type || '').toLowerCase();
+
+  switch (key) {
+    case 'dog':
+      return `${name} the Dog curls up for a cozy nap. 🐶💤`;
+    case 'cat':
+      return `${name} the Cat becomes a perfect loaf and powers down. 🐱🍞💤`;
+    case 'dragon':
+      return `${name} the Dragon curls around a tiny hoard of pixels and drifts off. 🐉💤`;
+    case 'bunny':
+      return `${name} the Bunny flops over into maximum comfy mode. 🐰💤`;
+    case 'blob':
+      return `${name} the Blob settles into a slow, gentle pulse. 🟢💤`;
+    default:
+      return `${name} takes a well-earned rest. 🐾💤`;
+  }
+}
+
+function releaseMessage(name, type) {
+  const key = String(type || '').toLowerCase();
+
+  switch (key) {
+    case 'dog':
+      return `${name} the Dog trots off to chase new adventures. 🐶✨`;
+    case 'cat':
+      return `${name} the Cat saunters away to rule another cozy corner. 🐱👑`;
+    case 'dragon':
+      return `${name} the Dragon soars off to guard a distant pixel kingdom. 🐉🏰`;
+    case 'bunny':
+      return `${name} the Bunny hops away into a field of endless snacks. 🐰🌱`;
+    case 'blob':
+      return `${name} the Blob oozes off to discover new, squishy horizons. 🟢🌈`;
+    default:
+      return `${name} wanders off to new adventures. 🐾✨`;
   }
 }
 
@@ -51,16 +126,16 @@ export const Brand = {
 
     adopted: adoptionMessage,
 
-    fed: 'Nom nom! 🍖',
+    fed: feedMessage,
     feedError: 'Feeding failed — your pet is still hungry. 😿',
 
-    played: 'So much fun! 🎮',
+    played: playMessage,
     playError: 'Playtime fizzled — try again in a moment. 😿',
 
-    rest: 'Zzz… 😴',
+    rest: restMessage,
     restError: 'Couldn’t tuck them in — rest failed. 😿',
 
-    released: 'Pet released. 🐾',
+    released: releaseMessage,
     releaseError: 'Could not release this pet. 😿',
 
     welcome: 'Welcome back! 🐾',
@@ -77,7 +152,7 @@ export const Brand = {
     accountDeleteError: 'Account deletion failed. 😿',
   },
 
-  // More detailed, business-y inline messages
+  // More detailed inline messages
   inline: {
     profileLoadFailed:
       'Failed to load your profile. Please refresh the page or try again in a few minutes.',
