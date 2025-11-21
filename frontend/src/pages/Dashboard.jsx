@@ -145,7 +145,7 @@ export default function Dashboard() {
         <div className="panel__body">
           <AdoptForm
             userId={userId}
-            petTypes={['Cat', 'Dog', 'Dragon']}
+            petTypes={['Cat', 'Dog', 'Dragon', 'Bunny', 'Blob']}
             onAdopt={(savedPet) => {
               setPets((prev) => {
                 if (prev.length === 0) {

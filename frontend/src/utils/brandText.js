@@ -4,6 +4,27 @@
  * - Keeps UI text consistent across pages/components
  * - Safe to import anywhere in the frontend
  */
+
+function adoptionMessage(name, type) {
+  const key = String(type || '').toLowerCase();
+
+  switch (key) {
+    case 'dog':
+      return `You adopted ${name} the Dog — loyal, wiggly, and ready for fetch! 🐶🎾`;
+    case 'cat':
+      return `You adopted ${name} the Cat — dignified, curious, and a little bit bossy. 🐱✨`;
+    case 'dragon':
+      return `You adopted ${name} the Dragon — tiny but mighty, with a spark of chaos. 🐉🔥`;
+    case 'bunny':
+      return `You adopted ${name} the Bunny — a bouncy bundle of floof and zoomies. 🐰🥕`;
+    case 'blob':
+      return `You adopted ${name} the Blob — soft, squishy, and surprisingly expressive. 🟢✨`;
+    default:
+      // generic fallback for any future pet types
+      return `You adopted ${name} the ${type || 'mystery pet'}! 🎉🐾`;
+  }
+}
+
 export const Brand = {
   app: 'Pixel Pets',
 
@@ -26,7 +47,7 @@ export const Brand = {
   toasts: {
     profilePatched: 'Profile patched! 🩹',
     passwordPatched: 'Password patched! 🔐🩹',
-    adopted: (name, type) => `Adopted ${name} the ${type}! 🎉🐾`,
+    adopted: adoptionMessage,
     fed: 'Nom nom! 🍖',
     played: 'So much fun! 🎮',
     rest: 'Zzz… 😴',
