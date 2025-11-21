@@ -97,7 +97,7 @@ export default function NavBar({
               {/* Pixel-style Quit button */}
               <button
                 type="button"
-                className="btn btn--danger nav__quit-btn"
+                className="btn btn--danger nav__logout"
                 onClick={handleLogout}
                 aria-label="Quit to login screen"
                 title="Quit"
