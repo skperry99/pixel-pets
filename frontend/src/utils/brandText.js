@@ -44,18 +44,49 @@ export const Brand = {
   },
 
   // Toast copy for NoticeProvider / screens
+  // FUN, QUIRKY, ON-BRAND
   toasts: {
     profilePatched: 'Profile patched! 🩹',
     passwordPatched: 'Password patched! 🔐🩹',
+
     adopted: adoptionMessage,
+
     fed: 'Nom nom! 🍖',
+    feedError: 'Feeding failed — your pet is still hungry. 😿',
+
     played: 'So much fun! 🎮',
+    playError: 'Playtime fizzled — try again in a moment. 😿',
+
     rest: 'Zzz… 😴',
+    restError: 'Couldn’t tuck them in — rest failed. 😿',
+
     released: 'Pet released. 🐾',
+    releaseError: 'Could not release this pet. 😿',
+
     welcome: 'Welcome back! 🐾',
     accountCreated: 'Account created! Welcome to Pixel Pets.',
 
     konami: 'Konami unlocked! 🕹️ Theme toggle + confetti!',
+
+    // Load failures (used with more detailed inline text)
+    petLoadFailed: 'Couldn’t load that pet. 😿',
+    petsLoadFailed: 'Couldn’t load your pets. 😿',
+    profileLoadFailed: 'Couldn’t load your profile. 😿',
+    profileError: 'Couldn’t save profile. 😿',
+    passwordError: 'Couldn’t change password. 😿',
+    accountDeleteError: 'Account deletion failed. 😿',
+  },
+
+  // More detailed, business-y inline messages
+  inline: {
+    profileLoadFailed:
+      'Failed to load your profile. Please refresh the page or try again in a few minutes.',
+    petsLoadFailed: 'Failed to load your pets. Please refresh the page or try again later.',
+    petLoadFailed: 'Failed to load this pet. It may have been released or a server error occurred.',
+    profileUpdateFailed: 'Profile update failed. Please review the fields below and try again.',
+    passwordChangeFailed: 'Password change failed. Please check your password and try again.',
+    accountDeleteFailed:
+      'Account deletion failed. Please try again. If this continues, contact support.',
   },
 
   // Auth-related UI text

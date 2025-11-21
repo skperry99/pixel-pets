@@ -53,9 +53,13 @@ export default function Settings() {
     (async () => {
       const res = await getUserProfile(userId);
       if (!res.ok) {
-        const msg = res.error || 'Failed to load profile.';
-        setErrorAndFocus(msg);
-        notify.error(msg);
+        const inlineMsg = res.error || Brand.inline.profileLoadFailed;
+
+        // Inline: detailed explanation
+        setErrorAndFocus(inlineMsg);
+
+        // Toast: short, on-brand
+        notify.error(Brand.toasts.profileLoadFailed);
         return;
       }
 
@@ -93,11 +97,10 @@ export default function Settings() {
     const username = form.username.trim();
     const email = form.email.trim();
 
-    // Basic validation
+    // Basic validation (inline only)
     if (!username || !email) {
       const msg = 'Username and email are required.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       if (!username) usernameRef.current?.focus();
       else emailRef.current?.focus();
       setLoading(false);
@@ -107,7 +110,6 @@ export default function Settings() {
     if (username.length < 3 || username.length > 30) {
       const msg = 'Username must be 3–30 characters.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       usernameRef.current?.focus();
       setLoading(false);
       return;
@@ -116,7 +118,6 @@ export default function Settings() {
     if (!isValidEmail(email)) {
       const msg = 'Please enter a valid email address.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       emailRef.current?.focus();
       setLoading(false);
       return;
@@ -124,10 +125,15 @@ export default function Settings() {
 
     const res = await updateUser(userId, { username, email });
     if (!res.ok) {
-      const msg = res.error || 'Profile update failed.';
-      setErrorAndFocus(msg);
-      notify.error(msg);
+      const inlineMsg = res.error || Brand.inline.profileUpdateFailed;
+
+      // Inline: more detailed, business-y
+      setErrorAndFocus(inlineMsg);
       usernameRef.current?.focus();
+
+      // Toast: short, themed
+      notify.error(Brand.toasts.profileError);
+
       setLoading(false);
       return;
     }
@@ -160,10 +166,10 @@ export default function Settings() {
 
     const nextPwd = password;
 
+    // Basic validation (inline only)
     if (!nextPwd) {
       const msg = 'Password is required.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
       return;
@@ -172,7 +178,6 @@ export default function Settings() {
     if (nextPwd.length < 8) {
       const msg = 'Password must be at least 8 characters.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
       return;
@@ -180,10 +185,15 @@ export default function Settings() {
 
     const res = await updateUser(userId, { password: nextPwd });
     if (!res.ok) {
-      const msg = res.error || 'Password change failed.';
-      setErrorAndFocus(msg);
-      notify.error(msg);
+      const inlineMsg = res.error || Brand.inline.passwordChangeFailed;
+
+      // Inline: details
+      setErrorAndFocus(inlineMsg);
       passwordRef.current?.focus();
+
+      // Toast: short + themed
+      notify.error(Brand.toasts.passwordError);
+
       setLoading(false);
       return;
     }
@@ -203,12 +213,14 @@ export default function Settings() {
   async function handleConfirmDelete() {
     if (loading) return;
 
+    // Client-side phrase check: inline + clear guidance
     if (confirmText !== requiredPhrase) {
       const msg = `Please type "${requiredPhrase}" exactly to confirm.`;
 
       // Inline error under the input
       setDeleteError(msg);
-      // Toast error via Notice system
+
+      // Toast error via Notice system (same text for clarity here)
       notify.error(msg);
 
       // Focus + select for quick correction
@@ -228,10 +240,15 @@ export default function Settings() {
 
     const res = await deleteUserApi(userId);
     if (!res.ok) {
-      const msg = res.error || 'Account deletion failed.';
-      setErrorAndFocus(msg);
-      notify.error(msg);
+      const inlineMsg = res.error || Brand.inline.accountDeleteFailed;
+
+      // Inline: detailed explanation in header panel
+      setErrorAndFocus(inlineMsg);
       confirmRef.current?.focus();
+
+      // Toast: short, fun-ish but still serious
+      notify.error(Brand.toasts.accountDeleteError);
+
       setLoading(false);
       return;
     }

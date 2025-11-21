@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [adoptHighlight, setAdoptHighlight] = useState(false);
 
   // Load profile + pets when the page mounts / user changes
+  // Load profile + pets when the page mounts / user changes
   useEffect(() => {
     if (userId == null) {
       navigate('/login');
@@ -51,14 +52,15 @@ export default function Dashboard() {
 
       // Profile
       if (!profileRes.ok) {
-        notify.error(profileRes.error || 'Failed to load profile.');
+        // Short, fun toast
+        notify.error(Brand.toasts.profileLoadFailed);
       } else {
         setUserProfile(profileRes.data || null);
       }
 
       // Pets
       if (!petsRes.ok) {
-        notify.error(petsRes.error || 'Failed to load pets.');
+        notify.error(Brand.toasts.petsLoadFailed);
         setPets([]); // always keep an array
       } else {
         const list = Array.isArray(petsRes.data) ? petsRes.data : [];

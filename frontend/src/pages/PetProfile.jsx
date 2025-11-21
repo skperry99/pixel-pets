@@ -47,9 +47,12 @@ export default function PetProfile() {
       if (!isActive) return;
 
       if (!res.ok) {
-        const message = res.error || 'Failed to load pet.';
-        setError(message);
-        notify.error(message);
+        const inlineMsg = res.error || Brand.inline.petLoadFailed;
+        setError(inlineMsg);
+
+        // Fun, themed toast
+        notify.error(Brand.toasts.petLoadFailed);
+
         setLoading(false);
         return;
       }
@@ -74,7 +77,7 @@ export default function PetProfile() {
 
     const res = await feedPet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Feeding failed.');
+      notify.error(Brand.toasts.feedError);
     } else {
       notify.success(Brand.toasts.fed);
       updatePetState(res.data);
@@ -89,7 +92,7 @@ export default function PetProfile() {
 
     const res = await playWithPet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Playtime failed.');
+      notify.error(Brand.toasts.playError);
     } else {
       notify.success(Brand.toasts.played);
       burstConfetti();
@@ -105,7 +108,7 @@ export default function PetProfile() {
 
     const res = await restPet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Rest failed.');
+      notify.error(Brand.toasts.restError);
     } else {
       notify.success(Brand.toasts.rest);
       updatePetState(res.data);
@@ -120,7 +123,7 @@ export default function PetProfile() {
 
     const res = await deletePet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Could not delete pet.');
+      notify.error(Brand.toasts.releaseError);
       setBusy(false);
       return;
     }
