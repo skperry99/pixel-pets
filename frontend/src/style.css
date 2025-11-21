@@ -888,6 +888,13 @@ select:focus {
 }
 
 /* --- Pet animations --- */
+/* Action flags – species will override the actual animation */
+.pet-anim--eat,
+.pet-anim--play,
+.pet-anim--rest {
+  animation-fill-mode: both;
+}
+
 @keyframes pet-bob {
   0%,
   100% {
@@ -989,6 +996,302 @@ select:focus {
 
 .pet-anim--rest {
   animation: pet-rest-breathe 1200ms steps(4, end);
+}
+
+/* Dog: big chomp + tail-waggy wiggle */
+@keyframes pet-dog-eat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(1px) scale(1.06, 0.94) rotate(-2deg);
+  }
+  40% {
+    transform: translateY(-2px) scale(0.96, 1.06) rotate(2deg);
+  }
+  60% {
+    transform: translateY(0) scale(1.03, 0.97) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1) rotate(0deg);
+  }
+}
+
+@keyframes pet-dog-play {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(-3px) translateY(-3px);
+  }
+  50% {
+    transform: translateX(3px) translateY(-2px);
+  }
+  75% {
+    transform: translateX(-2px) translateY(-1px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes pet-dog-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--dog.pet-anim--eat {
+  animation: pet-dog-eat 420ms steps(3, end);
+}
+
+.pet-species--dog.pet-anim--play {
+  animation: pet-dog-play 550ms steps(4, end);
+}
+
+.pet-species--dog.pet-anim--rest {
+  animation: pet-dog-rest 1200ms steps(4, end);
+}
+
+/* Cat: dignified pounce and tiny ear-flick vibes */
+@keyframes pet-cat-eat {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(1px) scale(1.02, 0.98);
+  }
+  60% {
+    transform: translateY(-1px) scale(0.98, 1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pet-cat-play {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-3px) translateX(2px);
+  }
+  50% {
+    transform: translateY(0) translateX(4px);
+  }
+  75% {
+    transform: translateY(-2px) translateX(0);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@keyframes pet-cat-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.99);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--cat.pet-anim--eat {
+  animation: pet-cat-eat 380ms steps(3, end);
+}
+
+.pet-species--cat.pet-anim--play {
+  animation: pet-cat-play 520ms steps(4, end);
+}
+
+.pet-species--cat.pet-anim--rest {
+  animation: pet-cat-rest 1100ms steps(4, end);
+}
+
+/* Dragon: dramatic tilt + little hovering energy */
+@keyframes pet-dragon-eat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-2px) rotate(-4deg) scale(1.05);
+  }
+  60% {
+    transform: translateY(0) rotate(3deg) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes pet-dragon-play {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-4px);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+  75% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pet-dragon-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(2px) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--dragon.pet-anim--eat {
+  animation: pet-dragon-eat 450ms steps(3, end);
+}
+
+.pet-species--dragon.pet-anim--play {
+  animation: pet-dragon-play 600ms steps(4, end);
+}
+
+.pet-species--dragon.pet-anim--rest {
+  animation: pet-dragon-rest 1300ms steps(4, end);
+}
+
+/* Bunny: zoomies + double hops */
+@keyframes pet-bunny-eat {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pet-bunny-play {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-5px);
+  }
+  40% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pet-bunny-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--bunny.pet-anim--eat {
+  animation: pet-bunny-eat 380ms steps(3, end);
+}
+
+.pet-species--bunny.pet-anim--play {
+  animation: pet-bunny-play 520ms steps(4, end);
+}
+
+.pet-species--bunny.pet-anim--rest {
+  animation: pet-bunny-rest 1150ms steps(4, end);
+}
+
+/* Blob: squish, wobble, slow pulse */
+@keyframes pet-blob-eat {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1.08, 0.92);
+  }
+  50% {
+    transform: scale(0.96, 1.06);
+  }
+  75% {
+    transform: scale(1.04, 0.96);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes pet-blob-play {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  25% {
+    transform: translateX(-3px) scale(1.02);
+  }
+  50% {
+    transform: translateX(3px) scale(0.98);
+  }
+  75% {
+    transform: translateX(-2px) scale(1.02);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes pet-blob-rest {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pet-species--blob.pet-anim--eat {
+  animation: pet-blob-eat 420ms steps(3, end);
+}
+
+.pet-species--blob.pet-anim--play {
+  animation: pet-blob-play 560ms steps(4, end);
+}
+
+.pet-species--blob.pet-anim--rest {
+  animation: pet-blob-rest 1400ms steps(4, end);
 }
 
 /* Reduced motion support */

@@ -49,6 +49,8 @@ export default function PetSprite({ type = 'Dog', size = 120, title, className =
   const alt = title || `${type} sprite`;
   const src = SRC_BY_TYPE[kind];
 
+  const speciesClass = `pet-species--${kind}`;
+
   // If we have no sprite path, or the <img> failed to load, render the emoji fallback.
   if (!src || showEmoji) {
     const glyph = EMOJI_FALLBACK[kind] || '🐾';
@@ -58,7 +60,7 @@ export default function PetSprite({ type = 'Dog', size = 120, title, className =
         role="img"
         aria-label={alt}
         title={alt}
-        className={`pet-sprite pet-anim--idle pet-anim--hover ${className}`.trim()}
+        className={`pet-sprite pet-anim--idle pet-anim--hover ${speciesClass} ${className}`.trim()}
         style={{
           width: `${size}px`,
           height: `${size}px`,
@@ -86,7 +88,7 @@ export default function PetSprite({ type = 'Dog', size = 120, title, className =
       decoding="async"
       loading="lazy"
       draggable="false"
-      className={`pet-sprite pet-anim--idle pet-anim--hover ${className}`.trim()}
+      className={`pet-sprite pet-anim--idle pet-anim--hover ${speciesClass} ${className}`.trim()}
       onError={() => setShowEmoji(true)}
     />
   );
