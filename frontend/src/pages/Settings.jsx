@@ -31,6 +31,7 @@ export default function Settings() {
   // Delete-confirmation state
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmText, setConfirmText] = useState('');
+  const [deleteError, setDeleteError] = useState(''); // inline delete error
   const [headerName, setHeaderName] = useState('');
 
   const requiredPhrase = 'DELETE';
@@ -201,9 +202,28 @@ export default function Settings() {
 
   async function handleConfirmDelete() {
     if (loading) return;
-    if (confirmText !== requiredPhrase) return;
+
+    if (confirmText !== requiredPhrase) {
+      const msg = `Please type "${requiredPhrase}" exactly to confirm.`;
+
+      // Inline error under the input
+      setDeleteError(msg);
+      // Toast error via Notice system
+      notify.error(msg);
+
+      // Focus + select for quick correction
+      queueMicrotask(() => {
+        if (confirmRef.current) {
+          confirmRef.current.focus();
+          confirmRef.current.select?.();
+        }
+      });
+
+      return;
+    }
 
     setErrorMsg('');
+    setDeleteError('');
     setLoading(true);
 
     const res = await deleteUserApi(userId);
@@ -367,6 +387,8 @@ export default function Settings() {
                 className="btn btn--danger"
                 onClick={() => {
                   setConfirmDelete(true);
+                  setDeleteError('');
+                  setConfirmText('');
                   setTimeout(() => confirmRef.current?.focus(), 0);
                 }}
                 disabled={loading}
@@ -384,16 +406,27 @@ export default function Settings() {
                 ref={confirmRef}
                 placeholder={requiredPhrase}
                 value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
+                onChange={(e) => {
+                  setConfirmText(e.target.value);
+                  if (deleteError) setDeleteError('');
+                }}
                 disabled={loading}
                 aria-label="Type DELETE to confirm account deletion"
+                aria-invalid={Boolean(deleteError)}
+                aria-describedby={deleteError ? 'delete-confirm-error' : undefined}
               />
+
+              {deleteError && (
+                <p id="delete-confirm-error" className="form-error" role="alert">
+                  {deleteError}
+                </p>
+              )}
 
               <div className="u-actions-row">
                 <button
                   type="button"
                   className="btn btn--danger"
-                  disabled={loading || confirmText !== requiredPhrase}
+                  disabled={loading}
                   onClick={handleConfirmDelete}
                 >
                   {loading ? 'Deleting...' : 'Confirm delete'}
@@ -406,6 +439,7 @@ export default function Settings() {
                   onClick={() => {
                     setConfirmDelete(false);
                     setConfirmText('');
+                    setDeleteError('');
                   }}
                 >
                   Cancel
