@@ -1,26 +1,39 @@
+// src/components/AdoptForm.jsx
+
 import { useMemo, useRef, useState } from 'react';
 import { createPet } from '../api';
 
-export default function AdoptForm({
-  userId, // required (number)
-  onAdopt, // required: (savedPet) => void
-  petTypes, // optional: ["Cat","Dog","Dragon"]; fallback used if omitted
-  className = '',
-}) {
+/**
+ * AdoptForm
+ *
+ * Small, self-contained form used on the Dashboard:
+ * - Lets the current user adopt a new pet by name + type.
+ * - Enforces simple client-side validation.
+ * - Surfaces errors inline and moves focus to the error message.
+ *
+ * Props:
+ * - userId   (number, required): owning user id
+ * - onAdopt  (function, required): callback receiving the saved pet DTO
+ * - petTypes (string[], optional): allowed types; defaults to ["Cat", "Dog", "Dragon"]
+ * - className (string, optional): extra panel classes
+ */
+export default function AdoptForm({ userId, onAdopt, petTypes, className = '' }) {
   const [name, setName] = useState('');
   const [type, setType] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
   const errorRef = useRef(null);
 
-  // Use prop or default list
+  // Use provided petTypes or a default list
   const options = useMemo(
     () => (petTypes?.length ? petTypes : ['Cat', 'Dog', 'Dragon']),
     [petTypes],
   );
 
-  function setAndFocusError(message) {
-    setErr(message);
+  /** Set an error message and shift focus to the alert region for screen readers. */
+  function setErrorAndFocus(message) {
+    setErrorMsg(message);
     // Move screen reader focus to the error
     queueMicrotask(() => errorRef.current?.focus());
   }
@@ -28,31 +41,42 @@ export default function AdoptForm({
   async function handleSubmit(e) {
     e.preventDefault();
     if (busy) return;
-    setErr('');
 
-    const trimmed = name.trim();
-    if (!trimmed) return setAndFocusError('Please enter a pet name.');
-    if (!type) return setAndFocusError('Please select a pet type.');
-    if (!userId) return setAndFocusError('Missing user ID.');
+    setErrorMsg('');
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      return setErrorAndFocus('Please enter a pet name.');
+    }
+    if (!type) {
+      return setErrorAndFocus('Please select a pet type.');
+    }
+    if (!userId) {
+      return setErrorAndFocus('Missing user ID.');
+    }
     if (options.length && !options.includes(type)) {
-      return setAndFocusError('Invalid pet type.');
+      return setErrorAndFocus('Invalid pet type.');
     }
 
     setBusy(true);
+
     const res = await createPet({
-      name: trimmed,
+      name: trimmedName,
       type,
       userId: Number(userId),
     });
 
     if (!res.ok) {
-      setAndFocusError(res.error || 'Adoption failed.');
+      setErrorAndFocus(res.error || 'Adoption failed.');
       setBusy(false);
       return;
     }
 
     const saved = res.data;
     onAdopt?.(saved);
+
+    // Reset form on success
     setName('');
     setType('');
     setBusy(false);
@@ -60,9 +84,9 @@ export default function AdoptForm({
 
   return (
     <section className={`panel ${className}`}>
-
       <div className="panel__body">
         <form className="form" onSubmit={handleSubmit} noValidate>
+          {/* Pet name */}
           <div className="form__row">
             <label className="label" htmlFor="adopt-name">
               Pet name
@@ -76,13 +100,14 @@ export default function AdoptForm({
               maxLength={50}
               pattern="^[A-Za-z0-9 _'\-]{2,50}$"
               aria-required="true"
-              aria-invalid={!!err && !name.trim()}
-              aria-describedby={err && !name.trim() ? 'adopt-error' : undefined}
+              aria-invalid={!!errorMsg && !name.trim()}
+              aria-describedby={errorMsg && !name.trim() ? 'adopt-error' : undefined}
               disabled={busy}
               placeholder="Pixel Paws"
             />
           </div>
 
+          {/* Pet type */}
           <div className="form__row">
             <label className="label" htmlFor="adopt-type">
               Pet type
@@ -93,8 +118,8 @@ export default function AdoptForm({
               onChange={(e) => setType(e.target.value)}
               required
               aria-required="true"
-              aria-invalid={!!err && !type}
-              aria-describedby={err && !type ? 'adopt-error' : undefined}
+              aria-invalid={!!errorMsg && !type}
+              aria-describedby={errorMsg && !type ? 'adopt-error' : undefined}
               disabled={busy}
             >
               <option value="">Select a pet type</option>
@@ -106,7 +131,8 @@ export default function AdoptForm({
             </select>
           </div>
 
-          {err && (
+          {/* Inline error message (focusable alert region) */}
+          {errorMsg && (
             <div
               id="adopt-error"
               className="form-error"
@@ -115,11 +141,12 @@ export default function AdoptForm({
               tabIndex={-1}
               ref={errorRef}
             >
-              {err}
+              {errorMsg}
             </div>
           )}
 
-          <div className="form__row" style={{ textAlign: 'center' }}>
+          {/* Actions */}
+          <div className="form__row u-text-center">
             <button className="btn" type="submit" disabled={busy}>
               {busy ? 'Adopting...' : 'Adopt 🐾'}
             </button>

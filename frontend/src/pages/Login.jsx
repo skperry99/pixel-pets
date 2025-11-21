@@ -1,9 +1,16 @@
+// src/pages/Login.jsx
+// Login screen:
+// - Redirects to dashboard if already authed
+// - Validates required fields client-side
+// - Uses inline error message + toast notices
+
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
 import { login } from '../api';
 import { getStoredUserId, setStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,20 +23,19 @@ export default function Login() {
   const usernameRef = useRef(null);
   const errorRef = useRef(null);
 
-  // If already logged in, bounce to dashboard
+  // If already logged in, bounce to dashboard; otherwise focus username.
   useEffect(() => {
     const id = getStoredUserId();
     if (id != null) {
       navigate('/dashboard');
     } else {
-      // focus username on first load
       usernameRef.current?.focus();
     }
   }, [navigate]);
 
-  function setAndFocusError(msg) {
-    setErrorMsg(msg);
-    // shift focus to the alert text for SR users
+  // Helper: set error text and move focus to the alert region for SR users.
+  function setErrorAndFocus(message) {
+    setErrorMsg(message);
     queueMicrotask(() => errorRef.current?.focus());
   }
 
@@ -43,19 +49,20 @@ export default function Login() {
     const password = form.password;
 
     if (!username || !password) {
-      const msg = 'Username and password are required.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = Brand.validation.usernameAndPasswordRequired;
+      setErrorAndFocus(message);
+      notify.error(message);
       if (!username) usernameRef.current?.focus();
       return;
     }
 
     setLoading(true);
+
     const res = await login(username, password);
     if (!res.ok) {
-      const msg = res.error || 'Login failed.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = res.error || Brand.errors.loginFailed;
+      setErrorAndFocus(message);
+      notify.error(message);
       usernameRef.current?.focus();
       setLoading(false);
       return;
@@ -64,7 +71,7 @@ export default function Login() {
     // API returns numeric userId as JSON
     const userId = res.data;
     setStoredUserId(userId);
-    notify.success('Welcome back! 🐾');
+    notify.success(Brand.toasts.welcome);
     navigate('/dashboard');
     setLoading(false);
   }
@@ -73,7 +80,7 @@ export default function Login() {
     <AppLayout headerProps={{ title: 'LOGIN' }}>
       <section className="panel">
         <header className="panel__header">
-          <h1 className="panel__title">Log In</h1>
+          <h1 className="panel__title">{Brand.auth.loginTitle}</h1>
         </header>
 
         <div className="panel__body">
@@ -134,19 +141,19 @@ export default function Login() {
             {/* Actions */}
             <div className="form__row" style={{ textAlign: 'center' }}>
               <button className="btn" type="submit" disabled={loading}>
-                {loading ? 'Signing in…' : 'Log In'}
+                {loading ? 'Signing in…' : Brand.auth.loginCta}
               </button>
             </div>
 
             <div className="form__row" style={{ textAlign: 'center' }}>
-              <p>New to Pixel Pets?</p>
+              <p>{Brand.auth.newHere}</p>
               <button
                 className="btn btn--secondary"
                 type="button"
                 onClick={() => navigate('/register')}
                 disabled={loading}
               >
-                Create Account
+                {Brand.auth.createAccountCta}
               </button>
             </div>
           </form>

@@ -1,9 +1,18 @@
+// src/pages/Settings.jsx
+// Profile settings:
+// - Load current user profile
+// - Update username/email
+// - Change password
+// - Delete account (with DELETE confirmation + toast feedback)
+
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { updateUser, deleteUserApi, getUserProfile } from '../api';
 import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -11,54 +20,67 @@ export default function Settings() {
 
   const userId = getStoredUserId();
 
+  // ----- Form state -----
   const [form, setForm] = useState({ username: '', email: '' });
   const [password, setPassword] = useState('');
 
+  // Shared status/error state
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Delete-confirmation state
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [headerName, setHeaderName] = useState('');
 
   const requiredPhrase = 'DELETE';
 
-  // Refs
+  // ----- Refs -----
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmRef = useRef(null);
   const errorRef = useRef(null);
 
+  // ----- Effects: initial load -----
   useEffect(() => {
     if (userId == null) {
       navigate('/login');
       return;
     }
+
     (async () => {
       const res = await getUserProfile(userId);
       if (!res.ok) {
         const msg = res.error || 'Failed to load profile.';
-        setAndFocusError(msg);
+        setErrorAndFocus(msg);
         notify.error(msg);
         return;
       }
+
       const user = res.data || {};
-      setForm({ username: user.username ?? '', email: user.email ?? '' });
+      setForm({
+        username: user.username ?? '',
+        email: user.email ?? '',
+      });
       setHeaderName(user.username ?? '');
-      // Autofocus username for convenience
       usernameRef.current?.focus();
     })();
   }, [userId, navigate, notify]);
+
+  // ----- Helpers -----
 
   function isValidEmail(v) {
     return /\S+@\S+\.\S+/.test(v);
   }
 
-  function setAndFocusError(msg) {
+  /** Set error message and move focus to the error block for SR users. */
+  function setErrorAndFocus(msg) {
     setErrorMsg(msg);
     queueMicrotask(() => errorRef.current?.focus());
   }
+
+  // ----- Handlers: profile update -----
 
   async function handleProfileSubmit(e) {
     e.preventDefault();
@@ -70,26 +92,29 @@ export default function Settings() {
     const username = form.username.trim();
     const email = form.email.trim();
 
+    // Basic validation
     if (!username || !email) {
       const msg = 'Username and email are required.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       if (!username) usernameRef.current?.focus();
       else emailRef.current?.focus();
       setLoading(false);
       return;
     }
+
     if (username.length < 3 || username.length > 30) {
       const msg = 'Username must be 3–30 characters.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       usernameRef.current?.focus();
       setLoading(false);
       return;
     }
+
     if (!isValidEmail(email)) {
       const msg = 'Please enter a valid email address.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       emailRef.current?.focus();
       setLoading(false);
@@ -99,7 +124,7 @@ export default function Settings() {
     const res = await updateUser(userId, { username, email });
     if (!res.ok) {
       const msg = res.error || 'Profile update failed.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       usernameRef.current?.focus();
       setLoading(false);
@@ -107,14 +132,23 @@ export default function Settings() {
     }
 
     const updated = res.data || {};
+
+    // Re-sync form with server; fall back to submitted values if needed.
+    const nextUsername = updated.username ?? username;
+    const nextEmail = updated.email ?? email;
+
     setForm({
-      username: updated.username ?? username,
-      email: updated.email ?? email,
+      username: nextUsername,
+      email: nextEmail,
     });
-    setHeaderName(updated.username ?? username); // header updates only after success
-    notify.success('Profile patched! 🩹');
+
+    // Header only updates after successful save
+    setHeaderName(nextUsername);
+    notify.success(Brand.toasts.profilePatched);
     setLoading(false);
   }
+
+  // ----- Handlers: password update -----
 
   async function handlePasswordSubmit(e) {
     e.preventDefault();
@@ -127,15 +161,16 @@ export default function Settings() {
 
     if (!nextPwd) {
       const msg = 'Password is required.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
       return;
     }
+
     if (nextPwd.length < 8) {
       const msg = 'Password must be at least 8 characters.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
@@ -145,7 +180,7 @@ export default function Settings() {
     const res = await updateUser(userId, { password: nextPwd });
     if (!res.ok) {
       const msg = res.error || 'Password change failed.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
@@ -153,9 +188,11 @@ export default function Settings() {
     }
 
     setPassword('');
-    notify.success('Password changed!');
+    notify.success(Brand.toasts.passwordPatched);
     setLoading(false);
   }
+
+  // ----- Handlers: session / delete -----
 
   function handleLogout() {
     clearStoredUserId();
@@ -172,7 +209,7 @@ export default function Settings() {
     const res = await deleteUserApi(userId);
     if (!res.ok) {
       const msg = res.error || 'Account deletion failed.';
-      setAndFocusError(msg);
+      setErrorAndFocus(msg);
       notify.error(msg);
       confirmRef.current?.focus();
       setLoading(false);
@@ -185,6 +222,8 @@ export default function Settings() {
     setLoading(false);
   }
 
+  // ----- Render -----
+
   return (
     <AppLayout headerProps={{ title: 'PROFILE SETTINGS' }}>
       {/* Header / quick actions */}
@@ -194,6 +233,7 @@ export default function Settings() {
             {headerName ? `${headerName}'s Profile` : 'Profile Settings'}
           </h1>
         </header>
+
         <div className="panel__body">
           <div className="u-actions-row">
             <button
@@ -208,8 +248,15 @@ export default function Settings() {
               Logout
             </button>
           </div>
+
           {errorMsg && (
-            <div className="form-error" role="alert" tabIndex={-1} ref={errorRef}>
+            <div
+              className="form-error"
+              role="alert"
+              aria-live="assertive"
+              tabIndex={-1}
+              ref={errorRef}
+            >
               {errorMsg}
             </div>
           )}
@@ -221,10 +268,13 @@ export default function Settings() {
         <header className="panel__header">
           <h2 className="panel__title">Update Profile</h2>
         </header>
+
         <div className="panel__body">
           <form className="form" onSubmit={handleProfileSubmit} noValidate>
             <div className="form__row">
-              <label className="label" htmlFor="set-username">Username</label>
+              <label className="label" htmlFor="set-username">
+                Username
+              </label>
               <input
                 id="set-username"
                 ref={usernameRef}
@@ -240,7 +290,9 @@ export default function Settings() {
             </div>
 
             <div className="form__row">
-              <label className="label" htmlFor="set-email">Email</label>
+              <label className="label" htmlFor="set-email">
+                Email
+              </label>
               <input
                 id="set-email"
                 ref={emailRef}
@@ -269,10 +321,13 @@ export default function Settings() {
         <header className="panel__header">
           <h2 className="panel__title">Change Password</h2>
         </header>
+
         <div className="panel__body">
           <form className="form" onSubmit={handlePasswordSubmit} noValidate>
             <div className="form__row">
-              <label className="label" htmlFor="set-password">New password</label>
+              <label className="label" htmlFor="set-password">
+                New password
+              </label>
               <input
                 id="set-password"
                 ref={passwordRef}
@@ -301,6 +356,7 @@ export default function Settings() {
         <header className="panel__header">
           <h2 className="panel__title">Delete Account</h2>
         </header>
+
         <div className="panel__body u-stack-md">
           <p>Deleting your account will permanently remove your user and all pets.</p>
 
@@ -323,6 +379,7 @@ export default function Settings() {
               <p>
                 Type <strong>{requiredPhrase}</strong> to confirm.
               </p>
+
               <input
                 ref={confirmRef}
                 placeholder={requiredPhrase}
@@ -331,6 +388,7 @@ export default function Settings() {
                 disabled={loading}
                 aria-label="Type DELETE to confirm account deletion"
               />
+
               <div className="u-actions-row">
                 <button
                   type="button"
@@ -340,6 +398,7 @@ export default function Settings() {
                 >
                   {loading ? 'Deleting...' : 'Confirm delete'}
                 </button>
+
                 <button
                   type="button"
                   className="btn btn--ghost"

@@ -1,8 +1,15 @@
+// src/components/NavBar.jsx
+// Top navigation for Pixel Pets.
+// - Shows brand, page title/subtitle, and primary nav links
+// - Adapts links based on auth state (login/register vs dashboard/settings/logout)
+// - Includes a responsive hamburger menu + Escape-to-close behavior
+
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
+import { Brand } from '../utils/brandText';
 
-/* Pixel "logout" icon (door + arrow) */
+/** Pixel-style logout icon (door + arrow). */
 function LogoutIcon({ size = 18 }) {
   return (
     <svg
@@ -16,7 +23,8 @@ function LogoutIcon({ size = 18 }) {
     >
       {/* door */}
       <rect x="2" y="3" width="7" height="12" />
-      <rect x="3" y="8" width="1" height="1" /> {/* knob */}
+      {/* knob */}
+      <rect x="3" y="8" width="1" height="1" />
       {/* arrow */}
       <rect x="10" y="8" width="6" height="2" />
       <rect x="14" y="6" width="2" height="2" />
@@ -26,11 +34,12 @@ function LogoutIcon({ size = 18 }) {
 }
 
 export default function NavBar({
-  headerTitle = 'PIXEL PETS',
-  headerSubtitle = '✨ Because every pixel deserves a little love. 🐾',
+  headerTitle = Brand.layout.headerTitle,
+  headerSubtitle = Brand.layout.headerSubtitle,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+
   const isAuthed = Boolean(getStoredUserId());
   const [open, setOpen] = useState(false);
 
@@ -42,23 +51,30 @@ export default function NavBar({
     navigate('/login');
   }
 
-  // Close menu on route change
+  // Close menu on route change for better UX on mobile
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
-  // Close on Escape
+  // Close menu on Escape key when open
   useEffect(() => {
-    const onKey = (e) => e.key === 'Escape' && setOpen(false);
-    if (open) window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const onKey = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+
+    if (open) {
+      window.addEventListener('keydown', onKey);
+    }
+    return () => {
+      window.removeEventListener('keydown', onKey);
+    };
   }, [open]);
 
   return (
     <div className="nav container">
       {/* Brand (left) */}
       <Link to="/" className="nav__brand" aria-label="Pixel Pets home">
-        🐾 Pixel Pets
+        🐾 {Brand.app}
       </Link>
 
       {/* Page title + subtitle (center) */}

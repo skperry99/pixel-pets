@@ -7,66 +7,90 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Pet data transfer object (API shape). - Keeps API backward-compatible: accepts "hunger" but
- * returns "fullness". - Allows nullable stats so the server can apply sensible defaults.
+ * Pet data transfer object (API shape).
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *   <li>Defines the JSON contract for pet resources.</li>
+ *   <li>Keeps API backward-compatible by accepting {@code "hunger"} but returning {@code "fullness"}.</li>
+ *   <li>Allows nullable stats so the server can apply sensible defaults when omitted.</li>
+ * </ul>
  */
 @Getter
 @Setter
 public class PetDto {
 
-  // ===== Identity =====
-  private Long id;
+    // ===== Identity =====
 
-  // ===== Basic info =====
-  @NotBlank
-  @Size(min = 2, max = 50)
-  private String name;
+    /** Surrogate primary key of the pet (nullable when creating). */
+    private Long id;
 
-  @NotBlank private String type; // cat, dog, dragon, etc.
+    // ===== Basic info =====
 
-  /** Pet level; nullable so server can default (e.g., to 1) when omitted. */
-  private Integer level;
+    /** Display name for the pet. */
+    @NotBlank
+    @Size(min = 2, max = 50)
+    private String name;
 
-  // ===== Stats (0–100) =====
-  /** Output as "fullness"; still accepts legacy "hunger" on input. */
-  @JsonProperty("fullness")
-  @JsonAlias("hunger")
-  @Min(0)
-  @Max(100)
-  private Integer fullness;
+    /** Pet type/species (e.g., cat, dog, dragon). */
+    @NotBlank
+    private String type;
 
-  @Min(0)
-  @Max(100)
-  private Integer happiness;
+    /** Pet level; nullable so the server can default (e.g. to 1) when omitted. */
+    private Integer level;
 
-  @Min(0)
-  @Max(100)
-  private Integer energy;
+    // ===== Stats (0–100) =====
 
-  // ===== Ownership =====
-  private Long userId;
+    /**
+     * Fullness stat in the range [0, 100].
+     *
+     * <p>Serialized as {@code "fullness"} but still accepts legacy {@code "hunger"} on input for
+     * backward compatibility.
+     */
+    @JsonProperty("fullness")
+    @JsonAlias("hunger")
+    @Min(0)
+    @Max(100)
+    private Integer fullness;
 
-  // ===== Constructors =====
-  public PetDto() {
-    /* for Jackson */
-  }
+    /** Happiness stat in the range [0, 100]. */
+    @Min(0)
+    @Max(100)
+    private Integer happiness;
 
-  public PetDto(
-      Long id,
-      String name,
-      String type,
-      Integer level,
-      Integer fullness,
-      Integer happiness,
-      Integer energy,
-      Long userId) {
-    this.id = id;
-    this.name = name;
-    this.type = type;
-    this.level = level;
-    this.fullness = fullness;
-    this.happiness = happiness;
-    this.energy = energy;
-    this.userId = userId;
-  }
+    /** Energy stat in the range [0, 100]. */
+    @Min(0)
+    @Max(100)
+    private Integer energy;
+
+    // ===== Ownership =====
+
+    /** Owning user's id; required for adopt/create flows. */
+    private Long userId;
+
+    // ===== Constructors =====
+
+    /** No-args constructor for Jackson and frameworks. */
+    public PetDto() {
+        // for Jackson
+    }
+
+    public PetDto(
+            Long id,
+            String name,
+            String type,
+            Integer level,
+            Integer fullness,
+            Integer happiness,
+            Integer energy,
+            Long userId) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.level = level;
+        this.fullness = fullness;
+        this.happiness = happiness;
+        this.energy = energy;
+        this.userId = userId;
+    }
 }

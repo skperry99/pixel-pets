@@ -1,13 +1,20 @@
+// src/pages/NotFound.jsx
+// 404 page:
+// - Shows a playful pixel ghost
+// - Offers navigation back home, back in history, or to dashboard
+
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
 import AppLayout from '../components/AppLayout';
 import { burstConfetti } from '../utils/confetti';
+import { Brand } from '../utils/brandText';
 
 export default function NotFound() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // quick celebratory pop so the page feels alive
+    // Quick celebratory pop so the page feels alive
     burstConfetti();
   }, []);
 
@@ -27,7 +34,7 @@ export default function NotFound() {
           <div className="panel__body notfound__body u-stack-md">
             <p className="notfound__lead">This path wandered off the map. The pixels got lost 🐾</p>
 
-            {/* Pixel ghost */}
+            {/* Pixel ghost illustration */}
             <div className="notfound__ghost" aria-hidden="true">
               <div className="eye" />
               <div className="eye" />
@@ -41,15 +48,17 @@ export default function NotFound() {
               <Link to="/">
                 <button className="btn">← Home</button>
               </Link>
-              <button className="btn btn--secondary" onClick={() => navigate(-1)}>
+
+              <button type="button" className="btn btn--secondary" onClick={() => navigate(-1)}>
                 ⤺ Go Back
               </button>
+
               <Link to="/dashboard">
                 <button className="btn btn--ghost">Dashboard</button>
               </Link>
             </div>
 
-            <p className="notfound__hint">Tip: use the navigation above to find your way.</p>
+            <p className="notfound__hint">{Brand.hints.notFound}</p>
           </div>
         </section>
       </div>

@@ -46,8 +46,10 @@
 }
 
 /* ---------- 1) Theme Variants ---------- */
-/* Light mode (class-based) */
-.light-mode {
+/* Light mode (class-based + data-theme) */
+.light-mode,
+.theme-light,
+[data-theme='light'] {
   --bg-color: #f0f0f0;
   --panel-color: #ffffff;
   --accent-color: #0099ff;
@@ -301,10 +303,12 @@ h3 {
 }
 
 /* --- Mobile dropdown behavior --- */
-@media (max-width: var(--bp-sm)) {
+@media (max-width: 640px) {
   /* anchor dropdown to the nav */
   .nav {
     position: relative;
+    grid-template-columns: 1fr;
+    row-gap: var(--space-2);
   }
 
   /* show hamburger on small screens */
@@ -321,78 +325,24 @@ h3 {
     border: var(--border-3) solid var(--border-color);
     box-shadow: var(--shadow-pixel-lg);
     padding: 0.5rem;
-    display: none;
+    display: none; /* hidden until nav__links--open */
     flex-direction: column;
     gap: 0.5rem;
     z-index: 1000;
     min-width: 180px;
-    justify-self: end; /* keep right aligned if grid reflows */
+    justify-self: end;
   }
+
   .nav__links.nav__links--open {
     display: flex;
   }
 
-  /* make logout button full-width inside dropdown */
-  .nav__links .nav__logout {
+  /* make logout/icon buttons full-width in dropdown */
+  .nav__links .nav__logout,
+  .nav__links .nav__icon-btn {
     width: 100%;
   }
 }
-
-/* Compatibility with existing classes (NavBar.jsx earlier versions) */
-.nav-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-} /* legacy */
-.nav-brand {
-  color: var(--accent-bright);
-  text-decoration: none;
-  text-shadow: 1px 1px #000;
-} /* legacy */
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-} /* legacy */
-.nav-link {
-  color: var(--accent-color);
-  text-decoration: none;
-  text-shadow: 1px 1px #000;
-} /* legacy */
-.nav-link.active,
-.nav-link:hover {
-  color: var(--accent-bright);
-}
-
-/* legacy */
-
-/* Alternate "grid" naming (kept for compatibility) */
-.nav-grid {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-} /* legacy */
-.nav-left {
-  justify-self: start;
-} /* legacy */
-.nav-right {
-  justify-self: end;
-} /* legacy */
-.nav-center {
-  text-align: center;
-} /* legacy */
-.nav-header-title {
-  margin: 0;
-  font-size: var(--fs-14);
-  color: var(--accent-color);
-  text-shadow: 2px 2px #000;
-} /* legacy */
-.nav-header-subtitle {
-  margin: 0.25rem 0 0;
-  color: var(--accent-bright);
-  text-shadow: 1px 1px #000;
-  font-size: var(--fs-10);
-} /* legacy */
 
 /* ---------- 5) Cards & Panels ---------- */
 .card {
@@ -599,7 +549,7 @@ select:focus {
   position: relative;
 }
 
-.status-bar + .status-bar { 
+.status-bar + .status-bar {
   margin-top: 8px; /* stack bars a touch more */
 }
 
@@ -945,44 +895,44 @@ select:focus {
   box-shadow: 8px 8px 0 #000;
 }
 
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .pet-anim--idle {
-    animation: none !important;
-  }
-  .pet-anim--hover {
-    transition: none !important;
-  }
-}
-
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   body::before {
     animation: none;
   }
+
   .blink,
-  .pulse {
+  .pulse,
+  .pet-anim--idle {
     animation: none !important;
   }
+
+  .pet-anim--hover {
+    transition: none !important;
+  }
+
   * {
     scroll-behavior: auto;
   }
 }
 
 /* ---------- 15) Responsive Media Queries ---------- */
-@media (max-width: var(--bp-lg)) {
+@media (max-width: 1024px) {
+  /* was var(--bp-lg) */
   .grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: var(--bp-md)) {
+@media (max-width: 720px) {
+  /* was var(--bp-md) */
   .profile-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: var(--bp-sm)) {
+@media (max-width: 640px) {
+  /* was var(--bp-sm) */
   .grid-3 {
     grid-template-columns: 1fr;
   }
@@ -1150,9 +1100,10 @@ a:focus-visible {
 
 /* Low-state pulse (friendly, subtle) */
 .status-bar--low .status-fill {
-  animation: pixel-warn 0.8s steps(2, end) infinite;
+  animation: pixel-warn-bar 0.8s steps(2, end) infinite;
 }
-@keyframes pixel-warn {
+
+@keyframes pixel-warn-bar {
   0%,
   100% {
     transform: translateX(0);
@@ -1173,31 +1124,22 @@ a:focus-visible {
   pointer-events: none;
 }
 
-/* Show hamburger at small screens and dropdown panel */
-.nav__controls { justify-self: end; display: flex; align-items: center; gap: 0.5rem; }
-.nav__toggle { display: none; background: transparent; border: var(--border-2) solid var(--border-color); padding: 0.35rem 0.5rem; box-shadow: var(--shadow-pixel-sm); cursor: pointer; }
-.nav__toggle-bar { display: block; width: 18px; height: 2px; background: var(--accent-color); box-shadow: 1px 1px 0 #000; margin: 3px 0; }
-
-/* dropdown */
-@media (max-width: var(--bp-sm)) {
-  .nav__toggle { display: inline-block; }
-  .nav { position: relative; }
-  .nav__links {
-    position: absolute; top: calc(100% + 4px); right: 1rem;
-    background: var(--panel-color);
-    border: var(--border-3) solid var(--border-color);
-    box-shadow: var(--shadow-pixel-lg);
-    padding: 0.5rem;
-    display: none; flex-direction: column; gap: 0.5rem; z-index: 1000; min-width: 180px;
-  }
-  .nav__links--open { display: flex; }
-  .nav__links .nav__logout, .nav__links .nav__icon-btn { width: 100%; }
-}
-
 /* Pixel SVG inherits theme color */
-.icon-pixel rect { fill: var(--accent-color); filter: drop-shadow(1px 1px 0 #000); }
-.nav__icon-btn:hover .icon-pixel rect { fill: var(--accent-bright); }
-.nav__icon-btn { padding: 0.35rem 0.5rem; line-height: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 32px; }
+.icon-pixel rect {
+  fill: var(--accent-color);
+  filter: drop-shadow(1px 1px 0 #000);
+}
+.nav__icon-btn:hover .icon-pixel rect {
+  fill: var(--accent-bright);
+}
+.nav__icon-btn {
+  padding: 0.35rem 0.5rem;
+  line-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+}
 
 /* ================================
    PIXEL BORDERS — Drop-in upgrade
@@ -1206,8 +1148,8 @@ a:focus-visible {
 
 /* Tunables */
 :root {
-  --px-unit: 5px;     /* nub size at corners */
-  --px-outline: 5px;  /* outline thickness */
+  --px-unit: 5px; /* nub size at corners */
+  --px-outline: 5px; /* outline thickness */
 }
 
 /* 1) Convert key components to pixel outlines */
@@ -1223,9 +1165,9 @@ a:focus-visible {
   outline: var(--px-outline) solid var(--border-color);
   outline-offset: 0;
   box-shadow:
-    var(--shadow-pixel-lg),  /* you already use this */
-    4px 4px 0 #000;          /* chunky “step” */
-  position: relative;        /* anchor corner nubs */
+    var(--shadow-pixel-lg),
+    /* you already use this */ 4px 4px 0 #000; /* chunky “step” */
+  position: relative; /* anchor corner nubs */
 }
 
 /* 2) Corner nubs (8-bit studs) */
@@ -1243,7 +1185,7 @@ a:focus-visible {
 .pet-sprite::after,
 .dialog::before,
 .dialog::after {
-  content: "";
+  content: '';
   position: absolute;
   width: var(--px-unit);
   height: var(--px-unit);
@@ -1282,15 +1224,17 @@ a:focus-visible {
 }
 
 /* 4) Keep toast corner badge you already add playing nice */
-.pixel-toast.panel { position: relative; }
+.pixel-toast.panel {
+  position: relative;
+}
 /* If your existing ::after badge conflicts, rename it to .pixel-toast .toast-badge */
 
 /* 5) Optional: “double cartridge” variant you can apply ad-hoc */
 .pixelize--double {
   outline: var(--px-outline) solid var(--border-color);
   box-shadow:
-    0 0 0 calc(var(--px-outline) + 2px) #000, /* outer black ring */
-    6px 6px 0 #000;
+    0 0 0 calc(var(--px-outline) + 2px) #000,
+    /* outer black ring */ 6px 6px 0 #000;
 }
 
 /* 6) Make sure interactive states still pop with pixel shadow */
@@ -1301,4 +1245,3 @@ a:focus-visible {
 .btn:active {
   box-shadow: 1px 1px 0 #000;
 }
-

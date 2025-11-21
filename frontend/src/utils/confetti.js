@@ -1,12 +1,17 @@
+// Lightweight wrapper around `canvas-confetti` with lazy loading and
+// reduced-motion awareness to keep things friendly + performant.
+
 // Cache the dynamic import so the library loads only once.
 let _confettiPromise;
 
 /** Lazy-load the confetti function; caches result and fails safe. */
 function loadConfetti() {
   if (typeof window === 'undefined') return Promise.resolve(null);
+
   if (!_confettiPromise) {
     _confettiPromise = import('canvas-confetti').then((m) => m.default || m).catch(() => null); // cache null on failure so we don't retry forever
   }
+
   return _confettiPromise;
 }
 
@@ -16,9 +21,12 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+const CONFETTI_COLORS = ['#ffcc00', '#ffec27', '#ff66a3', '#00ffcc', '#ffffff', '#000000'];
+
 /**
  * Fire a short celebratory burst.
- * Pass partial overrides if needed.
+ * - Pass `overrides` to tweak particleCount, spread, etc.
+ * - No-ops on SSR or when user prefers reduced motion.
  */
 export function burstConfetti(overrides = {}) {
   if (typeof window === 'undefined' || prefersReducedMotion()) return;
@@ -27,7 +35,6 @@ export function burstConfetti(overrides = {}) {
     if (!confetti) return;
 
     const end = Date.now() + 600;
-    const colors = ['#ffcc00', '#ffec27', '#ff66a3', '#00ffcc', '#ffffff', '#000000'];
 
     const frame = () => {
       confetti({
@@ -35,27 +42,55 @@ export function burstConfetti(overrides = {}) {
         startVelocity: 45,
         spread: 70,
         origin: { y: 0.6 },
-        colors,
+        colors: CONFETTI_COLORS,
         ...overrides,
       });
-      if (Date.now() < end) requestAnimationFrame(frame);
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
     };
 
     frame();
   });
 }
 
-/** Bigger celebration with staggered bursts. */
+/**
+ * Bigger celebration with staggered bursts.
+ * - Used for “big moments” (first pet, major achievements, etc.)
+ */
 export function megaConfetti() {
   if (typeof window === 'undefined' || prefersReducedMotion()) return;
 
   loadConfetti().then((confetti) => {
     if (!confetti) return;
-    const colors = ['#ffcc00', '#ffec27', '#ff66a3', '#00ffcc', '#ffffff', '#000000'];
-    confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors });
-    setTimeout(() => confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 }, colors }), 150);
+
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: CONFETTI_COLORS,
+    });
+
     setTimeout(
-      () => confetti({ particleCount: 160, spread: 120, origin: { y: 0.6 }, colors }),
+      () =>
+        confetti({
+          particleCount: 120,
+          spread: 90,
+          origin: { y: 0.6 },
+          colors: CONFETTI_COLORS,
+        }),
+      150,
+    );
+
+    setTimeout(
+      () =>
+        confetti({
+          particleCount: 160,
+          spread: 120,
+          origin: { y: 0.6 },
+          colors: CONFETTI_COLORS,
+        }),
       300,
     );
   });

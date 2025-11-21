@@ -1,9 +1,16 @@
+// src/pages/Register.jsx
+// Registration screen:
+// - Redirects to dashboard if already authed
+// - Client-side validation for username/email/password
+// - Inline error message + toast notices
+
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../api';
 import { setStoredUserId, getStoredUserId } from '../utils/auth';
 import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
+import { Brand } from '../utils/brandText';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,7 +24,7 @@ export default function Register() {
   const emailRef = useRef(null);
   const errorRef = useRef(null);
 
-  // If already authed, bounce; otherwise autofocus username for convenience
+  // If already authed, bounce; otherwise autofocus username for convenience.
   useEffect(() => {
     const id = getStoredUserId();
     if (id != null) {
@@ -27,13 +34,14 @@ export default function Register() {
     }
   }, [navigate]);
 
-  function setAndFocusError(msg) {
-    setErrorMsg(msg);
+  // Helper: set error text and shift focus to alert for SR users.
+  function setErrorAndFocus(message) {
+    setErrorMsg(message);
     queueMicrotask(() => errorRef.current?.focus());
   }
 
-  function isValidEmail(v) {
-    return /\S+@\S+\.\S+/.test(v);
+  function isValidEmail(value) {
+    return /\S+@\S+\.\S+/.test(value);
   }
 
   async function handleSubmit(e) {
@@ -41,44 +49,49 @@ export default function Register() {
     if (loading) return;
 
     setErrorMsg('');
+
     const username = form.username.trim();
     const email = form.email.trim();
     const password = form.password;
 
-    // client-side validation
+    // Client-side validation
     if (!username || !email || !password) {
-      const msg = 'All fields are required.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = Brand.validation.allFieldsRequired;
+      setErrorAndFocus(message);
+      notify.error(message);
       if (!username) return usernameRef.current?.focus();
       if (!email) return emailRef.current?.focus();
       return;
     }
+
     if (username.length < 3 || username.length > 30) {
-      const msg = 'Username must be 3–30 characters.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = Brand.validation.usernameLength;
+      setErrorAndFocus(message);
+      notify.error(message);
       return usernameRef.current?.focus();
     }
+
     if (!isValidEmail(email)) {
-      const msg = 'Please enter a valid email address.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = Brand.validation.emailInvalid;
+      setErrorAndFocus(message);
+      notify.error(message);
       return emailRef.current?.focus();
     }
+
     if (password.length < 8) {
-      const msg = 'Password must be at least 8 characters.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = Brand.validation.passwordMin;
+      setErrorAndFocus(message);
+      notify.error(message);
       return;
     }
 
     setLoading(true);
+
     const res = await registerUser(username, email, password);
     if (!res.ok) {
-      const msg = res.error || 'Registration failed.';
-      setAndFocusError(msg);
-      notify.error(msg);
+      const message = res.error || Brand.errors.registrationFailed;
+      setErrorAndFocus(message);
+      notify.error(message);
       usernameRef.current?.focus();
       setLoading(false);
       return;
@@ -87,7 +100,7 @@ export default function Register() {
     // API returns new user id as JSON
     const newUserId = res.data;
     setStoredUserId(newUserId);
-    notify.success('Account created! Welcome to Pixel Pets.');
+    notify.success(Brand.toasts.accountCreated);
     navigate('/dashboard');
     setLoading(false);
   }
@@ -96,7 +109,7 @@ export default function Register() {
     <AppLayout headerProps={{ title: 'REGISTER' }}>
       <section className="panel">
         <header className="panel__header">
-          <h1 className="panel__title">Create Account</h1>
+          <h1 className="panel__title">{Brand.auth.registerTitle}</h1>
         </header>
 
         <div className="panel__body">
@@ -180,12 +193,12 @@ export default function Register() {
             {/* Actions */}
             <div className="form__row u-text-center">
               <button className="btn" type="submit" disabled={loading}>
-                {loading ? 'Registering...' : 'Register'}
+                {loading ? 'Registering...' : Brand.auth.registerCta}
               </button>
             </div>
 
             <div className="form__row u-text-center">
-              <p>Already have an account?</p>
+              <p>{Brand.auth.hasAccount}</p>
               <div className="u-actions-row">
                 <button
                   className="btn btn--secondary"
@@ -193,7 +206,7 @@ export default function Register() {
                   onClick={() => navigate('/login')}
                   disabled={loading}
                 >
-                  Log In
+                  {Brand.auth.loginCta}
                 </button>
               </div>
             </div>

@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { burstConfetti } from '../utils/confetti';
 
-const SEQ = [
+// Classic Konami sequence: ↑ ↑ ↓ ↓ ← → ← → B A
+const KONAMI_KEYS = [
   'ArrowUp',
   'ArrowUp',
   'ArrowDown',
@@ -14,23 +15,55 @@ const SEQ = [
   'a',
 ];
 
+/**
+ * useKonami(onTrigger)
+ *
+ * Listens for the Konami code globally and then:
+ * - Calls the optional onTrigger callback
+ * - Toggles a "gb" theme via data-theme on <html>
+ * - Fires a little confetti burst for fun
+ */
 export function useKonami(onTrigger) {
-  const buf = useRef([]);
+  const bufferRef = useRef([]);
+
   useEffect(() => {
-    function onKey(e) {
-      buf.current.push(e.key);
-      if (buf.current.length > SEQ.length) buf.current.shift();
-      if (SEQ.every((k, i) => buf.current[i] === k)) {
-        onTrigger?.();
-        // fun: toggle theme data-attr on <html>
-        const html = document.documentElement;
-        const next = html.getAttribute('data-theme') === 'gb' ? null : 'gb'; // GameBoy palette
-        if (next) html.setAttribute('data-theme', next);
-        else html.removeAttribute('data-theme');
-        burstConfetti({ particleCount: 120, spread: 90 });
+    function handleKeyDown(event) {
+      // Ignore if user is typing with modifier keys
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+
+      // Push the latest key and trim buffer length
+      bufferRef.current.push(key);
+      if (bufferRef.current.length > KONAMI_KEYS.length) {
+        bufferRef.current.shift();
       }
+
+      // Check for exact sequence match
+      const isMatch = KONAMI_KEYS.every((k, index) => bufferRef.current[index] === k);
+      if (!isMatch) return;
+
+      bufferRef.current = []; // optional: reset after success
+
+      // Fire callback if provided
+      onTrigger?.();
+
+      // Toggle "gb" (Game Boy) theme on <html>
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'gb' ? null : 'gb';
+
+      if (next) {
+        html.setAttribute('data-theme', next);
+      } else {
+        html.removeAttribute('data-theme');
+      }
+
+      // Retro celebration 🎉
+      burstConfetti({ particleCount: 120, spread: 90 });
     }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onTrigger]);
 }

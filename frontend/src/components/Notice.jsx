@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
+/**
+ * Toast / inline notice component.
+ *
+ * - Supports four variants via `type`: success | error | warn | info
+ * - Uses ARIA roles for screen-reader friendly announcements
+ * - Optional auto-hide with pause-on-hover + ESC-to-dismiss
+ */
 const ICON = {
   success: '✅',
   error: '❌',
@@ -8,32 +15,32 @@ const ICON = {
 };
 
 export default function Notice({
-  type = 'info', // 'success' | 'error' | 'info' | 'warn'
-  children, // message text or JSX
-  onClose, // () => void
-  autoHideMs, // number (e.g., 3000)
+  type = 'info',        // 'success' | 'error' | 'info' | 'warn'
+  children,             // message text or JSX
+  onClose,              // optional: () => void
+  autoHideMs,           // optional: number (e.g., 3000)
   className = '',
 }) {
   const [paused, setPaused] = useState(false);
   const timerRef = useRef(null);
-  const rootRef = useRef(null);
 
-  // a11y roles
+  // ----- A11y roles / variants -----
   const isError = type === 'error';
   const role = isError ? 'alert' : 'status';
   const live = isError ? 'assertive' : 'polite';
   const icon = ICON[type] ?? ICON.info;
   const variantClass = `notice--${type}`;
 
-  // auto-hide with pause-on-hover
+  // ----- Auto-hide with pause-on-hover -----
   useEffect(() => {
     if (!autoHideMs || !onClose) return;
     if (paused) return; // don't count down when paused
+
     timerRef.current = setTimeout(onClose, autoHideMs);
     return () => clearTimeout(timerRef.current);
   }, [autoHideMs, onClose, paused]);
 
-  // ESC to dismiss (only if onClose provided)
+  // ----- ESC-to-dismiss (global key listener) -----
   useEffect(() => {
     if (!onClose) return;
     const onKey = (e) => {
@@ -45,7 +52,6 @@ export default function Notice({
 
   return (
     <div
-      ref={rootRef}
       role={role}
       aria-live={live}
       aria-atomic="true"
@@ -57,7 +63,9 @@ export default function Notice({
         <span className="notice__icon" aria-hidden="true">
           {icon}
         </span>
+
         <div className="notice__body">{children}</div>
+
         {onClose && (
           <button
             type="button"
