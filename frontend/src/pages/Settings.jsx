@@ -13,6 +13,7 @@ import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
 import { Brand } from '../utils/brandText';
+import ConfirmAction from '../components/ConfirmAction';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -455,29 +456,22 @@ export default function Settings() {
                 </p>
               )}
 
-              <div className="u-actions-row">
-                <button
-                  type="button"
-                  className="btn btn--danger"
-                  disabled={loading}
-                  onClick={handleConfirmDelete}
-                >
-                  {loading ? 'Deleting...' : 'Confirm delete'}
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn--ghost"
-                  disabled={loading}
-                  onClick={() => {
-                    setConfirmDelete(false);
-                    setConfirmText('');
-                    setDeleteError('');
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
+              {/* Inline confirmation UI using ConfirmAction */}
+              <ConfirmAction
+                className="settings-delete-confirm"
+                confirmPrompt="Are you absolutely sure? This cannot be undone."
+                confirmLabel="Yes, delete my account"
+                cancelLabel="Cancel"
+                danger
+                busy={loading}
+                onConfirm={handleConfirmDelete}
+                onCancel={() => {
+                  setConfirmDelete(false);
+                  setConfirmText('');
+                  setDeleteError('');
+                }}
+                autoFocusConfirm={false} // we’re already focusing the input above
+              />
             </div>
           )}
         </div>

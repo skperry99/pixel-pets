@@ -409,7 +409,7 @@ h3 {
 .header-panel {
   max-width: var(--container-md);
   margin: 0 auto;
-} /* if keep standalone Header */
+}
 .header-title {
   margin: 0;
 }
