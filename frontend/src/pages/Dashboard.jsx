@@ -4,7 +4,7 @@
 // - Lets users adopt new pets and navigate to pet profiles
 // - Shows inline empty state, loading state, and toast notices
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { getPetsByUser, getUserProfile } from '../api';
@@ -28,6 +28,11 @@ export default function Dashboard() {
   const [userProfile, setUserProfile] = useState(null); // { id, username, email }
   const [loading, setLoading] = useState(true);
 
+  // Highlight + scroll to Adopt panel when empty state button is clicked
+  const adoptPanelRef = useRef(null);
+  const [adoptHighlight, setAdoptHighlight] = useState(false);
+
+  // Load profile + pets when the page mounts / user changes
   // Load profile + pets when the page mounts / user changes
   useEffect(() => {
     if (userId == null) {
@@ -47,14 +52,15 @@ export default function Dashboard() {
 
       // Profile
       if (!profileRes.ok) {
-        notify.error(profileRes.error || 'Failed to load profile.');
+        // Short, fun toast
+        notify.error(Brand.toasts.profileLoadFailed);
       } else {
         setUserProfile(profileRes.data || null);
       }
 
       // Pets
       if (!petsRes.ok) {
-        notify.error(petsRes.error || 'Failed to load pets.');
+        notify.error(Brand.toasts.petsLoadFailed);
         setPets([]); // always keep an array
       } else {
         const list = Array.isArray(petsRes.data) ? petsRes.data : [];
@@ -72,6 +78,24 @@ export default function Dashboard() {
   function handleLogout() {
     clearStoredUserId();
     navigate('/login');
+  }
+
+  function focusAdoptPanel() {
+    // Smooth scroll the Adopt panel into view
+    if (adoptPanelRef.current) {
+      adoptPanelRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Add a temporary highlight class
+    setAdoptHighlight(true);
+    window.setTimeout(() => setAdoptHighlight(false), 900);
+
+    // Focus + select the adopt-name input
+    const input = document.getElementById('adopt-name');
+    if (input) {
+      input.focus();
+      if (input.select) input.select();
+    }
   }
 
   if (loading) {
@@ -112,7 +136,10 @@ export default function Dashboard() {
       </section>
 
       {/* Adopt panel */}
-      <section className="panel panel--full">
+      <section
+        ref={adoptPanelRef}
+        className={`panel panel--full ${adoptHighlight ? 'panel--highlight' : ''}`.trim()}
+      >
         <header className="panel__header">
           <h2 className="panel__title">Adopt a New Friend</h2>
         </header>
@@ -120,7 +147,7 @@ export default function Dashboard() {
         <div className="panel__body">
           <AdoptForm
             userId={userId}
-            petTypes={['Cat', 'Dog', 'Dragon']}
+            petTypes={['Cat', 'Dog', 'Dragon', 'Bunny', 'Blob']}
             onAdopt={(savedPet) => {
               setPets((prev) => {
                 if (prev.length === 0) {
@@ -146,10 +173,7 @@ export default function Dashboard() {
             <section className="panel panel--narrow u-stack-md">
               <p>🧸 {Brand.emptyStates.pets}</p>
 
-              <button
-                className="btn btn--secondary"
-                onClick={() => document.getElementById('adopt-name')?.focus()}
-              >
+              <button className="btn btn--secondary" onClick={focusAdoptPanel}>
                 Adopt your first friend
               </button>
 

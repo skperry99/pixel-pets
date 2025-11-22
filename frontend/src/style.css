@@ -176,9 +176,7 @@ h3 {
   display: grid;
   gap: var(--space-4);
 }
-.grid-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+
 .grid-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -345,13 +343,6 @@ h3 {
 }
 
 /* ---------- 5) Cards & Panels ---------- */
-.card {
-  background-color: var(--panel-color);
-  border: var(--border-3) solid var(--border-color);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-pixel-lg);
-}
-
 .panel {
   background-color: var(--panel-color);
   border: var(--border-3) solid var(--border-color);
@@ -393,6 +384,26 @@ h3 {
 }
 .panel--full {
   max-width: var(--container-lg);
+}
+
+/* Subtle "hey, look here!" pulse for Adopt panel */
+.panel--highlight {
+  animation: panel-highlight 0.9s ease-out;
+}
+
+@keyframes panel-highlight {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-color, #ffcc00);
+    background-color: rgba(255, 204, 0, 0.18);
+  }
+  40% {
+    box-shadow: 0 0 0 4px rgba(255, 204, 0, 0.6);
+    background-color: rgba(255, 204, 0, 0.26);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    background-color: transparent;
+  }
 }
 
 .header-panel {
@@ -527,15 +538,6 @@ select:focus {
   border-radius: var(--radius);
 }
 
-/* Optional: a full-width modifier for multi-line errors */
-.form-error--block {
-  display: block;
-  width: 100%;
-  max-width: var(--container-sm);
-  margin-left: auto;
-  margin-right: auto;
-}
-
 /* ---------- 8) Status Bars ---------- */
 .status-bar {
   background-color: #000;
@@ -609,14 +611,7 @@ select:focus {
   display: block;
   margin: 0 auto;
 }
-.pet-sprite--sm {
-  width: 80px;
-  height: 80px;
-}
-.pet-sprite--md {
-  width: 120px;
-  height: 120px;
-}
+
 .pet-sprite--lg {
   width: 160px;
   height: 160px;
@@ -721,13 +716,6 @@ select:focus {
   margin-top: 0.5rem;
 }
 
-/* Pet profile grid */
-.profile-grid {
-  display: grid;
-  grid-template-columns: minmax(240px, 320px) 1fr;
-  gap: 24px;
-}
-
 /* Footer */
 .site-footer {
   text-align: center;
@@ -741,9 +729,6 @@ select:focus {
 }
 .footer-credit {
   margin: 0;
-}
-.footer-accent {
-  color: var(--accent-color);
 }
 
 /* ---------- 13) Toggle (Light/Dark) ---------- */
@@ -855,6 +840,13 @@ select:focus {
 }
 
 /* --- Pet animations --- */
+/* Action flags – species will override the actual animation */
+.pet-anim--eat,
+.pet-anim--play,
+.pet-anim--rest {
+  animation-fill-mode: both;
+}
+
 @keyframes pet-bob {
   0%,
   100% {
@@ -862,23 +854,6 @@ select:focus {
   }
   50% {
     transform: translateY(-3px);
-  }
-}
-@keyframes pet-hop {
-  0% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-6px);
-  }
-  60% {
-    transform: translateY(0);
-  }
-  80% {
-    transform: translateY(-3px);
-  }
-  100% {
-    transform: translateY(0);
   }
 }
 
@@ -893,6 +868,365 @@ select:focus {
 .pet-anim--hover:hover {
   transform: translateY(-4px);
   box-shadow: 8px 8px 0 #000;
+}
+
+/* EAT: quick squash & stretch chomp */
+@keyframes pet-eat-chomp {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  20% {
+    transform: translateY(1px) scale(1.05, 0.95);
+  }
+  40% {
+    transform: translateY(-2px) scale(0.96, 1.06);
+  }
+  60% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+.pet-anim--eat {
+  animation: pet-eat-chomp 400ms steps(2, end);
+}
+
+/* PLAY: excited wiggle + bounce */
+@keyframes pet-play-bounce {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-4px) rotate(-3deg);
+  }
+  40% {
+    transform: translateY(0) rotate(3deg);
+  }
+  60% {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.pet-anim--play {
+  animation: pet-play-bounce 550ms steps(3, end);
+}
+
+/* REST: soft breathing / sway */
+@keyframes pet-rest-breathe {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-anim--rest {
+  animation: pet-rest-breathe 1200ms steps(4, end);
+}
+
+/* Dog: big chomp + tail-waggy wiggle */
+@keyframes pet-dog-eat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(1px) scale(1.06, 0.94) rotate(-2deg);
+  }
+  40% {
+    transform: translateY(-2px) scale(0.96, 1.06) rotate(2deg);
+  }
+  60% {
+    transform: translateY(0) scale(1.03, 0.97) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1) rotate(0deg);
+  }
+}
+
+@keyframes pet-dog-play {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(-3px) translateY(-3px);
+  }
+  50% {
+    transform: translateX(3px) translateY(-2px);
+  }
+  75% {
+    transform: translateX(-2px) translateY(-1px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes pet-dog-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.97);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--dog.pet-anim--eat {
+  animation: pet-dog-eat 420ms steps(3, end);
+}
+
+.pet-species--dog.pet-anim--play {
+  animation: pet-dog-play 550ms steps(4, end);
+}
+
+.pet-species--dog.pet-anim--rest {
+  animation: pet-dog-rest 1200ms steps(4, end);
+}
+
+/* Cat: dignified pounce and tiny ear-flick vibes */
+@keyframes pet-cat-eat {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(1px) scale(1.02, 0.98);
+  }
+  60% {
+    transform: translateY(-1px) scale(0.98, 1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pet-cat-play {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-3px) translateX(2px);
+  }
+  50% {
+    transform: translateY(0) translateX(4px);
+  }
+  75% {
+    transform: translateY(-2px) translateX(0);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@keyframes pet-cat-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.99);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--cat.pet-anim--eat {
+  animation: pet-cat-eat 380ms steps(3, end);
+}
+
+.pet-species--cat.pet-anim--play {
+  animation: pet-cat-play 520ms steps(4, end);
+}
+
+.pet-species--cat.pet-anim--rest {
+  animation: pet-cat-rest 1100ms steps(4, end);
+}
+
+/* Dragon: dramatic tilt + little hovering energy */
+@keyframes pet-dragon-eat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-2px) rotate(-4deg) scale(1.05);
+  }
+  60% {
+    transform: translateY(0) rotate(3deg) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes pet-dragon-play {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-4px);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+  75% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pet-dragon-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(2px) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--dragon.pet-anim--eat {
+  animation: pet-dragon-eat 450ms steps(3, end);
+}
+
+.pet-species--dragon.pet-anim--play {
+  animation: pet-dragon-play 600ms steps(4, end);
+}
+
+.pet-species--dragon.pet-anim--rest {
+  animation: pet-dragon-rest 1300ms steps(4, end);
+}
+
+/* Bunny: zoomies + double hops */
+@keyframes pet-bunny-eat {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pet-bunny-play {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-5px);
+  }
+  40% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pet-bunny-rest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(1px) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-species--bunny.pet-anim--eat {
+  animation: pet-bunny-eat 380ms steps(3, end);
+}
+
+.pet-species--bunny.pet-anim--play {
+  animation: pet-bunny-play 520ms steps(4, end);
+}
+
+.pet-species--bunny.pet-anim--rest {
+  animation: pet-bunny-rest 1150ms steps(4, end);
+}
+
+/* Blob: squish, wobble, slow pulse */
+@keyframes pet-blob-eat {
+  0% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1.08, 0.92);
+  }
+  50% {
+    transform: scale(0.96, 1.06);
+  }
+  75% {
+    transform: scale(1.04, 0.96);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes pet-blob-play {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  25% {
+    transform: translateX(-3px) scale(1.02);
+  }
+  50% {
+    transform: translateX(3px) scale(0.98);
+  }
+  75% {
+    transform: translateX(-2px) scale(1.02);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes pet-blob-rest {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pet-species--blob.pet-anim--eat {
+  animation: pet-blob-eat 420ms steps(3, end);
+}
+
+.pet-species--blob.pet-anim--play {
+  animation: pet-blob-play 560ms steps(4, end);
+}
+
+.pet-species--blob.pet-anim--rest {
+  animation: pet-blob-rest 1400ms steps(4, end);
 }
 
 /* Reduced motion support */
@@ -941,20 +1275,6 @@ select:focus {
   .nav {
     grid-template-columns: 1fr;
     row-gap: var(--space-2);
-  }
-
-  /* Legacy classes compatibility */
-  .nav-grid {
-    grid-template-columns: 1fr;
-    row-gap: var(--space-2);
-  }
-  .nav-left,
-  .nav-right {
-    justify-self: center;
-  }
-  .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   /* Notice layout tweak */
@@ -1129,21 +1449,9 @@ a:focus-visible {
   fill: var(--accent-color);
   filter: drop-shadow(1px 1px 0 #000);
 }
-.nav__icon-btn:hover .icon-pixel rect {
-  fill: var(--accent-bright);
-}
-.nav__icon-btn {
-  padding: 0.35rem 0.5rem;
-  line-height: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-}
 
 /* ================================
    PIXEL BORDERS — Drop-in upgrade
-   (Put near the end of style.css)
    ================================ */
 
 /* Tunables */
@@ -1152,9 +1460,8 @@ a:focus-visible {
   --px-outline: 5px; /* outline thickness */
 }
 
-/* 1) Convert key components to pixel outlines */
+/* Convert key components to pixel outlines */
 .panel,
-.card,
 .btn,
 .notice,
 .pixel-toast.panel,
@@ -1166,15 +1473,13 @@ a:focus-visible {
   outline-offset: 0;
   box-shadow:
     var(--shadow-pixel-lg),
-    /* you already use this */ 4px 4px 0 #000; /* chunky “step” */
+    4px 4px 0 #000; /* chunky “step” */
   position: relative; /* anchor corner nubs */
 }
 
-/* 2) Corner nubs (8-bit studs) */
+/* Corner nubs (8-bit studs) */
 .panel::before,
 .panel::after,
-.card::before,
-.card::after,
 .btn::before,
 .btn::after,
 .notice::before,
@@ -1191,12 +1496,11 @@ a:focus-visible {
   height: var(--px-unit);
   background: var(--border-color);
   box-shadow: 1px 1px 0 #000;
-  z-index: 0; /* under content but above backgrounds */
+  z-index: 0;
 }
 
 /* top-left / bottom-right */
 .panel::before,
-.card::before,
 .btn::before,
 .notice::before,
 .pixel-toast.panel::before,
@@ -1206,7 +1510,6 @@ a:focus-visible {
   top: calc(var(--px-unit) * -1);
 }
 .panel::after,
-.card::after,
 .btn::after,
 .notice::after,
 .pixel-toast.panel::after,
@@ -1216,30 +1519,19 @@ a:focus-visible {
   bottom: calc(var(--px-unit) * -1);
 }
 
-/* 3) Scale nubs slightly smaller on compact elements */
+/* Scale nubs slightly smaller on compact elements */
 .btn,
 .notice {
   --px-unit: 3px;
   --px-outline: 3px;
 }
 
-/* 4) Keep toast corner badge you already add playing nice */
 .pixel-toast.panel {
   position: relative;
 }
-/* If your existing ::after badge conflicts, rename it to .pixel-toast .toast-badge */
 
-/* 5) Optional: “double cartridge” variant you can apply ad-hoc */
-.pixelize--double {
-  outline: var(--px-outline) solid var(--border-color);
-  box-shadow:
-    0 0 0 calc(var(--px-outline) + 2px) #000,
-    /* outer black ring */ 6px 6px 0 #000;
-}
-
-/* 6) Make sure interactive states still pop with pixel shadow */
+/* Make sure interactive states still pop with pixel shadow */
 .btn:hover {
-  /* keep your existing transform, just ensure shadow stays chunky */
   box-shadow: 5px 5px 0 #000;
 }
 .btn:active {
