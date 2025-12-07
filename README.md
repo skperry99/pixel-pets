@@ -432,10 +432,9 @@ and is proudly powered by **caffeine, curiosity, and 8-bit nostalgia**. ☕🕹�
 
 ---
 
-## 📜 License
+## License
 
-This project was created as a **LaunchCode Full-Stack Capstone Project**.
-Please contact the author before using it for commercial purposes.
+This project is licensed under the MIT License – see the [LICENSE](./LICENSE) file for details.
 
 ---
 
