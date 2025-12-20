@@ -32,6 +32,13 @@ export default function PetProfile() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [actionAnim, setActionAnim] = useState('');
+
+  function triggerAnim(kind) {
+    setActionAnim(kind);
+    // clear after the animation duration
+    setTimeout(() => setActionAnim(''), 600);
+  }
 
   // Load pet on mount / when ID changes
   useEffect(() => {
@@ -47,9 +54,12 @@ export default function PetProfile() {
       if (!isActive) return;
 
       if (!res.ok) {
-        const message = res.error || 'Failed to load pet.';
-        setError(message);
-        notify.error(message);
+        const inlineMsg = res.error || Brand.inline.petLoadFailed;
+        setError(inlineMsg);
+
+        // Fun, themed toast
+        notify.error(Brand.toasts.petLoadFailed);
+
         setLoading(false);
         return;
       }
@@ -74,10 +84,12 @@ export default function PetProfile() {
 
     const res = await feedPet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Feeding failed.');
+      notify.error(Brand.toasts.feedError);
     } else {
-      notify.success(Brand.toasts.fed);
+      // species-aware, name-aware
+      notify.success(Brand.toasts.fed(pet.name, pet.type));
       updatePetState(res.data);
+      triggerAnim('eat');
     }
 
     setBusy(false);
@@ -89,11 +101,12 @@ export default function PetProfile() {
 
     const res = await playWithPet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Playtime failed.');
+      notify.error(Brand.toasts.playError);
     } else {
-      notify.success(Brand.toasts.played);
+      notify.success(Brand.toasts.played(pet.name, pet.type));
       burstConfetti();
       updatePetState(res.data);
+      triggerAnim('play');
     }
 
     setBusy(false);
@@ -105,10 +118,11 @@ export default function PetProfile() {
 
     const res = await restPet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Rest failed.');
+      notify.error(Brand.toasts.restError);
     } else {
-      notify.success(Brand.toasts.rest);
+      notify.success(Brand.toasts.rest(pet.name, pet.type));
       updatePetState(res.data);
+      triggerAnim('rest');
     }
 
     setBusy(false);
@@ -120,12 +134,12 @@ export default function PetProfile() {
 
     const res = await deletePet(petId);
     if (!res.ok) {
-      notify.error(res.error || 'Could not delete pet.');
+      notify.error(Brand.toasts.releaseError);
       setBusy(false);
       return;
     }
 
-    notify.success(Brand.toasts.released);
+    notify.success(Brand.toasts.released(pet.name, pet.type));
     navigate('/dashboard');
   }
 
@@ -184,7 +198,8 @@ export default function PetProfile() {
           <div className="u-center">
             <PetSprite
               type={type}
-              className="pet-sprite pet-sprite--lg pet-sprite--hover-bounce"
+              className={`pet-sprite pet-sprite--lg pet-sprite--hover-bounce
+                 ${actionAnim ? `pet-anim--${actionAnim}` : ''}`.trim()}
               title={`${name} the ${type}`}
             />
           </div>
@@ -240,6 +255,7 @@ export default function PetProfile() {
             confirmLabel="Delete"
             cancelLabel="Cancel"
             danger
+            beep
             onConfirm={() => {
               setConfirmOpen(false);
               handleDeleteConfirmed();

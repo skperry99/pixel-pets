@@ -2,12 +2,21 @@
 
 import { useMemo, useState } from 'react';
 
-// Mapping from pet type → sprite asset path.
+// Import sprites from src/assets/pets
+import dogImg from '../assets/pets/dog.png';
+import catImg from '../assets/pets/cat.png';
+import dragonImg from '../assets/pets/dragon.png';
+import bunnyImg from '../assets/pets/bunny.png';
+import blobImg from '../assets/pets/blob.png';
+
+// Mapping from pet type → sprite asset.
 // Keys are lowercase; component normalizes incoming type string.
 const SRC_BY_TYPE = {
-  dog: '/pets/dog.png',
-  cat: '/pets/cat.png',
-  dragon: '/pets/dragon.png',
+  dog: dogImg,
+  cat: catImg,
+  dragon: dragonImg,
+  bunny: bunnyImg,
+  blob: blobImg,
 };
 
 // Emoji used if the type sprite is missing or fails to load.
@@ -15,6 +24,8 @@ const EMOJI_FALLBACK = {
   dog: '🐶',
   cat: '🐱',
   dragon: '🐲',
+  bunny: '🐰',
+  blob: '🟢',
 };
 
 /**
@@ -38,6 +49,8 @@ export default function PetSprite({ type = 'Dog', size = 120, title, className =
   const alt = title || `${type} sprite`;
   const src = SRC_BY_TYPE[kind];
 
+  const speciesClass = `pet-species--${kind}`;
+
   // If we have no sprite path, or the <img> failed to load, render the emoji fallback.
   if (!src || showEmoji) {
     const glyph = EMOJI_FALLBACK[kind] || '🐾';
@@ -47,7 +60,7 @@ export default function PetSprite({ type = 'Dog', size = 120, title, className =
         role="img"
         aria-label={alt}
         title={alt}
-        className={`pet-sprite pet-anim--idle pet-anim--hover ${className}`.trim()}
+        className={`pet-sprite pet-anim--idle pet-anim--hover ${speciesClass} ${className}`.trim()}
         style={{
           width: `${size}px`,
           height: `${size}px`,
@@ -75,7 +88,7 @@ export default function PetSprite({ type = 'Dog', size = 120, title, className =
       decoding="async"
       loading="lazy"
       draggable="false"
-      className={`pet-sprite pet-anim--idle pet-anim--hover ${className}`.trim()}
+      className={`pet-sprite pet-anim--idle pet-anim--hover ${speciesClass} ${className}`.trim()}
       onError={() => setShowEmoji(true)}
     />
   );

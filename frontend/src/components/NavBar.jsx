@@ -9,30 +9,6 @@ import { useEffect, useState } from 'react';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
 import { Brand } from '../utils/brandText';
 
-/** Pixel-style logout icon (door + arrow). */
-function LogoutIcon({ size = 18 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 18 18"
-      role="img"
-      aria-hidden="true"
-      focusable="false"
-      className="icon-pixel"
-    >
-      {/* door */}
-      <rect x="2" y="3" width="7" height="12" />
-      {/* knob */}
-      <rect x="3" y="8" width="1" height="1" />
-      {/* arrow */}
-      <rect x="10" y="8" width="6" height="2" />
-      <rect x="14" y="6" width="2" height="2" />
-      <rect x="14" y="10" width="2" height="2" />
-    </svg>
-  );
-}
-
 export default function NavBar({
   headerTitle = Brand.layout.headerTitle,
   headerSubtitle = Brand.layout.headerSubtitle,
@@ -118,16 +94,15 @@ export default function NavBar({
                 Edit Profile
               </NavLink>
 
-              {/* Icon logout (replaces button text) */}
+              {/* Pixel-style Quit button */}
               <button
                 type="button"
-                className="btn btn--ghost nav__icon-btn"
+                className="btn btn--danger nav__logout"
                 onClick={handleLogout}
-                aria-label="Log out"
-                title="Log out"
+                aria-label="Quit to login screen"
+                title="Quit"
               >
-                <LogoutIcon />
-                <span className="sr-only">Log out</span>
+                QUIT
               </button>
             </>
           ) : (

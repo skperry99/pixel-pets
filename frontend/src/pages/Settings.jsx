@@ -13,6 +13,7 @@ import AppLayout from '../components/AppLayout';
 import { useNotice } from '../hooks/useNotice';
 import { getStoredUserId, clearStoredUserId } from '../utils/auth';
 import { Brand } from '../utils/brandText';
+import ConfirmAction from '../components/ConfirmAction';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ export default function Settings() {
   // Delete-confirmation state
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmText, setConfirmText] = useState('');
+  const [deleteError, setDeleteError] = useState(''); // inline delete error
   const [headerName, setHeaderName] = useState('');
 
   const requiredPhrase = 'DELETE';
@@ -52,9 +54,13 @@ export default function Settings() {
     (async () => {
       const res = await getUserProfile(userId);
       if (!res.ok) {
-        const msg = res.error || 'Failed to load profile.';
-        setErrorAndFocus(msg);
-        notify.error(msg);
+        const inlineMsg = res.error || Brand.inline.profileLoadFailed;
+
+        // Inline: detailed explanation
+        setErrorAndFocus(inlineMsg);
+
+        // Toast: short, on-brand
+        notify.error(Brand.toasts.profileLoadFailed);
         return;
       }
 
@@ -92,11 +98,10 @@ export default function Settings() {
     const username = form.username.trim();
     const email = form.email.trim();
 
-    // Basic validation
+    // Basic validation (inline only)
     if (!username || !email) {
       const msg = 'Username and email are required.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       if (!username) usernameRef.current?.focus();
       else emailRef.current?.focus();
       setLoading(false);
@@ -106,7 +111,6 @@ export default function Settings() {
     if (username.length < 3 || username.length > 30) {
       const msg = 'Username must be 3–30 characters.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       usernameRef.current?.focus();
       setLoading(false);
       return;
@@ -115,7 +119,6 @@ export default function Settings() {
     if (!isValidEmail(email)) {
       const msg = 'Please enter a valid email address.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       emailRef.current?.focus();
       setLoading(false);
       return;
@@ -123,10 +126,15 @@ export default function Settings() {
 
     const res = await updateUser(userId, { username, email });
     if (!res.ok) {
-      const msg = res.error || 'Profile update failed.';
-      setErrorAndFocus(msg);
-      notify.error(msg);
+      const inlineMsg = res.error || Brand.inline.profileUpdateFailed;
+
+      // Inline: more detailed
+      setErrorAndFocus(inlineMsg);
       usernameRef.current?.focus();
+
+      // Toast: short, themed
+      notify.error(Brand.toasts.profileError);
+
       setLoading(false);
       return;
     }
@@ -159,10 +167,10 @@ export default function Settings() {
 
     const nextPwd = password;
 
+    // Basic validation (inline only)
     if (!nextPwd) {
       const msg = 'Password is required.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
       return;
@@ -171,7 +179,6 @@ export default function Settings() {
     if (nextPwd.length < 8) {
       const msg = 'Password must be at least 8 characters.';
       setErrorAndFocus(msg);
-      notify.error(msg);
       passwordRef.current?.focus();
       setLoading(false);
       return;
@@ -179,10 +186,15 @@ export default function Settings() {
 
     const res = await updateUser(userId, { password: nextPwd });
     if (!res.ok) {
-      const msg = res.error || 'Password change failed.';
-      setErrorAndFocus(msg);
-      notify.error(msg);
+      const inlineMsg = res.error || Brand.inline.passwordChangeFailed;
+
+      // Inline: details
+      setErrorAndFocus(inlineMsg);
       passwordRef.current?.focus();
+
+      // Toast: short + themed
+      notify.error(Brand.toasts.passwordError);
+
       setLoading(false);
       return;
     }
@@ -201,17 +213,59 @@ export default function Settings() {
 
   async function handleConfirmDelete() {
     if (loading) return;
-    if (confirmText !== requiredPhrase) return;
 
     setErrorMsg('');
+
+    // 1) Client-side check: phrase must match exactly
+    if (confirmText !== requiredPhrase) {
+      const msg = `Please type "${requiredPhrase}" exactly to confirm.`;
+
+      // Inline error under the DELETE input
+      setDeleteError(msg);
+
+      // Short, on-brand toast (fun + quick)
+      notify.error(msg);
+
+      // Force focus back to the confirm field so the user can fix it quickly
+      queueMicrotask(() => {
+        if (confirmRef.current) {
+          confirmRef.current.focus();
+          confirmRef.current.select?.();
+        }
+      });
+      // Extra safety in case anything else tries to grab focus
+      window.setTimeout(() => {
+        if (confirmRef.current) {
+          confirmRef.current.focus();
+          confirmRef.current.select?.();
+        }
+      }, 0);
+
+      return;
+    }
+
+    // 2) Phrase is correct → actually attempt deletion
+    setDeleteError('');
     setLoading(true);
 
     const res = await deleteUserApi(userId);
     if (!res.ok) {
-      const msg = res.error || 'Account deletion failed.';
-      setErrorAndFocus(msg);
-      notify.error(msg);
-      confirmRef.current?.focus();
+      const inlineMsg = res.error || 'Account deletion failed.';
+
+      // Stay in the Delete section: use inline deleteError here
+      setDeleteError(inlineMsg);
+
+      // Toast: short, themed error
+      notify.error(Brand.toasts.accountDeleteError || 'Account deletion failed. 😿');
+
+      // Keep the user anchored at the DELETE input
+      queueMicrotask(() => {
+        if (confirmRef.current) {
+          confirmRef.current.focus();
+          confirmRef.current.select?.();
+        }
+      });
+
       setLoading(false);
       return;
     }
@@ -367,6 +421,8 @@ export default function Settings() {
                 className="btn btn--danger"
                 onClick={() => {
                   setConfirmDelete(true);
+                  setDeleteError('');
+                  setConfirmText('');
                   setTimeout(() => confirmRef.current?.focus(), 0);
                 }}
                 disabled={loading}
@@ -384,33 +440,38 @@ export default function Settings() {
                 ref={confirmRef}
                 placeholder={requiredPhrase}
                 value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
+                onChange={(e) => {
+                  setConfirmText(e.target.value);
+                  if (deleteError) setDeleteError('');
+                }}
                 disabled={loading}
                 aria-label="Type DELETE to confirm account deletion"
+                aria-invalid={Boolean(deleteError)}
+                aria-describedby={deleteError ? 'delete-confirm-error' : undefined}
               />
 
-              <div className="u-actions-row">
-                <button
-                  type="button"
-                  className="btn btn--danger"
-                  disabled={loading || confirmText !== requiredPhrase}
-                  onClick={handleConfirmDelete}
-                >
-                  {loading ? 'Deleting...' : 'Confirm delete'}
-                </button>
+              {deleteError && (
+                <p id="delete-confirm-error" className="form-error" role="alert">
+                  {deleteError}
+                </p>
+              )}
 
-                <button
-                  type="button"
-                  className="btn btn--ghost"
-                  disabled={loading}
-                  onClick={() => {
-                    setConfirmDelete(false);
-                    setConfirmText('');
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
+              {/* Inline confirmation UI using ConfirmAction */}
+              <ConfirmAction
+                className="settings-delete-confirm"
+                confirmPrompt="Are you absolutely sure? This cannot be undone."
+                confirmLabel="Yes, delete my account"
+                cancelLabel="Cancel"
+                danger
+                busy={loading}
+                onConfirm={handleConfirmDelete}
+                onCancel={() => {
+                  setConfirmDelete(false);
+                  setConfirmText('');
+                  setDeleteError('');
+                }}
+                autoFocusConfirm={false} // we’re already focusing the input above
+              />
             </div>
           )}
         </div>
